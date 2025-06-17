@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Header Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .device-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .breakpoint-indicator {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .active {
+            background: #10b981;
+            color: white;
+        }
+        .inactive {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Mobile Header Test</h1>
+        
+        <div class="device-info">
+            <h2>Device Information</h2>
+            <p><strong>Current Width:</strong> <span id="width">-</span>px</p>
+            <p><strong>User Agent:</strong> <span id="userAgent">-</span></p>
+            
+            <h3>Tailwind Breakpoints:</h3>
+            <div class="breakpoint-indicator" id="xs">XS: < 640px</div>
+            <div class="breakpoint-indicator" id="sm">SM: ≥ 640px</div>
+            <div class="breakpoint-indicator" id="md">MD: ≥ 768px</div>
+            <div class="breakpoint-indicator" id="lg">LG: ≥ 1024px</div>
+            <div class="breakpoint-indicator" id="xl">XL: ≥ 1280px</div>
+        </div>
+        
+        <h2>Live Preview</h2>
+        <iframe src="/index.html" id="preview"></iframe>
+    </div>
+    
+    <script>
+        function updateDeviceInfo() {
+            const width = window.innerWidth;
+            document.getElementById('width').textContent = width;
+            document.getElementById('userAgent').textContent = navigator.userAgent;
+            
+            // Update breakpoint indicators
+            document.getElementById('xs').className = width < 640 ? 'breakpoint-indicator active' : 'breakpoint-indicator inactive';
+            document.getElementById('sm').className = width >= 640 && width < 768 ? 'breakpoint-indicator active' : 'breakpoint-indicator inactive';
+            document.getElementById('md').className = width >= 768 && width < 1024 ? 'breakpoint-indicator active' : 'breakpoint-indicator inactive';
+            document.getElementById('lg').className = width >= 1024 && width < 1280 ? 'breakpoint-indicator active' : 'breakpoint-indicator inactive';
+            document.getElementById('xl').className = width >= 1280 ? 'breakpoint-indicator active' : 'breakpoint-indicator inactive';
+        }
+        
+        // Initial update
+        updateDeviceInfo();
+        
+        // Update on resize
+        window.addEventListener('resize', updateDeviceInfo);
+        
+        // Reload iframe on window resize to test responsive behavior
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                document.getElementById('preview').src = document.getElementById('preview').src;
+            }, 500);
+        });
+    </script>
+</body>
+</html>

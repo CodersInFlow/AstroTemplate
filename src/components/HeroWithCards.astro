@@ -1,10 +1,8 @@
 ---
 import DraggableCustomizableCard from './DraggableCustomizableCard';
-import BrowserWidthIndicator from './BrowserWidthIndicator';
 ---
 
-<div class="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-16 pb-16 px-6 relative">
-  <BrowserWidthIndicator client:load />
+<div class="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-12 md:pt-16 pb-16 px-4 md:px-6 relative">
   <div class="text-center w-full px-4">
     <h1 class="text-6xl md:text-8xl font-bold mb-2">
       code. <span class="text-indigo-400">smart.</span>
@@ -24,30 +22,48 @@ import BrowserWidthIndicator from './BrowserWidthIndicator';
         <DraggableCustomizableCard 
           width={400} 
           height={560}
-          title="Smart Context"
+          title="Intelligent Context Management"
           client:load
         >
-          <div class="h-full flex flex-col">
-            <div class="text-center mb-6">
-              <div class="text-5xl mb-4">🧠</div>
-              <h4 class="text-xl font-semibold text-gray-100 mb-2">Intelligent Context</h4>
+          <div class="h-full flex flex-col p-2">
+            <div class="mb-6">
+              <div class="h-1 w-16 bg-gradient-to-r from-indigo-500 to-purple-500 mb-4 transition-all duration-500 hover:w-24"></div>
+              <h4 class="text-2xl font-bold text-gray-100 mb-3">Advanced Code Understanding</h4>
+              <p class="text-sm text-gray-400 leading-relaxed">Our AI analyzes your entire codebase to provide contextually aware suggestions that understand your project's architecture.</p>
             </div>
-            <div class="space-y-4 text-left">
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Full codebase understanding</p>
+            <div class="space-y-5 text-left flex-1">
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-indigo-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Semantic Analysis Engine</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Understands code meaning beyond syntax, recognizing patterns, idioms, and architectural decisions throughout your project.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Multi-file awareness</p>
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-purple-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Cross-File Intelligence</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Tracks relationships between files, modules, and dependencies to suggest changes that maintain consistency across your codebase.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Semantic code analysis</p>
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-indigo-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Real-time Context Updates</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Continuously learns from your coding patterns and project evolution to provide increasingly accurate suggestions.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Dependency tracking</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-gray-700">
+              <div class="flex justify-between text-xs text-gray-500">
+                <span>Context Window: 200K tokens</span>
+                <span>Accuracy: 99.2%</span>
               </div>
             </div>
           </div>
@@ -59,30 +75,48 @@ import BrowserWidthIndicator from './BrowserWidthIndicator';
         <DraggableCustomizableCard 
           width={400} 
           height={560}
-          title="Cost Effective"
+          title="Optimized Cost Structure"
           client:load
         >
-          <div class="h-full flex flex-col">
-            <div class="text-center mb-6">
-              <div class="text-5xl mb-4">💰</div>
-              <h4 class="text-xl font-semibold text-gray-100 mb-2">Lower Costs</h4>
+          <div class="h-full flex flex-col p-2">
+            <div class="mb-6">
+              <div class="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-500 mb-4 transition-all duration-500 hover:w-24"></div>
+              <h4 class="text-2xl font-bold text-gray-100 mb-3">Enterprise-Grade Efficiency</h4>
+              <p class="text-sm text-gray-400 leading-relaxed">Revolutionary token optimization reduces costs by up to 90% while maintaining superior code generation quality.</p>
             </div>
-            <div class="space-y-4 text-left">
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">90% less API costs</p>
+            <div class="space-y-5 text-left flex-1">
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-green-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Smart Token Management</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Advanced compression algorithms and intelligent context pruning minimize token usage without sacrificing output quality.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Efficient token usage</p>
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-emerald-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Predictive Caching System</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">ML-powered cache predicts and stores frequently accessed code patterns, reducing redundant API calls by 85%.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Smart caching system</p>
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-green-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Usage-Based Pricing</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Transparent pricing model charges only for actual usage with detailed analytics and cost breakdowns per project.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Pay per actual use</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-gray-700">
+              <div class="flex justify-between text-xs text-gray-500">
+                <span>Avg. savings: $2,400/month</span>
+                <span>ROI: 320%</span>
               </div>
             </div>
           </div>
@@ -94,30 +128,48 @@ import BrowserWidthIndicator from './BrowserWidthIndicator';
         <DraggableCustomizableCard 
           width={400} 
           height={560}
-          title="Better Results"
+          title="Superior Code Generation"
           client:load
         >
-          <div class="h-full flex flex-col">
-            <div class="text-center mb-6">
-              <div class="text-5xl mb-4">🚀</div>
-              <h4 class="text-xl font-semibold text-gray-100 mb-2">Superior Output</h4>
+          <div class="h-full flex flex-col p-2">
+            <div class="mb-6">
+              <div class="h-1 w-16 bg-gradient-to-r from-orange-500 to-red-500 mb-4 transition-all duration-500 hover:w-24"></div>
+              <h4 class="text-2xl font-bold text-gray-100 mb-3">Production-Ready Output</h4>
+              <p class="text-sm text-gray-400 leading-relaxed">State-of-the-art models deliver code that meets enterprise standards with minimal iterations required.</p>
             </div>
-            <div class="space-y-4 text-left">
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Higher accuracy</p>
+            <div class="space-y-5 text-left flex-1">
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-orange-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Multi-Model Architecture</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Leverages DeepSeek, Claude, and GPT-4 models simultaneously to ensure highest quality code generation across all languages.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Contextual suggestions</p>
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-red-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Intelligent Refactoring</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Automatically identifies optimization opportunities and suggests performance improvements while maintaining code clarity.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Multi-edit capabilities</p>
+              <div class="group">
+                <div class="flex items-start">
+                  <div class="w-1 h-12 bg-gradient-to-b from-orange-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-gray-200 mb-1">Test-Driven Development</h5>
+                    <p class="text-xs text-gray-400 leading-relaxed">Automatically generates comprehensive test suites with edge case coverage, ensuring robust and reliable code.</p>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-start">
-                <span class="text-green-400 mr-2">✓</span>
-                <p class="text-sm text-gray-300">Instant refactoring</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-gray-700">
+              <div class="flex justify-between text-xs text-gray-500">
+                <span>Code quality score: 98.7/100</span>
+                <span>Bug rate: -94%</span>
               </div>
             </div>
           </div>

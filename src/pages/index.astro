@@ -1,18 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
+import Header from '../components/HeaderSimple.astro';
 import HeroWithCards from '../components/HeroWithCards.astro';
 import Footer from '../components/Footer.astro';
 
 // Interactive sections
 import InteractiveCardSection from '../components/InteractiveCardSection';
-import BrowserWidthIndicator from '../components/BrowserWidthIndicator';
 ---
 
 <Layout title="Coders in Flow - Interactive Card Experience">
-  <!-- Browser width indicator -->
-  <BrowserWidthIndicator client:load />
-  
   <!-- Static header and hero - no JavaScript shipped -->
   <Header />
   <HeroWithCards />
