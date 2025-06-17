@@ -1,0 +1,145 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CustomizableCard from '../components/CustomizableCard';
+---
+
+<Layout title="Card Size Examples - Coders in Flow">
+  <div class="min-h-screen bg-gray-100 py-20">
+    <div class="max-w-7xl mx-auto px-4">
+      <h1 class="text-4xl font-bold text-center mb-12">Customizable Card Dimensions</h1>
+      
+      <!-- Grid of different card sizes -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Small Card -->
+        <CustomizableCard 
+          width={250} 
+          height={200}
+          title="Small Card"
+          client:load
+        >
+          <p class="text-sm">This is a small card with fixed dimensions: 250x200px</p>
+        </CustomizableCard>
+        
+        <!-- Medium Card -->
+        <CustomizableCard 
+          width={350} 
+          height={300}
+          title="Medium Card"
+          client:load
+        >
+          <div>
+            <h4 class="font-semibold mb-2">Medium sized card</h4>
+            <p class="text-sm text-gray-600">350x300px - Perfect for moderate content</p>
+          </div>
+        </CustomizableCard>
+        
+        <!-- Large Card -->
+        <CustomizableCard 
+          width={450} 
+          height={400}
+          title="Large Card"
+          client:load
+        >
+          <div>
+            <h4 class="font-semibold mb-2">Large Card Example</h4>
+            <p class="text-sm text-gray-600 mb-4">450x400px - Lots of space for content</p>
+            <div class="flex gap-2">
+              <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">Tag 1</span>
+              <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Tag 2</span>
+            </div>
+          </div>
+        </CustomizableCard>
+        
+        <!-- Full Width Card -->
+        <div class="md:col-span-2 lg:col-span-3">
+          <CustomizableCard 
+            width="100%" 
+            height={250}
+            title="Full Width Card"
+            client:load
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-semibold mb-2">Responsive Width Card</h4>
+                <p class="text-sm text-gray-600">This card takes full width of its container</p>
+              </div>
+              <div class="text-4xl">🚀</div>
+            </div>
+          </CustomizableCard>
+        </div>
+        
+        <!-- Tall Card -->
+        <CustomizableCard 
+          width={300} 
+          height={500}
+          title="Tall Card"
+          client:load
+        >
+          <div class="h-full flex flex-col">
+            <h4 class="font-semibold mb-2">Tall Card (300x500)</h4>
+            <p class="text-sm text-gray-600 mb-4">Great for lists or vertical content</p>
+            <ul class="space-y-2 flex-1">
+              <li class="flex items-center">
+                <span class="mr-2">📍</span> Item 1
+              </li>
+              <li class="flex items-center">
+                <span class="mr-2">📍</span> Item 2
+              </li>
+              <li class="flex items-center">
+                <span class="mr-2">📍</span> Item 3
+              </li>
+            </ul>
+          </div>
+        </CustomizableCard>
+        
+        <!-- Square Card -->
+        <CustomizableCard 
+          width={300} 
+          height={300}
+          title="Square Card"
+          client:load
+        >
+          <div class="h-full flex items-center justify-center">
+            <div class="text-center">
+              <div class="text-6xl mb-4">🎯</div>
+              <p class="text-sm text-gray-600">Perfect square: 300x300px</p>
+            </div>
+          </div>
+        </CustomizableCard>
+        
+        <!-- Draggable Card -->
+        <CustomizableCard 
+          width={320} 
+          height={280}
+          title="Draggable Card"
+          draggable={true}
+          className="cursor-move"
+          client:load
+        >
+          <div class="text-center">
+            <p class="text-sm text-gray-600 mb-4">This card can be dragged!</p>
+            <p class="text-xs text-gray-500">Try dragging from the title bar</p>
+          </div>
+        </CustomizableCard>
+        
+      </div>
+      
+      <!-- Usage Example -->
+      <div class="mt-16 bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-bold mb-4">Usage Example</h2>
+        <pre class="bg-gray-900 text-white p-4 rounded overflow-x-auto"><code>{`<CustomizableCard 
+  width={400}        // or "100%" for responsive
+  height={300}       // or "auto" for content-based
+  title="My Card"
+  draggable={true}   // optional
+  className="custom-class"  // optional
+  style={{ borderRadius: '20px' }}  // optional
+>
+  <YourContent />
+</CustomizableCard>`}</code></pre>
+      </div>
+      
+    </div>
+  </div>
+</Layout>

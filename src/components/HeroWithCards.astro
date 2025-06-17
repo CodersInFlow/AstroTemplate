@@ -1,0 +1,135 @@
+---
+import DraggableCustomizableCard from './DraggableCustomizableCard';
+import BrowserWidthIndicator from './BrowserWidthIndicator';
+---
+
+<div class="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-16 pb-16 px-6 relative">
+  <BrowserWidthIndicator client:load />
+  <div class="text-center w-full px-4">
+    <h1 class="text-6xl md:text-8xl font-bold mb-2">
+      code. <span class="text-indigo-400">smart.</span>
+    </h1>
+    <h2 class="text-3xl md:text-4xl font-medium mb-6 text-gray-300">agentic coding, re-imagined</h2>
+    <p class="text-xl md:text-2xl mb-4 text-gray-300">
+      AI-Powered Code Assistance: Efficient, Affordable, Effective
+    </p>
+    <p class="text-md md:text-lg mb-12 text-gray-400 max-w-3xl mx-auto">
+      iPhone App. Android App. Claude Code. Open Router. DeepSeek. Anthropic. OpenAI. LM Studio. Ollama. Context Editing. Context Visualation. Cost Analysis. VS Code. CoPilot. Automatic Memory. Rule Detection. Language Detection. GitLab. GitHub. Automatic Snapshots. Commit Staging.
+    </p>
+    
+    <!-- Three Cards Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 w-full max-w-screen-xl mx-auto mt-12">
+      <!-- Card 1 -->
+      <div class="flex justify-center">
+        <DraggableCustomizableCard 
+          width={400} 
+          height={560}
+          title="Smart Context"
+          client:load
+        >
+          <div class="h-full flex flex-col">
+            <div class="text-center mb-6">
+              <div class="text-5xl mb-4">🧠</div>
+              <h4 class="text-xl font-semibold text-gray-100 mb-2">Intelligent Context</h4>
+            </div>
+            <div class="space-y-4 text-left">
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Full codebase understanding</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Multi-file awareness</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Semantic code analysis</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Dependency tracking</p>
+              </div>
+            </div>
+          </div>
+        </DraggableCustomizableCard>
+      </div>
+      
+      <!-- Card 2 -->
+      <div class="flex justify-center" style="margin-top: -35px;">
+        <DraggableCustomizableCard 
+          width={400} 
+          height={560}
+          title="Cost Effective"
+          client:load
+        >
+          <div class="h-full flex flex-col">
+            <div class="text-center mb-6">
+              <div class="text-5xl mb-4">💰</div>
+              <h4 class="text-xl font-semibold text-gray-100 mb-2">Lower Costs</h4>
+            </div>
+            <div class="space-y-4 text-left">
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">90% less API costs</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Efficient token usage</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Smart caching system</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Pay per actual use</p>
+              </div>
+            </div>
+          </div>
+        </DraggableCustomizableCard>
+      </div>
+      
+      <!-- Card 3 -->
+      <div class="flex justify-center">
+        <DraggableCustomizableCard 
+          width={400} 
+          height={560}
+          title="Better Results"
+          client:load
+        >
+          <div class="h-full flex flex-col">
+            <div class="text-center mb-6">
+              <div class="text-5xl mb-4">🚀</div>
+              <h4 class="text-xl font-semibold text-gray-100 mb-2">Superior Output</h4>
+            </div>
+            <div class="space-y-4 text-left">
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Higher accuracy</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Contextual suggestions</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Multi-edit capabilities</p>
+              </div>
+              <div class="flex items-start">
+                <span class="text-green-400 mr-2">✓</span>
+                <p class="text-sm text-gray-300">Instant refactoring</p>
+              </div>
+            </div>
+          </div>
+        </DraggableCustomizableCard>
+      </div>
+    </div>
+    
+    <!-- Arrow animation -->
+    <div class="animate-bounce mt-12">
+      <svg class="w-8 h-8 mx-auto text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </div>
+  </div>
+</div>
