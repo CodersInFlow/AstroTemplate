@@ -6,5 +6,10 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), tailwind()]
+  site: 'https://codersinflow.com',
+  integrations: [react(), tailwind()],
+  // Enable sitemap generation
+  build: {
+    sitemap: true
+  }
 });

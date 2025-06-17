@@ -127,9 +127,6 @@ const CardStacker = () => {
 */}
       <TechSection
         techSectionRef={techSectionRef}
-        cardPositions={cardPositions}
-        dragState={dragState}
-        handleMouseDown={handleMouseDown}
       />
       <FeaturesSection
         featureSectionRef={featureSectionRef}
