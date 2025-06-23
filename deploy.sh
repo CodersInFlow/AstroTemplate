@@ -40,10 +40,13 @@ scp -P 12222 nginx.conf root@ny:/tmp/codersinflow.com.nginx
 
 # Backup existing config, copy new one, and reload nginx
 ssh -p 12222 root@ny "
+    # Create backup directory if it doesn't exist
+    mkdir -p /etc/nginx/backups
+    
     # Backup existing config
     if [ -f /etc/nginx/sites-enabled/codersinflow.com ]; then
-        cp /etc/nginx/sites-enabled/codersinflow.com /etc/nginx/sites-enabled/codersinflow.com.backup.\$(date +%Y%m%d_%H%M%S)
-        echo '  - Backed up existing nginx config'
+        cp /etc/nginx/sites-enabled/codersinflow.com /etc/nginx/backups/codersinflow.com.backup.\$(date +%Y%m%d_%H%M%S)
+        echo '  - Backed up existing nginx config to /etc/nginx/backups/'
     fi
     
     # Copy new config
@@ -59,8 +62,11 @@ ssh -p 12222 root@ny "
         echo '  - Nginx reloaded successfully'
     else
         echo '❌ Nginx config test failed! Rolling back...'
-        if [ -f /etc/nginx/sites-enabled/codersinflow.com.backup.* ]; then
-            cp /etc/nginx/sites-enabled/codersinflow.com.backup.* /etc/nginx/sites-enabled/codersinflow.com
+        # Find the most recent backup and restore it
+        LATEST_BACKUP=\$(ls -t /etc/nginx/backups/codersinflow.com.backup.* 2>/dev/null | head -n1)
+        if [ -f "\$LATEST_BACKUP" ]; then
+            cp "\$LATEST_BACKUP" /etc/nginx/sites-enabled/codersinflow.com
+            echo '  - Restored from backup: '\$LATEST_BACKUP
         fi
         exit 1
     fi
@@ -70,6 +76,10 @@ ssh -p 12222 root@ny "
 "
 
 echo "📦 Uploading VSIX files..."
+# First, delete all existing VSIX files on the server
+echo "  - Cleaning existing VSIX files on server..."
+ssh -p 12222 root@ny "rm -f /var/www/codersinflow.com/downloads/*.vsix"
+
 # Check if there are any VSIX files in ~/Source/codersinflow/
 if ls ~/Source/codersinflow/*.vsix 1> /dev/null 2>&1; then
     echo "  - Found VSIX files in ~/Source/codersinflow/"

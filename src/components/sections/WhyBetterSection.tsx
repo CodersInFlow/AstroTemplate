@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import DraggableCustomizableCard from '../DraggableCustomizableCard';
-import SimpleVideoPlayer from '../SimpleVideoPlayer';
-import videoData from '../../data/videos.json';
 
 const WhyBetterSection: React.FC = () => {
   const [cardsVisible, setCardsVisible] = useState<boolean[]>([false, false, false]);
@@ -188,10 +186,6 @@ const WhyBetterSection: React.FC = () => {
           </div>
         </div>
         
-        {/* Video Player Section */}
-        <div className="mt-16">
-          <SimpleVideoPlayer videos={videoData} />
-        </div>
       </div>
     </div>
   );

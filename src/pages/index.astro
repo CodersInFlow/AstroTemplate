@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 
 // Section components
 import HeroSection from '../components/sections/HeroSection.astro';
+import WhyBetterSection from '../components/sections/WhyBetterSection';
 import VideoSection from '../components/sections/VideoSection';
 import KeyFeaturesSection from '../components/sections/KeyFeaturesSection.astro';
 
@@ -24,6 +25,9 @@ import CallToAction from '../components/CallToAction';
   
   <!-- Hero Section -->
   <HeroSection />
+  
+  <!-- Why We're Better Section -->
+  <WhyBetterSection client:load />
   
   <!-- Video Section -->
   <VideoSection client:load />
