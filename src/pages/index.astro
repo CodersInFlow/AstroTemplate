@@ -1,11 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/HeaderSimple.astro';
-import HeroWithCards from '../components/HeroWithCards.astro';
 import Footer from '../components/Footer.astro';
 
+// Section components
+import HeroSection from '../components/sections/HeroSection.astro';
+import WhyBetterSection from '../components/sections/WhyBetterSection.astro';
+import KeyFeaturesSection from '../components/sections/KeyFeaturesSection.astro';
+
 // Interactive sections
-import InteractiveCardSection from '../components/InteractiveCardSection';
+import TechStackSection from '../components/sections/TechStackSection';
+import TestimonialsWrapper from '../components/sections/TestimonialsWrapper';
+import CallToAction from '../components/CallToAction';
 ---
 
 <Layout 
@@ -13,13 +19,27 @@ import InteractiveCardSection from '../components/InteractiveCardSection';
   description="Revolutionary AI coding assistant with intelligent context management, 90% lower API costs, and superior code generation. Available for iPhone, Android, VS Code, and more."
   keywords="AI coding assistant, code generation, Claude Code, DeepSeek, OpenAI, LM Studio, Ollama, context editing, VS Code extension, GitHub Copilot alternative, automatic memory, smart code completion"
 >
-  <!-- Static header and hero - no JavaScript shipped -->
+  <!-- Static header -->
   <Header />
-  <HeroWithCards />
   
-  <!-- Interactive CardStacker - only loads JS for this component -->
-  <InteractiveCardSection client:visible />
+  <!-- Hero Section -->
+  <HeroSection />
   
-  <!-- Static footer - no JavaScript shipped -->
+  <!-- Why We're Better Section -->
+  <WhyBetterSection />
+  
+  <!-- Tech Stack Section -->
+  <TechStackSection client:visible />
+  
+  <!-- Key Features Section with FeatureGrid -->
+  <KeyFeaturesSection />
+  
+  <!-- Testimonials Section -->
+  <TestimonialsWrapper client:visible />
+  
+  <!-- Call to Action -->
+  <CallToAction client:visible />
+  
+  <!-- Static footer -->
   <Footer />
 </Layout>
