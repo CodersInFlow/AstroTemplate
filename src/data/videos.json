@@ -1,52 +1,22 @@
 [
   {
     "id": 1,
-    "filename": "Claude Code.mp4",
-    "title": "Claude Code",
-    "url": "/videos/Claude Code.mp4",
-    "thumbnail": "/videos/thumbnails/Claude Code.jpg",
+    "filename": "ClaudeCode KanBan.mp4",
+    "title": "ClaudeCode KanBan",
+    "url": "/videos/ClaudeCode KanBan.mp4",
+    "thumbnail": "/videos/thumbnails/ClaudeCode KanBan.jpg",
     "duration": null,
-    "size": 777854,
+    "size": 24712172,
     "description": "Video 1"
   },
   {
     "id": 2,
-    "filename": "Codebase Search.mp4",
-    "title": "Codebase Search",
-    "url": "/videos/Codebase Search.mp4",
-    "thumbnail": "/videos/thumbnails/Codebase Search.jpg",
+    "filename": "ClaudeCode Modify.mp4",
+    "title": "ClaudeCode Modify",
+    "url": "/videos/ClaudeCode Modify.mp4",
+    "thumbnail": "/videos/thumbnails/ClaudeCode Modify.jpg",
     "duration": null,
-    "size": 777854,
+    "size": 13722927,
     "description": "Video 2"
-  },
-  {
-    "id": 3,
-    "filename": "Iphone App.mp4",
-    "title": "Iphone App",
-    "url": "/videos/Iphone App.mp4",
-    "thumbnail": "/videos/thumbnails/Iphone App.jpg",
-    "duration": null,
-    "size": 777854,
-    "description": "Video 3"
-  },
-  {
-    "id": 4,
-    "filename": "MCP Marketplace.mp4",
-    "title": "MCP Marketplace",
-    "url": "/videos/MCP Marketplace.mp4",
-    "thumbnail": "/videos/thumbnails/MCP Marketplace.jpg",
-    "duration": null,
-    "size": 777854,
-    "description": "Video 4"
-  },
-  {
-    "id": 5,
-    "filename": "Mermaid Diagrams.mp4",
-    "title": "Mermaid Diagrams",
-    "url": "/videos/Mermaid Diagrams.mp4",
-    "thumbnail": "/videos/thumbnails/Mermaid Diagrams.jpg",
-    "duration": null,
-    "size": 777854,
-    "description": "Video 5"
   }
 ]

@@ -20,22 +20,10 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({ videos }) => {
 
   const currentVideo = videos[currentVideoIndex];
 
-  // Auto-play when component mounts or video changes
+  // Load video when component mounts or video changes
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.load();
-      // Try to play automatically
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch(() => {
-            // Auto-play was prevented
-            setIsPlaying(false);
-          });
-      }
     }
   }, [currentVideoIndex]);
 
@@ -93,6 +81,12 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({ videos }) => {
           onEnded={handleVideoEnded}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
+          onLoadedData={() => {
+            // Ensure play state is synced after video loads
+            if (videoRef.current && videoRef.current.autoplay) {
+              setIsPlaying(!videoRef.current.paused);
+            }
+          }}
           muted={isMuted}
           autoPlay
           playsInline
