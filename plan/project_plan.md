@@ -3,7 +3,7 @@
 
 This document outlines the plan for understanding and potentially modifying the project.
 
-## Checklist
+## Checklist for Plan for stuff and things. and other stuff
 
 - [x] Initial project overview provided to the user.
 - [x] Create `plan/project_plan.md` with a checklist.
