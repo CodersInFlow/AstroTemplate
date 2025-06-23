@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 
 // Section components
 import HeroSection from '../components/sections/HeroSection.astro';
-import WhyBetterSection from '../components/sections/WhyBetterSection.astro';
+import VideoSection from '../components/sections/VideoSection';
 import KeyFeaturesSection from '../components/sections/KeyFeaturesSection.astro';
 
 // Interactive sections
@@ -25,21 +25,21 @@ import CallToAction from '../components/CallToAction';
   <!-- Hero Section -->
   <HeroSection />
   
-  <!-- Why We're Better Section -->
-  <WhyBetterSection />
+  <!-- Video Section -->
+  <VideoSection client:load />
   
   <!-- Tech Stack Section -->
-  <TechStackSection client:visible />
+  <!-- TechStackSection client:visible -->
   
   <!-- Key Features Section with FeatureGrid -->
   <KeyFeaturesSection />
   
   <!-- Testimonials Section -->
-  <TestimonialsWrapper client:visible />
+  <!-- <TestimonialsWrapper client:visible /> -->
   
   <!-- Call to Action -->
-  <CallToAction client:visible />
+  <!-- <CallToAction client:visible /> -->
   
   <!-- Static footer -->
-  <Footer />
+  <!-- <Footer /> -->
 </Layout>

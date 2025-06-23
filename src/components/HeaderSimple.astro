@@ -15,28 +15,33 @@
     </div>
 
     <!-- Desktop only -->
-    <nav class="hidden md:flex items-center space-x-6">
+    <!-- <nav class="hidden md:flex items-center space-x-6">
       <a href="#" class="text-gray-300 hover:text-white">Features</a>
       <a href="#" class="text-gray-300 hover:text-white">Pricing</a>
       <a href="#" class="text-gray-300 hover:text-white">Docs</a>
-    </nav>
+    </nav> -->
 
     <!-- Desktop only -->
     <div class="hidden md:flex items-center space-x-4">
-      <a href="#" class="text-gray-300 hover:text-white">Sign In</a>
-      <a href="#" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Get Started</a>
+      <!-- <a href="#" class="text-gray-300 hover:text-white">Sign In</a> -->
+      <a href="/download" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Get Started</a>
     </div>
 
     <!-- Mobile menu button -->
-    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2">
+    <!-- <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2">
       <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
       </svg>
-    </button>
+    </button> -->
+    
+    <!-- Show Get Started button on mobile too -->
+    <div class="md:hidden">
+      <a href="/download" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">Get Started</a>
+    </div>
   </div>
 
   <!-- Mobile menu -->
-  <div id="mobile-menu" class="hidden md:hidden bg-gray-800 border-t border-gray-700">
+  <!-- <div id="mobile-menu" class="hidden md:hidden bg-gray-800 border-t border-gray-700">
     <div class="px-4 py-4 space-y-3">
       <a href="#" class="block text-gray-300 hover:text-white">Features</a>
       <a href="#" class="block text-gray-300 hover:text-white">Pricing</a>
@@ -45,5 +50,5 @@
       <a href="#" class="block text-gray-300 hover:text-white">Sign In</a>
       <a href="#" class="block px-4 py-2 bg-indigo-600 text-white rounded text-center hover:bg-indigo-700">Get Started</a>
     </div>
-  </div>
+  </div> -->
 </header>

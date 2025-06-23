@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Smartphone,
   Search,
@@ -19,6 +19,8 @@ import {
 
 const FeatureGrid = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [visibleCards, setVisibleCards] = useState<boolean[]>(new Array(15).fill(false));
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const features = [
     {
@@ -234,6 +236,41 @@ const FeatureGrid = () => {
     }
   ];
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          // Animate cards in sequence
+          features.forEach((_, index) => {
+            setTimeout(() => {
+              setVisibleCards(prev => {
+                const newVisible = [...prev];
+                newVisible[index] = true;
+                return newVisible;
+              });
+            }, index * 80); // Stagger by 80ms per card
+          });
+          
+          // Unobserve after animation starts
+          if (gridRef.current) {
+            observer.unobserve(gridRef.current);
+          }
+        }
+      },
+      { threshold: 0.1 } // Trigger when 10% of the grid is visible
+    );
+
+    if (gridRef.current) {
+      observer.observe(gridRef.current);
+    }
+
+    return () => {
+      if (gridRef.current) {
+        observer.unobserve(gridRef.current);
+      }
+    };
+  }, []);
+
   const renderPattern = (pattern, id) => {
     const patternId = `${pattern}-${id}`;
     switch (pattern) {
@@ -299,15 +336,17 @@ const FeatureGrid = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full" ref={gridRef}>
       {/* Grid Container */}
       <div className="relative">
         {/* Desktop Grid - 4 columns, smaller row height */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-[200px]">
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <div
               key={feature.id}
-              className={`${feature.className} relative group overflow-hidden rounded-xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl cursor-pointer`}
+              className={`${feature.className} relative group overflow-hidden rounded-xl transition-all duration-700 hover:scale-[1.02] hover:shadow-2xl cursor-pointer transform ${
+                visibleCards[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
               onMouseEnter={() => setHoveredCard(feature.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
@@ -362,10 +401,12 @@ const FeatureGrid = () => {
 
         {/* Mobile Grid - Single Column */}
         <div className="sm:hidden grid grid-cols-1 gap-4">
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <div
               key={feature.id}
-              className="relative group overflow-hidden rounded-xl transition-all duration-500 hover:shadow-2xl cursor-pointer"
+              className={`relative group overflow-hidden rounded-xl transition-all duration-700 hover:shadow-2xl cursor-pointer transform ${
+                visibleCards[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
               onMouseEnter={() => setHoveredCard(feature.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >

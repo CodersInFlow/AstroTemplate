@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/HeaderSimple.astro';
+---
+
+<Layout 
+  title="Download Coders in Flow - Get Started"
+  description="Download the latest version of Coders in Flow for VS Code"
+  keywords="download, VS Code extension, Coders in Flow"
+>
+  <Header />
+  
+  <div class="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 pt-32 pb-16">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+          Download <span class="text-indigo-400">Coders in Flow</span>
+        </h1>
+        <p class="text-xl text-gray-300">Get started with the most powerful AI coding assistant</p>
+      </div>
+
+      <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
+          <h2 class="text-2xl font-bold mb-2">VS Code Extension</h2>
+          <p class="text-indigo-100">The latest version is automatically detected</p>
+        </div>
+        
+        <div class="p-8">
+          <div id="download-info" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-gray-400">Version:</span>
+              <span id="version" class="text-white font-mono text-lg">Loading...</span>
+            </div>
+            <div class="flex items-center justify-between mb-6">
+              <span class="text-gray-400">File:</span>
+              <span id="filename" class="text-white font-mono text-sm">Loading...</span>
+            </div>
+          </div>
+
+          <a 
+            id="download-button"
+            href="#" 
+            class="block w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-4 px-6 rounded-lg font-semibold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+          >
+            Download Extension
+          </a>
+
+          <div class="mt-8 pt-8 border-t border-gray-700">
+            <h3 class="text-white font-semibold mb-3">Installation Instructions:</h3>
+            <ol class="text-gray-400 space-y-2 text-sm">
+              <li>1. Download the .vsix file above</li>
+              <li>2. Open VS Code</li>
+              <li>3. Press <code class="bg-gray-700 px-2 py-1 rounded">Cmd+Shift+P</code> (Mac) or <code class="bg-gray-700 px-2 py-1 rounded">Ctrl+Shift+P</code> (Windows/Linux)</li>
+              <li>4. Type "Install from VSIX" and select the command</li>
+              <li>5. Browse to the downloaded file and select it</li>
+              <li>6. Restart VS Code when prompted</li>
+            </ol>
+          </div>
+
+          <div class="mt-6 p-4 bg-indigo-900/20 border border-indigo-700/50 rounded-lg">
+            <p class="text-indigo-300 text-sm">
+              <strong>Note:</strong> Make sure you have VS Code version 1.70.0 or higher installed.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 text-center">
+        <a href="/" class="text-indigo-400 hover:text-indigo-300">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fetch the latest version info from PHP endpoint
+    fetch('/api/latest-version.php')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('version').textContent = data.version;
+          document.getElementById('filename').textContent = data.filename;
+          document.getElementById('download-button').href = data.download_url;
+        } else {
+          document.getElementById('version').textContent = 'Not found';
+          document.getElementById('filename').textContent = 'No file available';
+          document.getElementById('download-button').textContent = 'No Download Available';
+          document.getElementById('download-button').classList.add('opacity-50', 'cursor-not-allowed');
+          document.getElementById('download-button').removeAttribute('href');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching version:', error);
+        document.getElementById('version').textContent = 'Error';
+        document.getElementById('filename').textContent = 'Error loading file';
+      });
+  </script>
+</Layout>

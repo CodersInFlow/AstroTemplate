@@ -4,9 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "node scripts/generate-video-list.js",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy:prepare": "npm run build && ./scripts/post-build.sh",
+    "generate:videos": "node scripts/generate-video-list.js"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.0",
