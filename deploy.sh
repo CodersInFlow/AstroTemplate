@@ -75,35 +75,34 @@ ssh -p 12222 root@ny "
     rm /tmp/codersinflow.com.nginx
 "
 
-echo "📦 Uploading VSIX files..."
-# First, delete all existing VSIX files on the server
-echo "  - Cleaning existing VSIX files on server..."
-ssh -p 12222 root@ny "rm -f /var/www/codersinflow.com/downloads/*.vsix"
-
-# Check if there are any VSIX files in ~/Source/codersinflow/
-if ls ~/Source/codersinflow/*.vsix 1> /dev/null 2>&1; then
-    echo "  - Found VSIX files in ~/Source/codersinflow/"
-    scp -P 12222 ~/Source/codersinflow/*.vsix root@ny:/var/www/codersinflow.com/downloads/
-    echo "  - VSIX files uploaded successfully"
-    
-    # List uploaded files
-    echo "  - Uploaded files:"
-    for file in ~/Source/codersinflow/*.vsix; do
-        if [ -f "$file" ]; then
-            echo "    • $(basename "$file")"
-        fi
-    done
-else
-    echo "  - No VSIX files found in ~/Source/codersinflow/"
-    echo "  - To upload manually: scp -P 12222 ~/Source/codersinflow/*.vsix root@ny:/var/www/codersinflow.com/downloads/"
-fi
+# echo "📦 Uploading VSIX files..."
+# # First, delete all existing VSIX files on the server
+# echo "  - Cleaning existing VSIX files on server..."
+# ssh -p 12222 root@ny "rm -f /var/www/codersinflow.com/downloads/*.vsix"
+# 
+# # Check if there are any VSIX files in ~/Source/codersinflow/
+# if ls ~/Source/codersinflow/*.vsix 1> /dev/null 2>&1; then
+#     echo "  - Found VSIX files in ~/Source/codersinflow/"
+#     scp -P 12222 ~/Source/codersinflow/*.vsix root@ny:/var/www/codersinflow.com/downloads/
+#     echo "  - VSIX files uploaded successfully"
+#     
+#     # List uploaded files
+#     echo "  - Uploaded files:"
+#     for file in ~/Source/codersinflow/*.vsix; do
+#         if [ -f "$file" ]; then
+#             echo "    • $(basename "$file")"
+#         fi
+#     done
+# else
+#     echo "  - No VSIX files found in ~/Source/codersinflow/"
+#     echo "  - To upload manually: scp -P 12222 ~/Source/codersinflow/*.vsix root@ny:/var/www/codersinflow.com/downloads/"
+# fi
 
 echo "✅ Deployment complete!"
 echo "🌐 Site deployed to codersinflow.com"
 echo ""
-echo "📌 The download page will automatically detect the latest version"
+echo "📌 The download page now directs users to the VS Code Marketplace"
 echo ""
 echo "🧪 Test URLs:"
 echo "   https://codersinflow.com/api/test.php - Check PHP is working"
-echo "   https://codersinflow.com/api/latest-version.php - Check version detection"
 echo "   https://codersinflow.com/download - The download page"

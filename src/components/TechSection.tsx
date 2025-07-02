@@ -51,7 +51,7 @@ const TechSection: React.FC<TechSectionProps> = ({
     <div className="bg-gray-900 py-24" ref={techSectionRef}>
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4 text-gray-100">Why are we better?</h2>
+          <h2 className="text-4xl font-bold mb-4 text-gray-100">Whddddy are we better?</h2>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
             See our innovative features in action with this demonstration
           </p>

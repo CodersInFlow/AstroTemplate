@@ -37,7 +37,7 @@ const FeatureGrid = () => {
       className: 'col-span-2 row-span-2',
       mobileClass: 'col-span-1',
       hasImage: true,
-      imageSrc: '/iphone.png'
+      imageSrc: '/iphone-v2.png'
     },
     {
       id: 2,

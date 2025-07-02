@@ -70,13 +70,13 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({ videos }) => {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-[1280px] mx-auto">
       {/* Video Player */}
-      <div className="relative bg-black rounded-lg overflow-hidden mb-4">
+      <div className="relative bg-black rounded-lg overflow-hidden mb-4" style={{ maxWidth: '1280px', aspectRatio: '16/9' }}>
         <video
           ref={videoRef}
-          className="w-full h-auto"
-          style={{ maxHeight: '500px' }}
+          className="w-full h-full object-contain"
+          style={{ maxHeight: '720px' }}
           src={currentVideo.url}
           onEnded={handleVideoEnded}
           onPlay={() => setIsPlaying(true)}

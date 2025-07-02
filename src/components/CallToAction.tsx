@@ -8,9 +8,9 @@ const CallToAction: React.FC = () => {
         <p className="text-indigo-200 mb-8 text-lg">
           Join thousands of developers who are building amazing interfaces with our components.
         </p>
-        <button className="bg-gray-800 text-indigo-300 px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 border border-gray-600 transition-colors">
+        <a href="/download" className="inline-block bg-gray-800 text-indigo-300 px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 border border-gray-600 transition-colors">
           Get Started Now
-        </button>
+        </a>
       </div>
     </div>
   );

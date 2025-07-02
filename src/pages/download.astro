@@ -22,45 +22,66 @@ import HeaderDownload from '../components/HeaderDownload.astro';
       <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
         <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
           <h2 class="text-2xl font-bold mb-2">VS Code Extension</h2>
-          <p class="text-indigo-100">The latest version is automatically detected</p>
+          <p class="text-indigo-100">Install directly from the Visual Studio Code Marketplace</p>
         </div>
         
         <div class="p-8">
-          <div id="download-info" class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-gray-400">Version:</span>
-              <span id="version" class="text-white font-mono text-lg">Loading...</span>
-            </div>
-            <div class="flex items-center justify-between mb-6">
-              <span class="text-gray-400">File:</span>
-              <span id="filename" class="text-white font-mono text-sm">Loading...</span>
+          <div class="mb-8">
+            <a 
+              href="https://marketplace.visualstudio.com/items?itemName=DarkFlows.codersinflow"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-4 px-6 rounded-lg font-semibold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Install from VS Code Marketplace
+            </a>
+            <p class="text-gray-400 text-sm text-center mt-3">Opens in a new tab</p>
+          </div>
+
+          <div class="mb-8 pt-8 border-t border-gray-700">
+            <h3 class="text-white font-semibold mb-4">Installation Instructions:</h3>
+            
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-indigo-400 font-medium mb-2">Method 1: Install from Marketplace Website</h4>
+                <ol class="text-gray-400 space-y-2 text-sm ml-4">
+                  <li>1. Click the button above to open the marketplace page</li>
+                  <li>2. Click the "Install" button on the marketplace page</li>
+                  <li>3. VS Code will open and prompt you to install the extension</li>
+                  <li>4. Click "Install" in VS Code to complete the installation</li>
+                </ol>
+              </div>
+              
+              <div>
+                <h4 class="text-indigo-400 font-medium mb-2">Method 2: Install from within VS Code</h4>
+                <ol class="text-gray-400 space-y-2 text-sm ml-4">
+                  <li>1. Open Visual Studio Code</li>
+                  <li>2. Click the Extensions icon in the Activity Bar (or press <code class="bg-gray-700 px-2 py-1 rounded">Cmd+Shift+X</code> on Mac, <code class="bg-gray-700 px-2 py-1 rounded">Ctrl+Shift+X</code> on Windows/Linux)</li>
+                  <li>3. Search for "Coders In Flow"</li>
+                  <li>4. Click "Install" on the extension by DarkFlows</li>
+                </ol>
+              </div>
+              
+              <div>
+                <h4 class="text-indigo-400 font-medium mb-2">Method 3: Quick Install via Command Palette</h4>
+                <ol class="text-gray-400 space-y-2 text-sm ml-4">
+                  <li>1. Open VS Code</li>
+                  <li>2. Press <code class="bg-gray-700 px-2 py-1 rounded">Cmd+P</code> (Mac) or <code class="bg-gray-700 px-2 py-1 rounded">Ctrl+P</code> (Windows/Linux)</li>
+                  <li>3. Type: <code class="bg-gray-700 px-2 py-1 rounded">ext install DarkFlows.codersinflow</code></li>
+                  <li>4. Press Enter to install</li>
+                </ol>
+              </div>
             </div>
           </div>
 
-          <a 
-            id="download-button"
-            href="#" 
-            class="block w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-4 px-6 rounded-lg font-semibold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-          >
-            Download Extension
-          </a>
-
-          <div class="mt-8 pt-8 border-t border-gray-700">
-            <h3 class="text-white font-semibold mb-3">Installation Instructions:</h3>
-            <ol class="text-gray-400 space-y-2 text-sm">
-              <li>1. Download the .vsix file above</li>
-              <li>2. Open VS Code</li>
-              <li>3. Press <code class="bg-gray-700 px-2 py-1 rounded">Cmd+Shift+P</code> (Mac) or <code class="bg-gray-700 px-2 py-1 rounded">Ctrl+Shift+P</code> (Windows/Linux)</li>
-              <li>4. Type "Install from VSIX" and select the command</li>
-              <li>5. Browse to the downloaded file and select it</li>
-              <li>6. Restart VS Code when prompted</li>
-            </ol>
-          </div>
-
-          <div class="mt-6 p-4 bg-indigo-900/20 border border-indigo-700/50 rounded-lg">
-            <p class="text-indigo-300 text-sm">
-              <strong>Note:</strong> Make sure you have VS Code version 1.70.0 or higher installed.
+          <div class="p-4 bg-indigo-900/20 border border-indigo-700/50 rounded-lg">
+            <p class="text-indigo-300 text-sm mb-2">
+              <strong>Requirements:</strong>
             </p>
+            <ul class="text-indigo-300 text-sm ml-4 space-y-1">
+              <li>• Visual Studio Code version 1.70.0 or higher</li>
+              <li>• Active internet connection for AI features</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -71,27 +92,4 @@ import HeaderDownload from '../components/HeaderDownload.astro';
     </div>
   </div>
 
-  <script>
-    // Fetch the latest version info from PHP endpoint
-    fetch('/api/latest-version.php')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('version').textContent = data.version;
-          document.getElementById('filename').textContent = data.filename;
-          document.getElementById('download-button').href = data.download_url;
-        } else {
-          document.getElementById('version').textContent = 'Not found';
-          document.getElementById('filename').textContent = 'No file available';
-          document.getElementById('download-button').textContent = 'No Download Available';
-          document.getElementById('download-button').classList.add('opacity-50', 'cursor-not-allowed');
-          document.getElementById('download-button').removeAttribute('href');
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching version:', error);
-        document.getElementById('version').textContent = 'Error';
-        document.getElementById('filename').textContent = 'Error loading file';
-      });
-  </script>
 </Layout>
