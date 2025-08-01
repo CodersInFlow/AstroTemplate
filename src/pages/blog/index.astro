@@ -15,9 +15,10 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
 <Layout title="Blog - Coders Website">
   <HeaderSimple />
   
-  <main class="container mx-auto px-4 py-8 max-w-7xl">
+  <main class="bg-gray-950 min-h-screen">
+    <div class="container mx-auto px-4 pt-20 pb-8 max-w-7xl">
     <div class="mb-8">
-      <h1 class="text-4xl font-bold mb-4">Blog</h1>
+      <h1 class="text-4xl font-bold mb-4 text-white">Blog</h1>
       
       <!-- Category Filter -->
       <div class="flex gap-2 flex-wrap">
@@ -38,7 +39,7 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
     <!-- Blog Posts Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {posts.map((post: any) => (
-        <article class="bg-gray-900 rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
+        <article class="bg-gray-800 rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
           {post.coverImage && (
             <img 
               src={post.coverImage} 
@@ -53,7 +54,7 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
               <span>{new Date(post.createdAt).toLocaleDateString()}</span>
             </div>
             
-            <h2 class="text-xl font-bold mb-2 hover:text-blue-400 transition-colors">
+            <h2 class="text-xl font-bold mb-2 text-white hover:text-blue-400 transition-colors">
               <a href={`/blog/${post.slug}`}>
                 {post.title}
               </a>
@@ -64,11 +65,11 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
             </p>
             
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm">
+              <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm text-white">
                 {post.author_data?.name?.[0]?.toUpperCase() || 'A'}
               </div>
               <div class="text-sm">
-                <div>{post.author_data?.name || 'Anonymous'}</div>
+                <div class="text-gray-300">{post.author_data?.name || 'Anonymous'}</div>
                 <div class="text-gray-500">{post.readingTime} min read</div>
               </div>
             </div>
@@ -78,15 +79,10 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
     </div>
 
     {posts.length === 0 && (
-      <div class="text-center py-12 text-gray-400">
+      <div class="text-center py-12 text-gray-300">
         No blog posts found.
       </div>
     )}
+    </div>
   </main>
 </Layout>
-
-<style>
-  main {
-    min-height: calc(100vh - 64px);
-  }
-</style>
