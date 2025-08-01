@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import Layout from '../../../layouts/Layout.astro';
-import RichTextEditor from '../../../components/editor/RichTextEditor';
+import AstroRichTextEditor from '../../../components/editor/AstroRichTextEditor';
 
 // Check authentication
 const token = Astro.cookies.get('auth-token');
@@ -116,13 +116,11 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
         <!-- Content -->
         <div>
           <label class="block text-sm font-medium mb-2 text-gray-300">Content</label>
-          <RichTextEditor 
+          <AstroRichTextEditor 
             client:load
             content=""
-            onChange={(content) => {
-              (document.getElementById('content') as HTMLInputElement).value = content;
-            }}
             placeholder="Start writing your content..."
+            inputId="content"
           />
           <input type="hidden" id="content" name="content" />
         </div>
@@ -173,11 +171,14 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
   const slugInput = document.getElementById('slug') as HTMLInputElement;
   
   titleInput.addEventListener('input', () => {
-    if (!slugInput.value && !slugInput.dataset.manual) {
+    // Only auto-generate if user hasn't manually edited the slug
+    if (!slugInput.dataset.manual) {
       const slug = titleInput.value
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[^a-z0-9\s]+/g, '') // Remove special chars but keep spaces
+        .replace(/\s+/g, '-')          // Replace spaces with hyphens
+        .replace(/-+/g, '-')           // Replace multiple hyphens with single
+        .replace(/^-+|-+$/g, '');      // Remove leading/trailing hyphens
       slugInput.value = slug;
     }
   });
@@ -191,16 +192,26 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
     e.preventDefault();
     
     const formData = new FormData(form);
+    
+    // Get content from window object or hidden input
+    let content = formData.get('content') || '';
+    if (!content && typeof window !== 'undefined' && (window as any).__editorContent) {
+      content = (window as any).__editorContent;
+      console.log('Got content from window object:', content);
+    }
+    
     const data = {
       title: formData.get('title'),
       slug: formData.get('slug') || undefined,
       description: formData.get('description'),
-      content: formData.get('content'),
+      content: content,
       type: formData.get('type'),
       category: formData.get('category'),
       coverImage: formData.get('coverImage') || undefined,
       published: formData.get('published') === 'on'
     };
+    
+    console.log('Submitting data:', data);
     
     try {
       const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/posts`, {
@@ -214,6 +225,9 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
       
       if (response.ok) {
         const post = await response.json();
+        console.log('Post saved successfully:', post);
+        console.log('Content that was saved:', data.content);
+        alert(`Post saved! Content length: ${data.content?.length || 0} characters. Check console for details.`);
         window.location.href = `/editor/posts/edit/${post.id}?saved=true`;
       } else {
         const text = await response.text();

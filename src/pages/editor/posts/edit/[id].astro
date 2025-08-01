@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import Layout from '../../../../layouts/Layout.astro';
-import RichTextEditor from '../../../../components/editor/RichTextEditor';
+import AstroRichTextEditor from '../../../../components/editor/AstroRichTextEditor';
 
 // Check authentication
 const token = Astro.cookies.get('auth-token');
@@ -142,13 +142,11 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
         <!-- Content -->
         <div>
           <label class="block text-sm font-medium mb-2 text-gray-300">Content</label>
-          <RichTextEditor 
+          <AstroRichTextEditor 
             client:load
             content={post.content}
-            onChange={(content) => {
-              (document.getElementById('content') as HTMLInputElement).value = content;
-            }}
             placeholder="Start writing your content..."
+            inputId="content"
           />
           <input type="hidden" id="content" name="content" value={post.content} />
         </div>
@@ -163,7 +161,7 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
               checked={post.published}
               class="rounded bg-gray-700 border-gray-600"
             />
-            <span>Published</span>
+            <span class="text-gray-300">Published</span>
           </label>
         </div>
 
@@ -195,12 +193,10 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
     </main>
   </div>
 
-  <style>
-    import '../../../../components/editor/editor-styles.css';
-  </style>
 </Layout>
 
 <script>
+  import '../../../../components/editor/editor-styles.css';
   const form = document.getElementById('postForm') as HTMLFormElement;
   const errorDiv = document.getElementById('error') as HTMLDivElement;
   
@@ -210,11 +206,19 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
     
     const formData = new FormData(form);
     const postId = formData.get('id');
+    
+    // Get content from window object or hidden input
+    let content = formData.get('content') || '';
+    if (!content && typeof window !== 'undefined' && (window as any).__editorContent) {
+      content = (window as any).__editorContent;
+      console.log('Got content from window object:', content);
+    }
+    
     const data = {
       title: formData.get('title'),
       slug: formData.get('slug'),
       description: formData.get('description'),
-      content: formData.get('content'),
+      content: content,
       type: formData.get('type'),
       category: formData.get('category'),
       coverImage: formData.get('coverImage') || undefined,

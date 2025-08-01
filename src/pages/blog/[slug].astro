@@ -17,19 +17,21 @@ const post = await response.json();
 ---
 
 <Layout title={`${post.title} - Blog`}>
-  <HeaderSimple />
-  
-  <main class="pt-16">
-    <BlogPost client:load post={post} />
+  <div class="min-h-screen bg-gray-900 text-gray-300">
+    <HeaderSimple />
     
-    <div class="container mx-auto px-4 max-w-4xl">
-      <div class="mt-12 pt-8 border-t border-gray-800">
-        <a href="/blog" class="text-blue-400 hover:text-blue-300">
-          ← Back to Blog
-        </a>
+    <main class="pt-16">
+      <BlogPost client:load post={post} />
+      
+      <div class="container mx-auto px-4 max-w-4xl">
+        <div class="mt-12 pt-8 border-t border-gray-800">
+          <a href="/blog" class="text-blue-400 hover:text-blue-300">
+            ← Back to Blog
+          </a>
+        </div>
       </div>
-    </div>
-  </main>
+    </main>
+  </div>
 </Layout>
 
 <style>

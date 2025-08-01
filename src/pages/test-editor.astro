@@ -1,0 +1,83 @@
+---
+export const prerender = false;
+import Layout from '../layouts/Layout.astro';
+import AstroRichTextEditor from '../components/editor/AstroRichTextEditor';
+---
+
+<Layout title="Test Editor">
+  <div class="min-h-screen bg-gray-900 text-white p-8">
+    <h1 class="text-2xl font-bold mb-8">Test Editor</h1>
+    
+    <form id="testForm">
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-2">Direct onChange Test</label>
+        <AstroRichTextEditor 
+          client:load
+          content=""
+          placeholder="Type something to test onChange..."
+          inputId="hiddenContent"
+        />
+        <input type="hidden" id="hiddenContent" name="content" />
+      </div>
+      
+      <div class="mb-4">
+        <h2 class="text-lg font-semibold mb-2">Output:</h2>
+        <pre id="output" class="bg-gray-800 p-4 rounded overflow-auto max-h-96"></pre>
+      </div>
+      
+      <div class="mb-4">
+        <h2 class="text-lg font-semibold mb-2">Debug Info:</h2>
+        <div id="debugInfo" class="bg-gray-800 p-4 rounded text-sm"></div>
+      </div>
+      
+      <button type="submit" class="px-4 py-2 bg-blue-600 rounded">
+        Submit Test
+      </button>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  const form = document.getElementById('testForm') as HTMLFormElement;
+  
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const hiddenInput = document.getElementById('hiddenContent') as HTMLInputElement;
+    const windowContent = (window as any).__testContent;
+    const editorContent = (window as any).__editorContent;
+    
+    console.log('=== Form Submit ===');
+    console.log('Hidden input value:', hiddenInput?.value);
+    console.log('Window __testContent:', windowContent);
+    console.log('Window __editorContent:', editorContent);
+    
+    alert(`
+      Hidden input: ${hiddenInput?.value?.length || 0} chars
+      Window test: ${windowContent?.length || 0} chars
+      Window editor: ${editorContent?.length || 0} chars
+    `);
+  });
+  
+  // Monitor content changes
+  setInterval(() => {
+    const hiddenInput = document.getElementById('hiddenContent') as HTMLInputElement;
+    const outputDiv = document.getElementById('output');
+    const debugDiv = document.getElementById('debugInfo');
+    const editorContent = (window as any).__editorContent;
+    
+    // Update output display
+    if (outputDiv && hiddenInput?.value) {
+      outputDiv.textContent = hiddenInput.value;
+    }
+    
+    // Update debug info
+    if (debugDiv) {
+      debugDiv.innerHTML = `
+        <div>Hidden input: ${hiddenInput?.value?.length || 0} characters</div>
+        <div>Window.__editorContent: ${editorContent?.length || 0} characters</div>
+        <div>Last update: ${new Date().toLocaleTimeString()}</div>
+      `;
+    }
+  }, 500);
+</script>

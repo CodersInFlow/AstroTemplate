@@ -6,6 +6,7 @@ import Link from '@tiptap/extension-link';
 import { common, createLowlight } from 'lowlight';
 import { useEffect, useState, useCallback } from 'react';
 import { Bold, Italic, List, ListOrdered, ImageIcon, Code, Link2, Quote } from 'lucide-react';
+import 'highlight.js/styles/github-dark.css';
 
 // Import languages for syntax highlighting
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -54,6 +55,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
   
   useEffect(() => {
     setIsMounted(true);
+    // Set initial content in window object if it exists
+    if (content && content.trim() && typeof window !== 'undefined') {
+      (window as any).__editorContent = content;
+    }
   }, []);
 
   const editor = useEditor({
@@ -87,7 +92,17 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
         validate: href => /^https?:\/\//.test(href),
       }),
     ],
-    content: isMounted ? (content ? JSON.parse(content) : '') : '',
+    content: isMounted ? (() => {
+      try {
+        if (content && content.trim()) {
+          return typeof content === 'string' ? JSON.parse(content) : content;
+        }
+        return '';
+      } catch (e) {
+        console.error('Failed to parse initial content:', e);
+        return '';
+      }
+    })() : '',
     editorProps: {
       attributes: {
         class: 'prose prose-invert min-h-[400px] max-w-none w-full p-4 focus:outline-none',
@@ -99,13 +114,40 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
     },
     onUpdate: ({ editor }) => {
       const json = editor.getJSON();
-      if (onChange && typeof onChange === 'function') {
-        onChange(JSON.stringify(json));
+      const jsonString = JSON.stringify(json);
+      
+      // Store in window object for Astro to access
+      if (typeof window !== 'undefined') {
+        (window as any).__editorContent = jsonString;
+      }
+      
+      // Call onChange
+      if (onChange) {
+        try {
+          onChange(jsonString);
+        } catch (error) {
+          console.error('Error calling onChange:', error);
+        }
       }
     },
     immediatelyRender: false,
     placeholder,
   });
+
+  // Update content when it changes externally (like in reference implementation)
+  useEffect(() => {
+    if (editor && content && isMounted) {
+      try {
+        const parsedContent = typeof content === 'string' ? JSON.parse(content) : content;
+        const currentContent = editor.getJSON();
+        if (JSON.stringify(currentContent) !== JSON.stringify(parsedContent)) {
+          editor.commands.setContent(parsedContent);
+        }
+      } catch (e) {
+        console.error('Failed to sync content:', e);
+      }
+    }
+  }, [content, editor, isMounted]);
 
   const addImage = useCallback(async () => {
     const input = document.createElement('input');
