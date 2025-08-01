@@ -11,5 +11,13 @@ export default defineConfig({
   // Enable sitemap generation
   build: {
     sitemap: true
+  },
+  // Exclude reference directory from file watching
+  vite: {
+    server: {
+      watch: {
+        ignored: ['**/reference/**']
+      }
+    }
   }
 });
