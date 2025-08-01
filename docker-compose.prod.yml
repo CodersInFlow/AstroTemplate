@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Blog backend service
+  blog-backend:
+    container_name: codersinflow-blog-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8749:8749"  # Only expose to localhost
+    environment:
+      - MONGODB_URI=${MONGODB_URI:-mongodb://admin:password@blog-mongodb:27017/codersblog?authSource=admin}
+      - JWT_SECRET=${JWT_SECRET}
+      - UPLOAD_DIR=/uploads
+      - CORS_ORIGIN=https://codersinflow.com
+      - PORT=8749
+    volumes:
+      - ./uploads:/uploads
+    depends_on:
+      - blog-mongodb
+    networks:
+      - blog-network
+
+  # MongoDB for blog
+  blog-mongodb:
+    container_name: codersinflow-blog-mongodb
+    image: mongo:7.0
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=codersblog
+    volumes:
+      - blog_mongodb_data:/data/db
+      - ./backend/scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    networks:
+      - blog-network
+    command: mongod --bind_ip 0.0.0.0
+
+networks:
+  blog-network:
+    driver: bridge
+
+volumes:
+  blog_mongodb_data:
+    driver: local

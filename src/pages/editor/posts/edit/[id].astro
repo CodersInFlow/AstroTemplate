@@ -72,7 +72,7 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
             name="title"
             required
             value={post.title}
-            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter post title"
           />
         </div>
@@ -87,7 +87,7 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
             id="slug"
             name="slug"
             value={post.slug}
-            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="post-url-slug"
           />
         </div>
@@ -100,7 +100,7 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
             name="description"
             required
             rows="3"
-            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Brief description for listing pages"
           >{post.description}</textarea>
         </div>
@@ -112,7 +112,7 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
             id="category"
             name="category"
             required
-            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select a category</option>
             {categories.map((cat: any) => (
@@ -134,7 +134,7 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
             id="coverImage"
             name="coverImage"
             value={post.coverImage || ''}
-            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="/uploads/cover-image.jpg"
           />
         </div>
@@ -171,20 +171,20 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
         <div class="flex gap-4">
           <button
             type="submit"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition-colors"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-white transition-colors"
           >
             Save Changes
           </button>
           <a
             href={`/${post.type}/${post.slug}`}
             target="_blank"
-            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium transition-colors"
+            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium text-white transition-colors"
           >
             View Post
           </a>
           <a
             href="/editor/posts"
-            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium transition-colors"
+            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium text-white transition-colors"
           >
             Cancel
           </a>

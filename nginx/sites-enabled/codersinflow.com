@@ -1,0 +1,96 @@
+server {
+    # Redirect HTTP to HTTPS
+    listen 80;
+    listen [::]:80;
+    server_name codersinflow.com www.codersinflow.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    # HTTPS configuration
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    include snippets/block-middleware-subrequest.conf;
+
+    # Define the server names
+    server_name codersinflow.com www.codersinflow.com;
+
+    # SSL configuration
+    ssl_certificate /etc/letsencrypt/live/codersinflow.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/codersinflow.com/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/codersinflow.com/chain.pem;
+
+    # Recommended SSL settings
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    # HSTS (uncomment if you're sure)
+    # add_header Strict-Transport-Security "max-age=63072000" always;
+
+    # Set the root directory for the website
+    root /var/www/codersinflow.com;
+
+    # Define the index files
+    index index.html index.htm;
+
+    # Add logs for debugging and access tracking
+    access_log /var/log/nginx/codersinflow.com.access.log;
+    error_log /var/log/nginx/codersinflow.com.error.log;
+
+    # Security headers
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+
+    # Redirect all PHP files to /var/www/php/filename.php
+    location ~ \.php$ {
+        # Extract the filename from the request
+        set $php_filename $uri;
+
+        # Pass the request to PHP-FPM
+        root /var/www/codersinflow.com;
+        fastcgi_pass unix:/var/run/php/php-fpm.sock; # Adjust to your PHP-FPM configuration
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    # Include Codersinflow unified server location blocks
+    include /etc/nginx/includes/codersinflow-locations.conf;
+
+    # API endpoint for version detection (static files)
+    location /api/ {
+        try_files $uri $uri/ =404;
+    }
+
+    # Downloads directory - ensure it's accessible
+    location /downloads/ {
+        autoindex off;  # Set to 'on' if you want directory listing
+        try_files $uri $uri/ =404;
+        
+        # Add headers for download files
+        add_header Content-Disposition "attachment";
+    }
+
+    # Main location block for Astro/static files
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|vsix)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        
+        # Special handling for .vsix files
+        location ~* \.vsix$ {
+            add_header Content-Type "application/vsix";
+            add_header Content-Disposition "attachment";
+        }
+    }
+
+    # Redirect www to non-www (optional)
+    if ($host = www.codersinflow.com) {
+        return 301 https://codersinflow.com$request_uri;
+    }
+}

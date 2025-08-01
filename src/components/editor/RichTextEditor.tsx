@@ -13,22 +13,34 @@ import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
 import go from 'highlight.js/lib/languages/go';
 import rust from 'highlight.js/lib/languages/rust';
+import java from 'highlight.js/lib/languages/java';
+import ruby from 'highlight.js/lib/languages/ruby';
 import bash from 'highlight.js/lib/languages/bash';
 import json from 'highlight.js/lib/languages/json';
 import html from 'highlight.js/lib/languages/xml';
 import css from 'highlight.js/lib/languages/css';
+import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
+import shell from 'highlight.js/lib/languages/shell';
+import plaintext from 'highlight.js/lib/languages/plaintext';
 
 // Create lowlight instance
 const lowlight = createLowlight(common);
 lowlight.register('typescript', typescript);
 lowlight.register('javascript', javascript);
 lowlight.register('python', python);
+lowlight.register('ruby', ruby);
 lowlight.register('go', go);
 lowlight.register('rust', rust);
+lowlight.register('java', java);
 lowlight.register('bash', bash);
 lowlight.register('json', json);
 lowlight.register('html', html);
 lowlight.register('css', css);
+lowlight.register('c', c);
+lowlight.register('cpp', cpp);
+lowlight.register('shell', shell);
+lowlight.register('plaintext', plaintext);
 
 interface RichTextEditorProps {
   content: string;
@@ -61,14 +73,18 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
         lowlight,
         defaultLanguage: null,
         HTMLAttributes: {
-          class: 'hljs bg-gray-900 rounded-lg p-4 overflow-x-auto text-sm',
+          class: 'hljs not-prose bg-[#0d1117] rounded-lg p-4 overflow-x-auto text-sm leading-relaxed',
+          spellcheck: 'false',
         },
       }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
           class: 'text-blue-400 hover:text-blue-300 underline',
+          rel: 'noopener noreferrer',
+          target: '_blank'
         },
+        validate: href => /^https?:\/\//.test(href),
       }),
     ],
     content: isMounted ? (content ? JSON.parse(content) : '') : '',
@@ -76,10 +92,16 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
       attributes: {
         class: 'prose prose-invert min-h-[400px] max-w-none w-full p-4 focus:outline-none',
       },
+      handlePaste: (view, event, slice) => {
+        // Let TipTap handle paste events normally
+        return false;
+      },
     },
     onUpdate: ({ editor }) => {
       const json = editor.getJSON();
-      onChange(JSON.stringify(json));
+      if (onChange && typeof onChange === 'function') {
+        onChange(JSON.stringify(json));
+      }
     },
     immediatelyRender: false,
     placeholder,
@@ -106,11 +128,15 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
         });
 
         if (!response.ok) {
-          throw new Error('Upload failed');
+          const errorText = await response.text();
+          console.error('Upload failed:', response.status, errorText);
+          throw new Error(`Upload failed: ${response.status} ${errorText}`);
         }
 
         const { url } = await response.json();
-        editor?.chain().focus().setImage({ src: url }).run();
+        // Prepend the API URL to the image path
+        const fullUrl = `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}${url}`;
+        editor?.chain().focus().setImage({ src: fullUrl }).run();
       } catch (error) {
         console.error('Upload error:', error);
         alert('Failed to upload image');
@@ -126,21 +152,36 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
     const previousUrl = editor?.getAttributes('link').href;
     const url = window.prompt('Enter URL', previousUrl);
 
+    // Cancel button or empty URL
     if (url === null) {
       return;
     }
 
+    // Remove link if URL is empty
     if (url === '') {
       editor?.chain().focus().unsetLink().run();
+      return;
+    }
+
+    // Validate URL
+    try {
+      new URL(url);
+    } catch {
+      alert('Please enter a valid URL (including http:// or https://)');
       return;
     }
 
     editor?.chain().focus().setLink({ href: url }).run();
   }, [editor]);
 
+  // Helper to check if text is selected
+  const hasTextSelection = useCallback(() => {
+    return editor?.state.selection.content().size ?? 0 > 0;
+  }, [editor]);
+
   if (!isMounted || !editor) {
     return (
-      <div className="border border-gray-700 rounded-md bg-gray-800 min-h-[400px] p-4">
+      <div className="border border-gray-700 rounded-lg bg-gray-800 min-h-[400px] p-4 text-gray-400">
         Loading editor...
       </div>
     );
@@ -155,7 +196,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
-              className={`p-2 rounded hover:bg-gray-700 ${editor.isActive('bold') ? 'bg-gray-700' : ''}`}
+              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('bold') ? 'bg-gray-700 text-white' : ''}`}
               title="Bold"
             >
               <Bold size={16} />
@@ -163,7 +204,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={`p-2 rounded hover:bg-gray-700 ${editor.isActive('italic') ? 'bg-gray-700' : ''}`}
+              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('italic') ? 'bg-gray-700 text-white' : ''}`}
               title="Italic"
             >
               <Italic size={16} />
@@ -174,7 +215,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-              className={`px-2 py-1 rounded hover:bg-gray-700 ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-700' : ''}`}
+              className={`px-2 py-1 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-700 text-white' : ''}`}
               title="Heading 1"
             >
               H1
@@ -182,7 +223,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              className={`px-2 py-1 rounded hover:bg-gray-700 ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-700' : ''}`}
+              className={`px-2 py-1 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : ''}`}
               title="Heading 2"
             >
               H2
@@ -190,7 +231,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-              className={`px-2 py-1 rounded hover:bg-gray-700 ${editor.isActive('heading', { level: 3 }) ? 'bg-gray-700' : ''}`}
+              className={`px-2 py-1 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('heading', { level: 3 }) ? 'bg-gray-700 text-white' : ''}`}
               title="Heading 3"
             >
               H3
@@ -201,7 +242,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={`p-2 rounded hover:bg-gray-700 ${editor.isActive('bulletList') ? 'bg-gray-700' : ''}`}
+              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('bulletList') ? 'bg-gray-700 text-white' : ''}`}
               title="Bullet List"
             >
               <List size={16} />
@@ -209,7 +250,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={`p-2 rounded hover:bg-gray-700 ${editor.isActive('orderedList') ? 'bg-gray-700' : ''}`}
+              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('orderedList') ? 'bg-gray-700 text-white' : ''}`}
               title="Ordered List"
             >
               <ListOrdered size={16} />
@@ -220,15 +261,16 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              className={`p-2 rounded hover:bg-gray-700 ${editor.isActive('codeBlock') ? 'bg-gray-700' : ''}`}
+              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('codeBlock') ? 'bg-gray-700 text-white' : ''}`}
               title="Code Block"
             >
               <Code size={16} />
             </button>
+            
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
-              className={`p-2 rounded hover:bg-gray-700 ${editor.isActive('blockquote') ? 'bg-gray-700' : ''}`}
+              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('blockquote') ? 'bg-gray-700 text-white' : ''}`}
               title="Quote"
             >
               <Quote size={16} />
@@ -239,15 +281,22 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={setLink}
-              className="p-2 rounded hover:bg-gray-700"
-              title="Add Link"
+              disabled={!hasTextSelection()}
+              className={`p-2 rounded ${
+                editor?.isActive('link') 
+                  ? 'bg-gray-700 text-white' 
+                  : hasTextSelection() 
+                    ? 'hover:bg-gray-700 text-gray-300 hover:text-white' 
+                    : 'opacity-50 cursor-not-allowed text-gray-500'
+              }`}
+              title={hasTextSelection() ? 'Add Link' : 'Select text to add link'}
             >
               <Link2 size={16} />
             </button>
             <button
               type="button"
               onClick={addImage}
-              className="p-2 rounded hover:bg-gray-700 relative"
+              className="p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white relative"
               title="Add Image"
               disabled={uploading}
             >
