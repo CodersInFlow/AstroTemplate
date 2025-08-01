@@ -211,7 +211,6 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
     let content = formData.get('content') || '';
     if (!content && typeof window !== 'undefined' && (window as any).__editorContent) {
       content = (window as any).__editorContent;
-      console.log('Got content from window object:', content);
     }
     
     const data = {

@@ -12,20 +12,17 @@ export default function AstroRichTextEditor({ content, placeholder, inputId = 'c
 
   // Handle onChange by updating both the ref and the DOM
   const handleChange = (newContent: string) => {
-    console.log('AstroRichTextEditor onChange:', newContent);
     contentRef.current = newContent;
     
     // Update hidden input
     const hiddenInput = document.getElementById(inputId) as HTMLInputElement;
     if (hiddenInput) {
       hiddenInput.value = newContent;
-      console.log('Updated hidden input');
     }
     
     // Update window object as fallback
     if (typeof window !== 'undefined') {
       (window as any).__editorContent = newContent;
-      console.log('Updated window.__editorContent');
     }
   };
 

@@ -197,7 +197,6 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
     let content = formData.get('content') || '';
     if (!content && typeof window !== 'undefined' && (window as any).__editorContent) {
       content = (window as any).__editorContent;
-      console.log('Got content from window object:', content);
     }
     
     const data = {
@@ -211,7 +210,6 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
       published: formData.get('published') === 'on'
     };
     
-    console.log('Submitting data:', data);
     
     try {
       const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/posts`, {
@@ -225,9 +223,6 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
       
       if (response.ok) {
         const post = await response.json();
-        console.log('Post saved successfully:', post);
-        console.log('Content that was saved:', data.content);
-        alert(`Post saved! Content length: ${data.content?.length || 0} characters. Check console for details.`);
         window.location.href = `/editor/posts/edit/${post.id}?saved=true`;
       } else {
         const text = await response.text();
