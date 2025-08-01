@@ -44,8 +44,25 @@ cleanup() {
 trap cleanup INT
 
 # Start the Go backend in background
-echo "🔧 Starting Go backend..."
+echo "🔧 Building and starting Go backend..."
+
+# Kill any existing process on port 8749
+if lsof -ti:8749 > /dev/null 2>&1; then
+    echo "⚠️  Killing existing process on port 8749..."
+    lsof -ti:8749 | xargs kill -9 2>/dev/null
+    sleep 1
+fi
+
 cd backend
+# Force rebuild to ensure latest code changes are included
+go build -o server cmd/server/main.go
+if [ $? -ne 0 ]; then
+    echo "❌ Backend build failed"
+    cd ..
+    cleanup
+    exit 1
+fi
+echo "✅ Backend built successfully"
 ./scripts/dev.sh &
 BACKEND_PID=$!
 cd ..

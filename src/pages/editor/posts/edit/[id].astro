@@ -12,15 +12,26 @@ if (!token) {
 
 const { id } = Astro.params;
 
+// Debug logging
+console.log('Edit page - Post ID from URL:', id);
+
 // Fetch the post
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
-const postResponse = await fetch(`${API_URL}/api/posts/${id}`, {
+const fetchUrl = `${API_URL}/api/posts/id/${id}`;
+console.log('Edit page - Fetching URL:', fetchUrl);
+
+const postResponse = await fetch(fetchUrl, {
   headers: {
     'Cookie': `auth-token=${token.value}`
   }
 });
 
+console.log('Edit page - Response status:', postResponse.status);
+console.log('Edit page - Response OK:', postResponse.ok);
+
 if (!postResponse.ok) {
+  const errorText = await postResponse.text();
+  console.error('Edit page - Error fetching post:', errorText);
   return Astro.redirect('/editor/posts');
 }
 
