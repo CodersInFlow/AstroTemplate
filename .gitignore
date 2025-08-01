@@ -5,3 +5,8 @@
 .DS_Store
 node_modules
 dist
+
+# Coders in Flow
+.codersinflow
+.vscode
+.env
