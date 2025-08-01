@@ -14,12 +14,24 @@ import {
   Coins,
   Database,
   Cpu,
-  ChartBar
+  ChartBar,
+  Users,
+  Zap,
+  FileSearch,
+  GitMerge,
+  Cloud,
+  Activity,
+  BarChart3,
+  Gauge,
+  Shield,
+  Lock,
+  Layers,
+  RefreshCw
 } from 'lucide-react';
 
 const FeatureGrid = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const [visibleCards, setVisibleCards] = useState<boolean[]>(new Array(15).fill(false));
+  const [visibleCards, setVisibleCards] = useState<boolean[]>(new Array(27).fill(false));
   const gridRef = useRef<HTMLDivElement>(null);
 
   const features = [
@@ -218,7 +230,7 @@ const FeatureGrid = () => {
       icon: <Cpu className="w-8 h-8" />,
       gradient: 'from-gray-700 to-slate-900',
       pattern: 'grid',
-      className: 'col-span-1 row-span-1',
+      className: 'col-span-2 row-span-1',
       mobileClass: 'col-span-1'
     },
     {
@@ -231,6 +243,174 @@ const FeatureGrid = () => {
       icon: <ChartBar className="w-8 h-8" />,
       gradient: 'from-lime-600 to-green-700',
       pattern: 'diagonal',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 16,
+      title: 'Enterprise Dashboard',
+      items: [
+        'Monitor entire dev team',
+        'Real-time productivity metrics',
+        'ROI tracking and reports'
+      ],
+      icon: <Users className="w-8 h-8" />,
+      gradient: 'from-blue-700 to-indigo-800',
+      pattern: 'grid',
+      className: 'col-span-2 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 17,
+      title: 'Subtask Parallelization',
+      items: [
+        '20+ concurrent tasks',
+        'Automatic task decomposition',
+        'Lightning-fast development'
+      ],
+      icon: <Zap className="w-8 h-8" />,
+      gradient: 'from-yellow-600 to-orange-700',
+      pattern: 'circuit',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 18,
+      title: 'Multi-Channel Logging',
+      items: [
+        'ID-based filtering',
+        'Persistent file logs',
+        'SQLite analytics'
+      ],
+      icon: <Layers className="w-8 h-8" />,
+      gradient: 'from-teal-700 to-blue-800',
+      pattern: 'waves',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 19,
+      title: 'Framework Detection',
+      items: [
+        'Auto-detect tech stack',
+        'Custom search patterns',
+        'Smart documentation generation'
+      ],
+      icon: <FileSearch className="w-8 h-8" />,
+      gradient: 'from-purple-700 to-pink-700',
+      pattern: 'waves',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 20,
+      title: 'Selective Staging',
+      items: [
+        'Chunk-level change control',
+        'Perfect human-AI collaboration',
+        'Review changes individually'
+      ],
+      icon: <GitMerge className="w-8 h-8" />,
+      gradient: 'from-teal-700 to-cyan-800',
+      pattern: 'dots',
+      className: 'col-span-2 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 21,
+      title: 'Cloud Sync & Backup',
+      items: [
+        'Automatic cloud backup',
+        'Cross-device continuity',
+        'Never lose your work'
+      ],
+      icon: <Cloud className="w-8 h-8" />,
+      gradient: 'from-sky-600 to-blue-700',
+      pattern: 'diagonal',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 22,
+      title: 'Real-Time Analytics',
+      items: [
+        'Live performance metrics',
+        'Usage statistics',
+        'Cost breakdowns by task'
+      ],
+      icon: <Activity className="w-8 h-8" />,
+      gradient: 'from-emerald-700 to-green-800',
+      pattern: 'grid',
+      className: 'col-span-2 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 23,
+      title: 'Provider Management',
+      items: [
+        'Dynamic provider system',
+        'Add providers via JSON',
+        'No code changes needed'
+      ],
+      icon: <BarChart3 className="w-8 h-8" />,
+      gradient: 'from-indigo-700 to-purple-800',
+      pattern: 'circuit',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 24,
+      title: 'Connection Resilience',
+      items: [
+        'Auto-reconnection',
+        'Provider failover',
+        'Offline mode support'
+      ],
+      icon: <RefreshCw className="w-8 h-8" />,
+      gradient: 'from-emerald-700 to-teal-800',
+      pattern: 'diagonal',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 25,
+      title: 'Native Claude Code',
+      items: [
+        'First-class integration',
+        'Official Anthropic CLI',
+        'Enhanced with visual UI'
+      ],
+      icon: <Code2 className="w-8 h-8" />,
+      gradient: 'from-orange-700 to-red-800',
+      pattern: 'dots',
+      className: 'col-span-2 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 26,
+      title: 'Security & Compliance',
+      items: [
+        'SOC2 compliant',
+        'GDPR ready',
+        'Enterprise SSO support'
+      ],
+      icon: <Shield className="w-8 h-8" />,
+      gradient: 'from-gray-700 to-slate-800',
+      pattern: 'grid',
+      className: 'col-span-1 row-span-1',
+      mobileClass: 'col-span-1'
+    },
+    {
+      id: 27,
+      title: 'File Access Queue',
+      items: [
+        'Prevent race conditions',
+        'Atomic operations',
+        'Transaction support'
+      ],
+      icon: <Lock className="w-8 h-8" />,
+      gradient: 'from-purple-700 to-indigo-800',
+      pattern: 'circuit',
       className: 'col-span-1 row-span-1',
       mobileClass: 'col-span-1'
     }

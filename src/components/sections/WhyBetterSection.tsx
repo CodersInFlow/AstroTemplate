@@ -90,8 +90,8 @@ const WhyBetterSection: React.FC = () => {
               <div className="h-full flex flex-col p-2">
                 <div className="mb-6">
                   <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-500 mb-4 transition-all duration-500 hover:w-24"></div>
-                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Continious Context Compression</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">AI edits and removes chunks from context as it works for optimum savings</p>
+                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Optimized Cost Structure</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">AI chooses the cheapest capable model for each task. Simple tasks → cheap models, Complex tasks → advanced models. Average 60% cost reduction.</p>
                 </div>
                 <div className="space-y-5 text-left flex-1">
                   <div className="group">
@@ -144,16 +144,16 @@ const WhyBetterSection: React.FC = () => {
               <div className="h-full flex flex-col p-2">
                 <div className="mb-6">
                   <div className="h-1 w-16 bg-gradient-to-r from-orange-500 to-red-500 mb-4 transition-all duration-500 hover:w-24"></div>
-                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Latest Features and AI</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">Our system is truely dynamic so we always get the latest Models the second they are available.</p>
+                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Next Generation Features</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">True multi-tasking capabilities.</p>
                 </div>
                 <div className="space-y-5 text-left flex-1">
                   <div className="group">
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-orange-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Modular Design</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">Our system is build from a modular design so implementing new features is often done with in minutes.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Massive Parallelization</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">Run 20+ AI tasks simultaneously. Complete hours of work in minutes. Automatic task decomposition and routing.</p>
                       </div>
                     </div>
                   </div>
@@ -161,8 +161,8 @@ const WhyBetterSection: React.FC = () => {
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-red-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Cutting Edge Development</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">We were the first to implement features in our tool, and still have many features not available in the competition.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Enterprise Cloud & Team Management</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">Complete cloud backup of all conversations. Monitor your entire dev team's AI usage. Synchronize modes across your organization. View comprehensive reports for management.</p>
                       </div>
                     </div>
                   </div>
@@ -170,16 +170,16 @@ const WhyBetterSection: React.FC = () => {
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-orange-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Rapid Development Cycle</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">As fast as we cane think of new ideas, or users provider suggestions we will implement them in our tool.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Mobile Continuity</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">Native iOS app with real-time sync. Start on desktop, continue on iPhone. Zero context switches.</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-gray-700">
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>Code quality score: 98.7/100</span>
-                    <span>Bug rate: -94%</span>
+                    <span>Full Cloud Enterprise Solution</span>
+                    <span>More Savings</span>
                   </div>
                 </div>
               </div>
