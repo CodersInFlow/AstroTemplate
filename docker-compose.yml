@@ -1,47 +1,51 @@
 version: '3.8'
 
 services:
-  frontend:
+  coders-blog-frontend:
+    container_name: coders-blog-frontend
     build:
       context: .
       dockerfile: Dockerfile.frontend
     ports:
       - "4321:4321"
     environment:
-      - PUBLIC_API_URL=http://localhost:8080
+      - PUBLIC_API_URL=http://localhost:8749
     depends_on:
-      - backend
+      - coders-blog-backend
     volumes:
       - ./src:/app/src
       - ./public:/app/public
     command: npm run dev
 
-  backend:
+  coders-blog-backend:
+    container_name: coders-blog-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8749:8749"
     environment:
-      - MONGODB_URI=mongodb://admin:password@mongodb:27017/codersblog?authSource=admin
+      - MONGODB_URI=mongodb://admin:password@coders-blog-mongodb:27017/codersblog?authSource=admin
       - JWT_SECRET=${JWT_SECRET:-your-secret-key-here}
       - UPLOAD_DIR=/uploads
       - CORS_ORIGIN=http://localhost:4321
+      - PORT=8749
     depends_on:
-      - mongodb
+      - coders-blog-mongodb
     volumes:
       - ./uploads:/uploads
 
-  mongodb:
+  coders-blog-mongodb:
+    container_name: coders-blog-mongodb
     image: mongo:7.0
     ports:
-      - "27017:27017"
+      - "27419:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
       - MONGO_INITDB_DATABASE=codersblog
     volumes:
-      - mongodb_data:/data/db
+      - coders_blog_mongodb_data:/data/db
       - ./backend/scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
@@ -50,4 +54,4 @@ services:
       retries: 3
 
 volumes:
-  mongodb_data:
+  coders_blog_mongodb_data:

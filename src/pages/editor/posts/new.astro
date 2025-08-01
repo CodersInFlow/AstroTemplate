@@ -1,0 +1,230 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Layout.astro';
+import RichTextEditor from '../../../components/editor/RichTextEditor';
+
+// Check authentication
+const token = Astro.cookies.get('auth-token');
+if (!token) {
+  return Astro.redirect('/editor/login');
+}
+
+// Get post type from query params
+const postType = Astro.url.searchParams.get('type') || 'blog';
+
+// Fetch categories
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
+const categoriesResponse = await fetch(`${API_URL}/api/categories?type=${postType}`, {
+  headers: {
+    'Cookie': `auth-token=${token.value}`
+  }
+});
+const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
+---
+
+<Layout title="New Post - Editor">
+  <div class="min-h-screen bg-gray-900">
+    <!-- Editor Header -->
+    <header class="bg-gray-800 border-b border-gray-700">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <h1 class="text-xl font-bold text-white">Create New {postType === 'blog' ? 'Blog Post' : 'Documentation'}</h1>
+          <a href="/editor" class="text-gray-400 hover:text-white">
+            ← Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+      <form id="postForm" class="space-y-6">
+        <input type="hidden" name="type" value={postType} />
+        
+        <!-- Title -->
+        <div>
+          <label for="title" class="block text-sm font-medium mb-2 text-gray-300">Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            required
+            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter post title"
+          />
+        </div>
+
+        <!-- Slug -->
+        <div>
+          <label for="slug" class="block text-sm font-medium mb-2 text-gray-300">
+            Slug (URL)
+            <span class="text-gray-400 text-xs ml-2">Leave empty to auto-generate</span>
+          </label>
+          <input
+            type="text"
+            id="slug"
+            name="slug"
+            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="post-url-slug"
+          />
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="description" class="block text-sm font-medium mb-2 text-gray-300">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            required
+            rows="3"
+            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Brief description for listing pages"
+          ></textarea>
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label for="category" class="block text-sm font-medium mb-2 text-gray-300">Category</label>
+          <select
+            id="category"
+            name="category"
+            required
+            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select a category</option>
+            {categories.map((cat: any) => (
+              <option value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <!-- Cover Image -->
+        <div>
+          <label for="coverImage" class="block text-sm font-medium mb-2 text-gray-300">
+            Cover Image URL
+            <span class="text-gray-400 text-xs ml-2">Optional</span>
+          </label>
+          <input
+            type="text"
+            id="coverImage"
+            name="coverImage"
+            class="w-full px-3 py-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="/uploads/cover-image.jpg"
+          />
+        </div>
+
+        <!-- Content -->
+        <div>
+          <label class="block text-sm font-medium mb-2 text-gray-300">Content</label>
+          <RichTextEditor 
+            client:load
+            content=""
+            onChange={(content) => {
+              (document.getElementById('content') as HTMLInputElement).value = content;
+            }}
+            placeholder="Start writing your content..."
+          />
+          <input type="hidden" id="content" name="content" />
+        </div>
+
+        <!-- Publish Options -->
+        <div class="flex items-center gap-4">
+          <label class="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="published"
+              id="published"
+              class="rounded bg-gray-700 border-gray-600"
+            />
+            <span class="text-gray-300">Publish immediately</span>
+          </label>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-4">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition-colors"
+          >
+            Create Post
+          </button>
+          <a
+            href="/editor"
+            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium transition-colors"
+          >
+            Cancel
+          </a>
+        </div>
+
+        <div id="error" class="text-red-400 hidden"></div>
+      </form>
+    </main>
+  </div>
+
+  <style>
+    import '../../../components/editor/editor-styles.css';
+  </style>
+</Layout>
+
+<script>
+  const form = document.getElementById('postForm') as HTMLFormElement;
+  const errorDiv = document.getElementById('error') as HTMLDivElement;
+  
+  // Auto-generate slug from title
+  const titleInput = document.getElementById('title') as HTMLInputElement;
+  const slugInput = document.getElementById('slug') as HTMLInputElement;
+  
+  titleInput.addEventListener('input', () => {
+    if (!slugInput.value && !slugInput.dataset.manual) {
+      const slug = titleInput.value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      slugInput.value = slug;
+    }
+  });
+  
+  slugInput.addEventListener('input', () => {
+    slugInput.dataset.manual = 'true';
+  });
+  
+  // Form submission
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const data = {
+      title: formData.get('title'),
+      slug: formData.get('slug') || undefined,
+      description: formData.get('description'),
+      content: formData.get('content'),
+      type: formData.get('type'),
+      category: formData.get('category'),
+      coverImage: formData.get('coverImage') || undefined,
+      published: formData.get('published') === 'on'
+    };
+    
+    try {
+      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      
+      if (response.ok) {
+        const post = await response.json();
+        window.location.href = `/editor/posts/edit/${post.id}?saved=true`;
+      } else {
+        const text = await response.text();
+        errorDiv.textContent = text || 'Failed to create post';
+        errorDiv.classList.remove('hidden');
+      }
+    } catch (error) {
+      errorDiv.textContent = 'Network error. Please try again.';
+      errorDiv.classList.remove('hidden');
+    }
+  });
+</script>

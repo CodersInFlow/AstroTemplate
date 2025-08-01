@@ -12,10 +12,20 @@
     "generate:videos": "node scripts/generate-video-list.js"
   },
   "dependencies": {
+    "@astrojs/node": "^9.3.2",
     "@astrojs/react": "^4.3.0",
+    "@tiptap/core": "^2.11.5",
+    "@tiptap/extension-code-block-lowlight": "^2.11.5",
+    "@tiptap/extension-image": "^2.11.5",
+    "@tiptap/extension-link": "^2.11.5",
+    "@tiptap/pm": "^2.11.5",
+    "@tiptap/react": "^2.11.5",
+    "@tiptap/starter-kit": "^2.11.5",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "astro": "^5.9.3",
+    "highlight.js": "^11.11.1",
+    "lowlight": "^3.3.0",
     "lucide-react": "^0.522.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
