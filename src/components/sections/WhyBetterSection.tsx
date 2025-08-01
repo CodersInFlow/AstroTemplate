@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import DraggableCustomizableCard from '../DraggableCustomizableCard';
 
@@ -35,16 +36,16 @@ const WhyBetterSection: React.FC = () => {
               <div className="h-full flex flex-col p-2">
                 <div className="mb-6">
                   <div className="h-1 w-16 bg-gradient-to-r from-indigo-500 to-purple-500 mb-4 transition-all duration-500 hover:w-24"></div>
-                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Semantic Search Engine</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">Thanks to our sematic search engine we know everything about your codebase.</p>
+                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Code Understanding</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed"></p>
                 </div>
                 <div className="space-y-5 text-left flex-1">
                   <div className="group">
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-indigo-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Semantic Analysis Engine</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">Understands code meaning beyond syntax, recognizing patterns, idioms, and architectural decisions throughout your project.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Automatic Codebase Documentation</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">AI analyzes and documents your entire codebase. 50%+ reduction in token usage through deep understanding. Framework-specific intelligence (React vs Django vs Rails).</p>
                       </div>
                     </div>
                   </div>
@@ -52,8 +53,8 @@ const WhyBetterSection: React.FC = () => {
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-purple-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Pinpoint Search Accuracy</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">Easily find code without complex searching.  AI Can instantly find anything it needs, saving your money.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Intelligent Project Awareness</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">Generates executive summaries of your architecture. Maps all component relationships automatically. Understands your specific design patterns.</p>
                       </div>
                     </div>
                   </div>
@@ -61,16 +62,16 @@ const WhyBetterSection: React.FC = () => {
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-indigo-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Real-time Updates</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">Automatically monitors your code base updating our semantic search database live.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Context-Aware Search</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">Customizes queries for YOUR tech stack. AST-aware code chunking for precision. Real-time index updates as you code.</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-gray-700">
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>Context Window: 200K tokens</span>
-                    <span>Accuracy: 99.2%</span>
+                    <span>Automatic Context Compression</span>
+                    <span>Savings: 50%</span>
                   </div>
                 </div>
               </div>
@@ -89,16 +90,16 @@ const WhyBetterSection: React.FC = () => {
               <div className="h-full flex flex-col p-2">
                 <div className="mb-6">
                   <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-500 mb-4 transition-all duration-500 hover:w-24"></div>
-                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Saves You Money</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">From implementing the best providers, to optimization token utilization, our goal is the best understanding with the lowest costs.</p>
+                  <h4 className="text-2xl font-bold text-gray-100 mb-3">Continious Context Compression</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">AI edits and removes chunks from context as it works for optimum savings</p>
                 </div>
                 <div className="space-y-5 text-left flex-1">
                   <div className="group">
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-green-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Smart Token Management</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">Visualize and edit your context, or let our built in AI do it for you, to minimize your token cost.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Automatic Model Selection</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">AI chooses the cheapest capable model for each task.</p>
                       </div>
                     </div>
                   </div>
@@ -106,8 +107,8 @@ const WhyBetterSection: React.FC = () => {
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-emerald-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Claude Code and Other Integrations</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">We integrate and optimize for the best solutions and providers.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Multi-Task Efficiency</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">20+ concurrent tasks with focused contexts. Each subtask uses minimal tokens. Main context stays small = massive savings.</p>
                       </div>
                     </div>
                   </div>
@@ -115,16 +116,16 @@ const WhyBetterSection: React.FC = () => {
                     <div className="flex items-start">
                       <div className="w-1 h-12 bg-gradient-to-b from-green-500 to-transparent mr-4 transition-all duration-300 group-hover:h-14"></div>
                       <div>
-                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Optimize Tool Calls</h5>
-                        <p className="text-xs text-gray-400 leading-relaxed">Unlimited tool calls per request, allowing the AI to maximize its token utilizations.</p>
+                        <h5 className="text-sm font-semibold text-gray-200 mb-1">Smart Context Management</h5>
+                        <p className="text-xs text-gray-400 leading-relaxed">Automatic conversation condensing. Token-perfect counting for every model. Budget enforcement per task or globally.</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-gray-700">
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>Avg. savings: $2,400/month</span>
-                    <span>ROI: 320%</span>
+                    <span>Huge Savings</span>
+                    <span>Estimated: 50-75%</span>
                   </div>
                 </div>
               </div>
