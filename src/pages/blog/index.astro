@@ -5,11 +5,13 @@ import HeaderSimple from '../../components/HeaderSimple.astro';
 // Fetch posts from API
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
 const response = await fetch(`${API_URL}/api/posts?type=blog`);
-const posts = response.ok ? await response.json() : [];
+const postsData = response.ok ? await response.json() : null;
+const posts = Array.isArray(postsData) ? postsData : [];
 
 // Fetch categories
 const categoryResponse = await fetch(`${API_URL}/api/categories?type=blog`);
-const categories = categoryResponse.ok ? await categoryResponse.json() : [];
+const categoriesData = categoryResponse.ok ? await categoryResponse.json() : null;
+const categories = Array.isArray(categoriesData) ? categoriesData : [];
 ---
 
 <Layout title="Blog - Coders Website">

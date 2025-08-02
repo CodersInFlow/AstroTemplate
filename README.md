@@ -236,6 +236,92 @@ docker exec coders-blog-mongodb mongodump --authenticationDatabase admin -u admi
 docker exec coders-blog-mongodb mongorestore --authenticationDatabase admin -u admin -p password --db codersblog /backup/codersblog
 ```
 
+## 🖥️ Server Deployment
+
+### Directory Structure on Production Server
+
+Everything is deployed to `/var/www/codersinflow.com/`:
+
+```
+/var/www/codersinflow.com/
+├── dist/                    # Built Astro frontend files
+│   ├── client/             # Static assets served by Astro
+│   └── server/             # Node.js server files (entry.mjs)
+├── backend/                 # Go backend source code
+│   ├── cmd/server/         # Main server entry
+│   ├── internal/           # Internal packages
+│   └── Dockerfile          # Docker build file
+├── runtime/                 # Runtime data (NOT in git)
+│   ├── mongodb/            # MongoDB database files
+│   ├── uploads/            # User uploaded images
+│   └── .env                # Production secrets (JWT_SECRET, MONGO_PASSWORD)
+├── node_modules/            # Node dependencies
+├── docker-compose.prod.yml  # Production Docker config
+├── package.json             # Node package config
+└── [other source files]     # Your git repo files
+```
+
+### System Services & Configs
+
+**Nginx Configuration:**
+- `/etc/nginx/sites-enabled/codersinflow.com` - Main site config
+- `/etc/nginx/includes/codersinflow-locations.conf` - Sync server routes
+- `/etc/nginx/conf.d/codersinflow-server.conf` - Upstream definitions
+- `/etc/nginx/backups/` - Config backups
+
+**Systemd Services:**
+- `/etc/systemd/system/codersinflow-blog.service` - Docker containers (MongoDB + Go API)
+- `/etc/systemd/system/codersinflow-astro.service` - Astro Node.js frontend server
+
+### Running Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Astro Frontend | 4321 | Node.js SSR server |
+| Blog/Docs API | 8749 | Go API in Docker |
+| MongoDB | 27017 | Database in Docker (internal only) |
+| Sync Server | 8080 | Extension sync API |
+| Admin UI | 4004 | Sync server admin panel |
+
+### Docker Containers
+- `codersinflow-blog-backend` - Go API server
+- `codersinflow-blog-mongodb` - MongoDB database
+
+### Environment Variables
+
+Production secrets are stored in `/var/www/codersinflow.com/runtime/.env`:
+- `JWT_SECRET` - Authentication token secret
+- `MONGO_PASSWORD` - MongoDB root password
+- `MONGODB_URI` - Full MongoDB connection string
+
+This file is created automatically during deployment with secure random values.
+
+### Managing Services
+
+```bash
+# Check service status
+systemctl status codersinflow-astro
+systemctl status codersinflow-blog
+
+# View logs
+journalctl -u codersinflow-astro -f
+docker-compose -f /var/www/codersinflow.com/docker-compose.prod.yml logs -f
+
+# Restart services
+systemctl restart codersinflow-astro
+cd /var/www/codersinflow.com && docker-compose -f docker-compose.prod.yml restart
+```
+
+### Deployment
+
+Run `./deploy.sh` from your local machine. It will:
+1. Build the Astro site locally
+2. Sync files to the server
+3. Install Node dependencies
+4. Set up environment variables
+5. Start/restart all services
+6. Configure systemd for auto-start
+
 ## 📄 License
 
 [Your License Here]
