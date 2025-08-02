@@ -42,6 +42,9 @@ const posts = Array.isArray(postsData) ? postsData : [];
           <h1 class="text-xl font-bold text-white">Content Editor</h1>
           <div class="flex items-center gap-4">
             <span class="text-gray-400">Welcome, {user.name}</span>
+            <a href="/editor/change-password" class="text-blue-400 hover:text-blue-300">
+              Change Password
+            </a>
             <button id="logoutBtn" class="text-red-400 hover:text-red-300">
               Logout
             </button>
