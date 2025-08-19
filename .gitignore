@@ -15,3 +15,11 @@ reference/
 # Runtime data
 runtime/
 
+
+# Coders in Flow
+.venv
+.codex
+out
+*.vsix
+.claude
+CLAUDE.md
