@@ -12,6 +12,282 @@ A modern blog and documentation system built with Astro, Go, and MongoDB.
 - **Categories**: Organize content with categories
 - **SEO Optimized**: Static site generation for optimal performance
 
+## 🏗️ System Architecture Overview
+
+### Tech Stack
+- **Frontend**: Astro with React components, TailwindCSS for styling
+- **Backend**: Go with Gorilla Mux, JWT authentication
+- **Database**: MongoDB
+- **Deployment**: Docker containers, nginx reverse proxy
+
+### Current Authentication System
+- **User Model** (backend/internal/models/user.go:10-19):
+  - Currently 2 roles: admin and user
+  - Approval system for new registrations
+  - JWT tokens with 7-day expiration
+  - httpOnly cookies for web security
+  
+- **Authentication Flow**:
+  - Login creates JWT with userId, email, role
+  - Token stored in httpOnly cookie
+  - Middleware validates on each request
+  - Role-based access control (admin/user)
+
+## 🛥️ Boat Lift Management System
+
+### Overview
+The system supports multiple boat lifts per user account with a sophisticated mutual authentication system between the boat lift hardware, mobile app, and server. This creates a secure triangle of trust where the server and lift can verify each other through an untrusted mobile app intermediary.
+
+### Core Components
+
+#### 1. Boat Lift Entity
+Each boat lift has:
+- **Unique Lift ID**: System-generated identifier
+- **Owner**: Reference to primary user account
+- **Lift Secret Key**: Shared secret for lift-server authentication
+- **Public Key**: For asymmetric cryptography operations
+- **Metadata**: Name, location, model, installation date
+- **Status**: Active, maintenance, offline
+- **Access Log**: Audit trail of all access attempts
+
+#### 2. Authentication Triangle
+The system implements mutual authentication between three parties:
+
+```
+    Server (Trusted)
+         /\
+        /  \
+       /    \
+      /      \
+Mobile App   Boat Lift
+(Untrusted)  (Trusted)
+```
+
+**Authentication Flow**:
+1. **User → Mobile App**: User opens app and selects boat lift
+2. **Mobile App → Boat Lift**: App connects via Bluetooth/WiFi and requests access
+3. **Boat Lift → Mobile App**: Lift generates challenge with:
+   - Timestamp
+   - Nonce (random value)
+   - Lift ID
+   - Signed with lift's private key
+4. **Mobile App → Server**: Forwards challenge package (app cannot decrypt/modify)
+5. **Server Verification**:
+   - Validates lift signature using stored public key
+   - Checks timestamp freshness (prevent replay attacks)
+   - Verifies user has permission for this lift
+   - Generates response token signed with server's private key
+6. **Server → Mobile App**: Returns encrypted response token
+7. **Mobile App → Boat Lift**: Forwards server response
+8. **Boat Lift Verification**:
+   - Validates server signature
+   - Checks response matches challenge
+   - Grants or denies access
+
+This ensures:
+- Lift knows response genuinely came from authorized server
+- Server knows request genuinely came from registered lift
+- Mobile app cannot forge either party's credentials
+- Protection against replay attacks via timestamps/nonces
+
+### User Access Management
+
+#### Access Levels
+1. **Owner**: Full control
+   - Add/remove other users
+   - View all access logs
+   - Modify lift settings
+   - Generate guest access keys
+
+2. **Admin**: Delegated management
+   - Can operate lift
+   - Can generate temporary guest keys
+   - Can view access logs
+   - Cannot remove owner or other admins
+
+3. **Guest**: Time-limited access
+   - Can operate lift during valid time window
+   - Access automatically expires
+   - Cannot modify any settings
+   - Cannot view logs or other users
+
+#### Guest Access System
+- **Key Generation**: Owner/Admin generates time-limited access key
+- **Key Format**: Encrypted JWT containing:
+  - Guest email/phone
+  - Lift ID(s)
+  - Start and end timestamps
+  - Usage restrictions (e.g., max uses per day)
+- **Key Distribution**: Send via email/SMS with setup link
+- **Guest Setup Process**:
+  1. Guest receives key via email/SMS
+  2. Clicks setup link or enters key in app
+  3. Creates temporary account (or uses existing)
+  4. Access automatically configured with restrictions
+  5. Receives notification when access is about to expire
+
+### Database Schema
+
+#### boat_lifts Collection
+```javascript
+{
+  _id: ObjectId,
+  lift_id: String (unique),
+  owner_id: ObjectId (ref: users),
+  name: String,
+  location: {
+    address: String,
+    coordinates: [longitude, latitude]
+  },
+  keys: {
+    secret_key: String (hashed),
+    public_key: String,
+    private_key_encrypted: String,
+    key_rotation_date: Date
+  },
+  metadata: {
+    model: String,
+    serial_number: String,
+    installation_date: Date,
+    firmware_version: String,
+    last_maintenance: Date
+  },
+  status: String (active|maintenance|offline),
+  created_at: Date,
+  updated_at: Date
+}
+```
+
+#### lift_access Collection
+```javascript
+{
+  _id: ObjectId,
+  lift_id: String (ref: boat_lifts),
+  user_id: ObjectId (ref: users),
+  granted_by: ObjectId (ref: users),
+  access_level: String (owner|admin|guest),
+  permissions: [String],
+  time_restrictions: {
+    start_date: Date,
+    end_date: Date,
+    allowed_hours: {
+      start: String (HH:MM),
+      end: String (HH:MM)
+    },
+    max_uses_per_day: Number
+  },
+  access_key: String (for guests),
+  created_at: Date,
+  expires_at: Date,
+  last_used: Date,
+  usage_count: Number
+}
+```
+
+#### access_logs Collection
+```javascript
+{
+  _id: ObjectId,
+  lift_id: String,
+  user_id: ObjectId,
+  action: String (access_granted|access_denied|settings_changed),
+  method: String (mobile_app|physical_key|web_interface),
+  details: {
+    ip_address: String,
+    device_info: String,
+    location: [longitude, latitude],
+    challenge_nonce: String,
+    failure_reason: String (if denied)
+  },
+  timestamp: Date
+}
+```
+
+### Mobile App Integration
+
+#### App Capabilities
+- **Lift Discovery**: Scan for nearby lifts via Bluetooth/WiFi
+- **Access Request**: Initiate authentication flow
+- **Guest Mode**: Enter access key to set up temporary access
+- **Offline Mode**: Cache recent auth tokens for limited offline use
+- **Push Notifications**: Access granted/denied, maintenance reminders
+
+#### API Endpoints
+
+**Authentication**:
+- `POST /api/mobile/auth/challenge-response` - Process lift challenge
+- `POST /api/mobile/auth/validate-guest-key` - Validate guest access key
+
+**Lift Management**:
+- `GET /api/mobile/lifts` - List user's accessible lifts
+- `GET /api/mobile/lifts/:id/status` - Get lift status
+- `POST /api/mobile/lifts/:id/operate` - Send operation command
+- `GET /api/mobile/lifts/:id/logs` - View access logs (if permitted)
+
+**Access Management**:
+- `POST /api/lifts/:id/access/grant` - Grant user access
+- `POST /api/lifts/:id/access/revoke` - Revoke user access
+- `POST /api/lifts/:id/guest-key/generate` - Generate guest key
+- `GET /api/lifts/:id/access/list` - List all users with access
+
+### Security Considerations
+
+1. **Key Rotation**: Regular rotation of lift secret keys (quarterly)
+2. **Rate Limiting**: Prevent brute force attacks on authentication
+3. **Audit Logging**: Complete audit trail of all access attempts
+4. **Encryption**: All sensitive data encrypted at rest
+5. **Challenge Expiry**: Challenges valid for only 30 seconds
+6. **Geographic Fencing**: Optional restriction to specific locations
+7. **Two-Factor Auth**: Optional 2FA for owner account operations
+8. **Firmware Validation**: Verify lift firmware integrity before auth
+
+### Implementation Roadmap
+
+#### Phase 1: Core Infrastructure
+- Extend user model with multi-level roles
+- Create boat_lifts and lift_access collections
+- Implement basic CRUD operations for lifts
+- Set up owner/admin/guest access levels
+
+#### Phase 2: Authentication System
+- Implement challenge-response protocol
+- Create key generation and validation
+- Set up mutual authentication flow
+- Add access logging
+
+#### Phase 3: Mobile API
+- Create mobile-specific endpoints
+- Implement guest key system
+- Add push notification support
+- Build offline token caching
+
+#### Phase 4: Security Hardening
+- Add rate limiting
+- Implement key rotation
+- Set up comprehensive audit logging
+- Add geographic restrictions
+
+#### Phase 5: Advanced Features
+- Maintenance scheduling system
+- Usage analytics dashboard
+- Automated access expiry notifications
+- Integration with smart home systems
+
+### Design Customization Points
+
+#### Primary Styling Hooks
+- **Global CSS** (src/styles/global.css) - Tailwind base styles
+- **Tailwind Config** (tailwind.config.js) - Extend theme here
+- **Layout Component** (src/layouts/Layout.astro) - Meta tags, global imports
+- **Component Styling** - Each component uses Tailwind classes
+- **Color Scheme** - Currently gray-900/800 backgrounds, indigo-400 accents
+
+#### Key Components to Modify
+- HeroSection.astro - Main landing hero
+- HeaderSimple.astro - Navigation
+- Footer.astro - Footer design
+- Section components in src/components/sections/
+
 ## 📋 Prerequisites
 
 - Node.js 18+ and npm
