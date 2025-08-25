@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Comparison - Coders in Flow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 60px 20px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            animation: gradientShift 5s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            font-size: 1.25em;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .highlight-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        .table-wrapper {
+            background: #111111;
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(59, 130, 246, 0.1);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #0f0f0f;
+            border-bottom: 2px solid #1f2937;
+        }
+
+        thead th {
+            padding: 10px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        thead th:first-child {
+            text-align: left;
+            padding-left: 32px;
+            color: #e5e7eb;
+            font-size: 1em;
+        }
+
+        thead th:last-child {
+            background: linear-gradient(135deg, #1e293b, #312e81);
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        thead th:last-child::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #1a1a1a;
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        tbody td {
+            padding: 8px 12px;
+            color: #e2e8f0;
+            text-align: center;
+            font-size: 0.9em;
+            position: relative;
+        }
+
+        tbody td:first-child {
+            text-align: left;
+            padding-left: 32px;
+            font-weight: 500;
+            color: #e5e7eb;
+            position: relative;
+        }
+
+        tbody td:first-child::before {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        tbody tr:hover td:first-child::before {
+            opacity: 1;
+        }
+
+        .status-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+
+        .check {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            animation: checkPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes checkPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
+        }
+
+        .check::after {
+            content: '✓';
+            font-size: 16px;
+        }
+
+        .cross {
+            background: #374151;
+            border: 1px solid #4b5563;
+            color: #9ca3af;
+        }
+
+        .cross::after {
+            content: '−';
+            font-size: 18px;
+            opacity: 0.5;
+        }
+
+        .value-text {
+            font-size: 0.85em;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        .winner-value {
+            font-weight: 700;
+            font-size: 1em;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 4px;
+        }
+
+        tbody td:last-child {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+            border-left: 2px solid transparent;
+            border-image: linear-gradient(180deg, #3b82f6, #8b5cf6) 1;
+        }
+
+        /* Feature badges */
+        .feature-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        /* Loading animation for features */
+        tbody tr {
+            animation: fadeInRow 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        tbody tr:nth-child(1) { animation-delay: 0.05s; }
+        tbody tr:nth-child(2) { animation-delay: 0.1s; }
+        tbody tr:nth-child(3) { animation-delay: 0.15s; }
+        tbody tr:nth-child(4) { animation-delay: 0.2s; }
+        tbody tr:nth-child(5) { animation-delay: 0.25s; }
+        tbody tr:nth-child(6) { animation-delay: 0.3s; }
+        tbody tr:nth-child(7) { animation-delay: 0.35s; }
+        tbody tr:nth-child(8) { animation-delay: 0.4s; }
+        tbody tr:nth-child(9) { animation-delay: 0.45s; }
+        tbody tr:nth-child(10) { animation-delay: 0.5s; }
+        tbody tr:nth-child(11) { animation-delay: 0.55s; }
+        tbody tr:nth-child(12) { animation-delay: 0.6s; }
+        tbody tr:nth-child(13) { animation-delay: 0.65s; }
+        tbody tr:nth-child(14) { animation-delay: 0.7s; }
+        tbody tr:nth-child(15) { animation-delay: 0.75s; }
+        tbody tr:nth-child(16) { animation-delay: 0.8s; }
+        tbody tr:nth-child(17) { animation-delay: 0.85s; }
+
+        @keyframes fadeInRow {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Stats section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            padding: 0 20px;
+        }
+
+        .stat-card {
+            background: #111111;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            .table-wrapper { 
+                border-radius: 12px;
+                overflow-x: auto;
+            }
+            thead th { 
+                font-size: 0.8em; 
+                padding: 16px 12px;
+            }
+            tbody td { 
+                font-size: 0.85em; 
+                padding: 14px 12px;
+            }
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>How We Compare</h1>
+            <p class="subtitle">True multitasking, powerful, token optimized, intuitive - fundamentally changing how software is built</p>
+            <span class="highlight-badge">✨ 17-0 Feature Advantage</span>
+        </div>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Cline</th>
+                        <th>Continue</th>
+                        <th>Cursor</th>
+                        <th>Roo</th>
+                        <th>Coders in Flow ⚡</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Concurrent Tasks</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">1</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">1</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">1</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">1</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">20+</div></td>
+                    </tr>
+                    <tr>
+                        <td>Automatic Subtasks</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Yes</div></td>
+                    </tr>
+                    <tr>
+                        <td>Dynamic Providers</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Hardcoded</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Hardcoded</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Hardcoded</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Hardcoded</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">JSON-based</div></td>
+                    </tr>
+                    <tr>
+                        <td>Model Discovery</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Manual</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Manual</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Manual</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Manual</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Automatic</div></td>
+                    </tr>
+                    <tr>
+                        <td>Mobile App</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Native iOS</div></td>
+                    </tr>
+                    <tr>
+                        <td>Selective Staging</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="value-text">Yes</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Chunk-level</div></td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Backup</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Limited</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Complete</div></td>
+                    </tr>
+                    <tr>
+                        <td>Team Management</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Enterprise</div></td>
+                    </tr>
+                    <tr>
+                        <td>AI Context Editing</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Dynamic</div></td>
+                    </tr>
+                    <tr>
+                        <td>Cost Optimization</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Limited</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Automatic</div></td>
+                    </tr>
+                    <tr>
+                        <td>Code Analysis</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Basic</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Basic</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">50+ Detectors</div></td>
+                    </tr>
+                    <tr>
+                        <td>Security Scanner</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">30+ Patterns</div></td>
+                    </tr>
+                    <tr>
+                        <td>Auto-Fixes</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Limited</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">Limited</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">200+ Types</div></td>
+                    </tr>
+                    <tr>
+                        <td>MCP Server</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Built-in</div></td>
+                    </tr>
+                    <tr>
+                        <td>Message Indexing</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Byte-offset</div></td>
+                    </tr>
+                    <tr>
+                        <td>Lazy Loading</td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon cross"></span><div class="value-text">No</div></td>
+                        <td><span class="status-icon check"></span><div class="winner-value">Windowed</div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number">20×</div>
+                <div class="stat-label">More Concurrent Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">60%</div>
+                <div class="stat-label">Cost Reduction</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Code Detectors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">200+</div>
+                <div class="stat-label">Auto-Fix Types</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
