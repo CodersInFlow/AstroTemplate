@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "title": "Our competition can't compare",
+    "subtitle": "We knew we could do better, and we proved it",
+    "quote": {
+      "text": "Our competitors thought my ideas were unobtainable, so i decided to prove otherwise, building a solution from the ground up",
+      "authorName": "Preston Garrison",
+      "authorTitle": "Creator"
+    }
+  },
+  "features": [
+    {
+      "title": "Billing without shocks or surprises",
+      "heading": "If your collaborators already pay, why should we charge twice?",
+      "paragraphs": [
+        "If you invite an editor to your document who already pays for Sketch elsewhere, we don't charge you extra for them. There are no limits on how many documents or projects you can share. You don't even have to hide documents in your drafts.",
+        "**We also make it crystal clear when changes to the number of editors (or editor seats) in your Workspace affect your bill — it's just the right thing to do.**",
+        "And if you invite a viewer to your document, we won't charge you for them either. They're free and always will be."
+      ]
+    },
+    {
+      "title": "Real-time collaboration, done right",
+      "heading": "Work together without the complexity",
+      "paragraphs": [
+        "Collaboration shouldn't come with hidden costs or complicated pricing tiers. We believe in making teamwork accessible and affordable.",
+        "Whether you're working with 2 people or 200, our pricing scales fairly with your actual usage, not arbitrary limits.",
+        "**No seat minimum requirements. No surprise charges for guests. No penalties for growing your team.**"
+      ]
+    },
+    {
+      "title": "Transparent pricing, always",
+      "heading": "Know exactly what you're paying for",
+      "paragraphs": [
+        "We show you exactly how changes to your team affect your bill before you confirm them. No retroactive charges, no confusing prorations.",
+        "Add or remove team members anytime, and we'll show you the exact impact on your next bill. It's that simple.",
+        "Our billing dashboard gives you complete visibility into your usage, upcoming charges, and historical invoices."
+      ]
+    },
+    {
+      "title": "Free viewers, forever",
+      "heading": "Share without limits",
+      "paragraphs": [
+        "Stakeholders, clients, and reviewers can view and comment on your work without any cost to you or them.",
+        "Unlimited viewer access means you can involve everyone who needs to see your work, without worrying about your bill.",
+        "**Because great design happens when everyone can participate in the process.**"
+      ]
+    },
+    {
+      "title": "Pay for what you use",
+      "heading": "Usage-based pricing that makes sense",
+      "paragraphs": [
+        "We believe in fair pricing that reflects actual usage, not arbitrary tiers designed to maximize revenue.",
+        "Your bill grows with your team's actual needs, not with predetermined packages that force you to pay for features you don't use.",
+        "**Simple, transparent, and aligned with your success.**"
+      ]
+    },
+    {
+      "title": "No hidden fees",
+      "heading": "Everything upfront, nothing hidden",
+      "paragraphs": [
+        "No setup fees. No cancellation penalties. No surprise charges for API calls or storage overages.",
+        "We show you exactly what you'll pay before you commit, and that number doesn't change unless you explicitly add more users.",
+        "**Predictable costs mean better budgeting and fewer surprises.**"
+      ]
+    },
+    {
+      "title": "Team-friendly billing",
+      "heading": "Built for how teams actually work",
+      "paragraphs": [
+        "Add contractors for a project without annual commitments. Remove team members who leave without penalty.",
+        "Seasonal workers? Interns? Project-based collaborators? Our billing flexes with your team's real-world needs.",
+        "**Because your team structure shouldn't be dictated by billing constraints.**"
+      ]
+    },
+    {
+      "title": "Start free, stay free",
+      "heading": "No credit card required to begin",
+      "paragraphs": [
+        "Start with our generous free tier and only pay when you're ready to scale. No time limits, no feature restrictions.",
+        "Viewers, commenters, and stakeholders remain free forever - we only charge for active creators and editors.",
+        "**Try everything, commit when you're ready, scale at your own pace.**"
+      ]
+    }
+  ]
+}
