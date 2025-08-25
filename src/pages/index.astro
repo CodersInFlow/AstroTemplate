@@ -3,8 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/HeaderSimple.astro';
 import Footer from '../components/Footer.astro';
 
+// Hero and Billing components
+import HeroComparison from '../components/HeroComparison';
+import BillingSection from '../components/BillingSection';
+import ComparisonTable from '../components/ComparisonTable';
+
 // Section components
-import HeroSection from '../components/sections/HeroSection.astro';
 import WhyBetterSection from '../components/sections/WhyBetterSection';
 import VideoSection from '../components/sections/VideoSection';
 import KeyFeaturesSection from '../components/sections/KeyFeaturesSection.astro';
@@ -23,8 +27,14 @@ import CallToAction from '../components/CallToAction';
   <!-- Static header -->
   <Header />
   
-  <!-- Hero Section -->
-  <HeroSection />
+  <!-- Hero Comparison Card -->
+  <HeroComparison client:load />
+  
+  <!-- Billing Section with Hero and Features -->
+  <BillingSection client:load />
+  
+  <!-- Comparison Table -->
+  <ComparisonTable client:load />
   
   <!-- Why We're Better Section -->
   <WhyBetterSection client:load />

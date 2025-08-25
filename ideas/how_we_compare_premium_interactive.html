@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How We Compare — Premium Interactive</title>
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --panel: #0f1320;
+      --panel-2: #12182a;
+      --text: #e8eefc;
+      --muted: #aab3c7;
+      --brand: #7c5cff; /* violet */
+      --brand-2: #00e5a8; /* teal */
+      --danger: #ff5c7a;
+      --ok: #1ee28e;
+      --warn: #ffd166;
+      --grid: rgba(255,255,255,0.06);
+      --ring: rgba(124, 92, 255, 0.45);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 700px at 15% -10%, rgba(124,92,255,0.25), transparent),
+                  radial-gradient(1000px 600px at 85% 0%, rgba(0,229,168,0.18), transparent),
+                  var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.45;
+    }
+
+    .max { max-width: 1200px; margin: 48px auto; padding: 0 20px; }
+
+    header.hero { display: grid; gap: 16px; align-items: center; justify-items: center; text-align: center; }
+    header.hero h1 {
+      font-size: clamp(1.6rem, 1.25rem + 2vw, 2.6rem);
+      margin: 0;
+      background: linear-gradient(90deg, #fff, #cdd7ff);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    header.hero p { max-width: 840px; color: var(--muted); margin: 0; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 28px 0 14px; }
+    .btn, .seg button {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--grid);
+      color: var(--text);
+      padding: 10px 14px; border-radius: 12px; cursor: pointer; transition: 140ms ease-in-out;
+      box-shadow: var(--shadow);
+    }
+    .btn:hover, .seg button:hover { border-color: var(--ring); box-shadow: 0 0 0 6px var(--ring), var(--shadow); }
+    .btn[aria-pressed="true"] { outline: 2px solid var(--brand); }
+    .seg { display: inline-flex; padding: 4px; background: var(--panel-2); border: 1px solid var(--grid); border-radius: 14px; }
+    .seg button { border-radius: 10px; border: none; }
+    .seg button[aria-pressed="true"] { background: linear-gradient(180deg, #1a1f35, #131a2c); box-shadow: inset 0 0 0 1px var(--brand); }
+
+    .table-wrap {
+      background: linear-gradient(180deg, rgba(124,92,255,0.07), transparent 240px),
+                  linear-gradient(180deg, rgba(0,229,168,0.06), transparent 420px),
+                  linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--grid);
+      border-radius: 18px; overflow: hidden; box-shadow: var(--shadow);
+    }
+
+    table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    thead th {
+      position: sticky; top: 0; z-index: 2;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      backdrop-filter: blur(6px);
+      padding: 14px 16px; text-align: center; border-bottom: 1px solid var(--grid);
+      font-weight: 700;
+    }
+    thead th:first-child { text-align: left; }
+
+    tbody td { padding: 12px 16px; text-align: center; border-bottom: 1px solid var(--grid); }
+    tbody td:first-child {
+      text-align: left; position: sticky; left: 0; z-index: 1;
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent 70%);
+      font-weight: 600;
+    }
+
+    tr:nth-child(odd) td { background: rgba(255,255,255,0.02); }
+    tr:hover td { background: rgba(124,92,255,0.08); }
+
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 0.92rem; border: none; }
+    .pill.yes { background: rgba(0,229,168,0.14); color: #c9fff1; }
+    .pill.no { background: rgba(255,92,122,0.12); color: #ffd1da; }
+    .pill.limited { background: rgba(255,209,102,0.12); color: #fff1c9; }
+
+    /* Subtle highlight for the Coders in Flow header cell only */
+    .col-brand { background: rgba(124,92,255,0.08); box-shadow: none; border: none; }
+    th.brand { color: #e9e5ff; text-shadow: 0 0 18px rgba(124,92,255,0.6); }
+
+    .legend { display: flex; gap: 14px; justify-content: center; margin: 14px 0 22px; color: var(--muted); font-size: 0.95rem; }
+    .legend .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; margin-right: 6px; }
+
+    .notice { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 16px; }
+
+    /* Mobile cards */
+    @media (max-width: 900px) {
+      .table-wrap { display: none; }
+      .cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
+      .card {
+        background: linear-gradient(180deg, var(--panel), var(--panel-2));
+        border: 1px solid var(--grid); border-radius: 16px; padding: 16px; box-shadow: var(--shadow);
+      }
+      .card h3 { margin: 0 0 10px; font-size: 1.1rem; }
+      .row { display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; padding: 10px 0; border-top: 1px dashed var(--grid); }
+      .row:first-of-type { border-top: 0; }
+      .row .feat { color: var(--muted); }
+    }
+
+    /* Column focus highlight (no borders/outlines) */
+    .focusable { cursor: pointer; }
+    .focus-col { outline: none; border: none; background: rgba(124,92,255,0.12) !important; }
+
+    .search {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--grid); border-radius: 12px; background: var(--panel-2); min-width: 260px; color: var(--text);
+    }
+    .search input { background: transparent; border: none; outline: none; color: var(--text); width: 220px; }
+
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-size: 0.85rem; border: 1px solid var(--grid); background: rgba(255,255,255,0.04); }
+    .badge.star { border-color: rgba(255,215,0,0.4); }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 1px, 1px); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body>
+  <div class="max">
+    <header class="hero" role="banner">
+      <div class="badge star" aria-hidden="true">🚀 Premium comparison &nbsp;•&nbsp; <strong>Interactive</strong></div>
+      <h1>How We Compare</h1>
+      <p>An interactive, accessible, and responsive comparison between development assistants. Filter differences, spotlight a column, and export—all in one elegant view.</p>
+
+      <div class="toolbar" role="toolbar" aria-label="Comparison controls">
+        <div class="search" role="search">
+          🔎 <input id="q" type="search" placeholder="Search features (e.g., security, tasks)" aria-label="Search features">
+        </div>
+        <button id="toggleDiff" class="btn" aria-pressed="false" aria-label="Toggle show differences only">Show Differences Only</button>
+        <div class="seg" role="group" aria-label="Highlight column">
+          <button class="focusable" data-col="1" aria-pressed="false">Cline</button>
+          <button class="focusable" data-col="2" aria-pressed="false">Continue</button>
+          <button class="focusable" data-col="3" aria-pressed="false">Cursor</button>
+          <button class="focusable" data-col="4" aria-pressed="false">Roo</button>
+          <button class="focusable" data-col="5" aria-pressed="true">Coders in Flow ⭐</button>
+        </div>
+        <button id="copyCsv" class="btn" aria-label="Export table to CSV">Export CSV</button>
+      </div>
+
+      <div class="legend" aria-hidden="true">
+        <span><i class="dot" style="background:#00e5a8"></i> Positive</span>
+        <span><i class="dot" style="background:#ff5c7a"></i> Missing</span>
+        <span><i class="dot" style="background:#ffd166"></i> Limited</span>
+      </div>
+    </header>
+
+    <!-- Desktop table -->
+    <div class="table-wrap" role="region" aria-label="Comparison table" tabindex="0">
+      <table id="cmp">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Cline</th>
+            <th>Continue</th>
+            <th>Cursor</th>
+            <th>Roo</th>
+            <th class="brand col-brand th-cif">Coders in Flow</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- rows filled by JS for maintainability -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <section class="cards" aria-label="Mobile comparison" hidden></section>
+
+    <p class="notice">Tip: Click a vendor in the highlight group to spotlight their column. Use “Show Differences Only” to hide identical rows.</p>
+  </div>
+
+  <script>
+    const data = [
+      ["Concurrent Tasks", "❌ 1", "❌ 1", "❌ 1", "❌ 1", "✅ 20+"],
+      ["Automatic Subtasks", "❌ No", "❌ No", "❌ No", "❌ No", "✅ Yes"],
+      ["Dynamic Providers", "❌ Hardcoded", "❌ Hardcoded", "❌ Hardcoded", "❌ Hardcoded", "✅ JSON-based"],
+      ["Model Discovery", "❌ Manual", "❌ Manual", "❌ Manual", "❌ Manual", "✅ Automatic"],
+      ["Mobile App", "❌ No", "❌ No", "❌ No", "❌ No", "✅ Native iOS"],
+      ["Selective Staging", "❌ No", "❌ No", "✅ Yes", "❌ No", "✅ Chunk-level"],
+      ["Cloud Backup", "❌ No", "❌ No", "❌ Limited", "❌ No", "✅ Complete"],
+      ["Team Management", "❌ No", "❌ No", "❌ No", "❌ No", "✅ Enterprise"],
+      ["AI Context Editing", "❌ No", "❌ No", "❌ No", "❌ No", "✅ Dynamic"],
+      ["Cost Optimization", "❌ No", "❌ No", "❌ Limited", "❌ No", "✅ Automatic"],
+      ["Code Analysis", "❌ No", "❌ Basic", "❌ Basic", "❌ No", "✅ 50+ Detectors"],
+      ["Security Scanner", "❌ No", "❌ No", "❌ No", "❌ No", "✅ 30+ Patterns"],
+      ["Auto-Fixes", "❌ No", "❌ Limited", "❌ Limited", "❌ No", "✅ 200+ Types"],
+      ["MCP Server", "❌ No", "❌ No", "❌ No", "❌ No", "✅ Built-in"],
+      ["Message Indexing", "❌ No", "❌ No", "❌ No", "❌ No", "✅ Byte-offset"],
+      ["Lazy Loading", "❌ No", "❌ No", "❌ No", "❌ No", "✅ Windowed"]
+    ];
+
+    const headers = ["Feature", "Cline", "Continue", "Cursor", "Roo", "Coders in Flow"];
+
+    const tbody = document.querySelector('#cmp tbody');
+
+    function classify(value) {
+      const v = value.toLowerCase();
+      if (v.includes('✅')) return 'yes';
+      if (v.includes('limited')) return 'limited';
+      return 'no';
+    }
+
+    function renderTable(rows) {
+      tbody.innerHTML = '';
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        r.forEach((cell, i) => {
+          const td = document.createElement('td');
+          if (i === 0) { td.textContent = cell; }
+          else {
+            const span = document.createElement('span');
+            span.className = `pill ${classify(cell)}`;
+            span.textContent = cell;
+            td.appendChild(span);
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderCards(rows) {
+      const container = document.querySelector('.cards');
+      container.innerHTML = '';
+      const vendors = headers.slice(1);
+      vendors.forEach((vendor, vi) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        const h = document.createElement('h3');
+        h.textContent = vendor;
+        card.appendChild(h);
+        rows.forEach(r => {
+          const row = document.createElement('div');
+          row.className = 'row';
+          const feat = document.createElement('div');
+          feat.className = 'feat';
+          feat.textContent = r[0];
+          const val = document.createElement('div');
+          const pill = document.createElement('span');
+          pill.className = `pill ${classify(r[vi+1])}`;
+          pill.textContent = r[vi+1];
+          val.appendChild(pill);
+          row.appendChild(feat); row.appendChild(val);
+          card.appendChild(row);
+        });
+        container.appendChild(card);
+      });
+    }
+
+    // Initial render
+    renderTable(data);
+    renderCards(data);
+
+    // Column focus logic
+    const focusButtons = document.querySelectorAll('.focusable');
+    function clearFocus() {
+      document.querySelectorAll('#cmp td, #cmp th').forEach(el => el.classList.remove('focus-col'));
+      focusButtons.forEach(b => b.setAttribute('aria-pressed', 'false'));
+    }
+    function focusCol(idx) {
+      clearFocus();
+      focusButtons.forEach(b => (+b.dataset.col === idx) && b.setAttribute('aria-pressed', 'true'));
+      const rows = document.querySelectorAll('#cmp tr');
+      rows.forEach(r => {
+        const cell = r.children[idx];
+        if (cell) cell.classList.add('focus-col');
+      });
+    }
+    // default focus Coders in Flow (col 5) — background only, no borders
+    focusCol(5);
+    focusButtons.forEach(btn => btn.addEventListener('click', () => focusCol(+btn.dataset.col)));
+
+    // Differences only toggle
+    const toggle = document.getElementById('toggleDiff');
+    let diffOnly = false;
+    toggle.addEventListener('click', () => {
+      diffOnly = !diffOnly;
+      toggle.setAttribute('aria-pressed', String(diffOnly));
+      toggle.textContent = diffOnly ? 'Show All' : 'Show Differences Only';
+      applyFilters();
+    });
+
+    // Search filter
+    const q = document.getElementById('q');
+    q.addEventListener('input', () => applyFilters());
+
+    function rowsFiltered() {
+      const term = (q.value || '').trim().toLowerCase();
+      return data.filter(row => {
+        const text = row.join(' ').toLowerCase();
+        const matchesSearch = !term || text.includes(term);
+        if (!diffOnly) return matchesSearch;
+        const vals = row.slice(1);
+        const allSame = vals.every(v => v === vals[0]);
+        return matchesSearch && !allSame;
+      });
+    }
+
+    function applyFilters() {
+      const rows = rowsFiltered();
+      renderTable(rows);
+      const active = [...focusButtons].find(b => b.getAttribute('aria-pressed') === 'true');
+      focusCol(active ? +active.dataset.col : 5);
+      renderCards(rows);
+    }
+
+    // CSV export
+    document.getElementById('copyCsv').addEventListener('click', () => {
+      const rows = rowsFiltered();
+      const csv = [headers.join(',')].concat(rows.map(r => r.map(v => '"' + v.replaceAll('"', '""') + '"').join(','))).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'how-we-compare.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Responsive switch
+    const cards = document.querySelector('.cards');
+    function updateResponsive() {
+      const isMobile = window.matchMedia('(max-width: 900px)').matches;
+      cards.hidden = !isMobile;
+      document.querySelector('.table-wrap').style.display = isMobile ? 'none' : 'block';
+    }
+    updateResponsive();
+    window.addEventListener('resize', updateResponsive);
+  </script>
+</body>
+</html>

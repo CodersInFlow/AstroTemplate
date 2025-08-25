@@ -23,3 +23,11 @@ out
 *.vsix
 .claude
 CLAUDE.md
+.git
+*.log
+*.tmp
+__pycache__
+*.pyc
+.env.local
+.next
+.github
