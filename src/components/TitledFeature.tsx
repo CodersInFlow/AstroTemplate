@@ -139,17 +139,39 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
             isRightLayout ? 'lg:order-2' : ''
           }`}
         >
-          <h2 
-            ref={titleTextRef}
-            className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent absolute will-change-transform"
-            style={{
-              transform: 'translateZ(0)',
-              WebkitFontSmoothing: 'antialiased',
-              backfaceVisibility: 'hidden'
-            }}
-          >
-            {title}
-          </h2>
+          <div className="relative">
+            <h2 
+              ref={titleTextRef}
+              className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent will-change-transform mb-4"
+              style={{
+                transform: 'translateZ(0)',
+                WebkitFontSmoothing: 'antialiased',
+                backfaceVisibility: 'hidden'
+              }}
+            >
+              {title}
+            </h2>
+            <a 
+              href="#" 
+              className="inline-flex items-center gap-2 text-sm md:text-base text-blue-400 hover:text-blue-300 transition-colors group cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                // Add navigation logic here if needed
+                console.log('Learn more clicked for:', title);
+              }}
+            >
+              <span className="underline-offset-4 hover:underline">Learn more</span>
+              <svg 
+                className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </a>
+          </div>
         </div>
         
         <div 
