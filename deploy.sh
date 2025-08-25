@@ -102,8 +102,8 @@ server {
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
 
-    # Set the root directory for the website
-    root /var/www/codersinflow.com/dist;
+    # Set the root directory for static files
+    root /var/www/codersinflow.com/dist/client;
 
     # Define the index files
     index index.html index.htm;
@@ -116,7 +116,10 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
 
-    # Proxy API requests to the Go backend
+    # Include Codersinflow unified server location blocks
+    include /etc/nginx/includes/codersinflow-locations.conf;
+
+    # Proxy API requests to the Go backend (blog API)
     location /api/ {
         proxy_pass http://localhost:8749;
         proxy_http_version 1.1;
@@ -133,7 +136,7 @@ server {
         proxy_pass_request_headers on;
     }
 
-    # Serve uploaded images
+    # Serve uploaded images (blog uploads)
     location /uploads/ {
         proxy_pass http://localhost:8749;
         proxy_cache_valid 200 1d;
@@ -150,8 +153,30 @@ server {
         add_header Content-Disposition "attachment";
     }
 
-    # Main location block - proxy to Astro server
+    # Serve static assets directly
+    location /_astro/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Serve other static files
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|vsix)$ {
+        expires 30d;
+        add_header Cache-Control "public";
+        
+        # Special handling for .vsix files
+        location ~* \.vsix$ {
+            add_header Content-Type "application/vsix";
+            add_header Content-Disposition "attachment";
+        }
+    }
+
+    # Main location block - try static files first, then proxy to Astro server
     location / {
+        try_files $uri @astro;
+    }
+
+    location @astro {
         proxy_pass http://localhost:4321;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -161,18 +186,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
-    }
-
-    # Cache static assets
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|vsix)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-        
-        # Special handling for .vsix files
-        location ~* \.vsix$ {
-            add_header Content-Type "application/vsix";
-            add_header Content-Disposition "attachment";
-        }
     }
 
     # Redirect www to non-www
@@ -246,23 +259,36 @@ EOL
 
 # Step 8: Deploy nginx configuration
 echo -e "${YELLOW}🔧 Updating nginx configuration...${NC}"
+echo -e "${YELLOW}⚠️  IMPORTANT: This only updates codersinflow.com config, not other sites${NC}"
 scp -P 12222 nginx-merged.conf root@ny:/tmp/codersinflow.com.nginx
 
 ssh -p 12222 root@ny "
-    # Backup existing config
-    mkdir -p /etc/nginx/backups
+    # Backup ALL nginx configs for safety
+    mkdir -p /etc/nginx/backups /etc/tmp/nginx-emergency-backup
+    
+    # Create emergency backup of ALL sites
+    echo '📦 Creating emergency backup of all nginx configs...'
+    cp -r /etc/nginx/sites-enabled/* /etc/tmp/nginx-emergency-backup/ 2>/dev/null || true
+    
+    # Backup existing codersinflow config
     if [ -f /etc/nginx/sites-enabled/codersinflow.com ]; then
         cp /etc/nginx/sites-enabled/codersinflow.com /etc/nginx/backups/codersinflow.com.backup.\$(date +%Y%m%d_%H%M%S)
-        echo '✅ Backed up existing nginx config'
+        echo '✅ Backed up existing codersinflow.com nginx config'
     fi
     
-    # Copy new config
+    # Copy new config (ONLY for codersinflow.com)
     cp /tmp/codersinflow.com.nginx /etc/nginx/sites-enabled/codersinflow.com
     
     # Test nginx config
     nginx -t
     if [ \$? -eq 0 ]; then
         echo '✅ Nginx config test passed'
+        
+        # Verify other sites still exist
+        if [ ! -f /etc/nginx/sites-enabled/dock-hub.com ]; then
+            echo '⚠️  WARNING: dock-hub.com config missing! Check /etc/tmp/nginx-emergency-backup/'
+        fi
+        
         systemctl reload nginx
         echo '✅ Nginx reloaded successfully'
     else
