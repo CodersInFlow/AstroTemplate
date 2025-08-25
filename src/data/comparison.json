@@ -160,7 +160,7 @@
       }
     },
     {
-      "name": "MCP Server",
+      "name": "Automatic MCP Passthrough",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
