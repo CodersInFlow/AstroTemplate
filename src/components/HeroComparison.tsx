@@ -8,29 +8,33 @@ const HeroComparison: React.FC = () => {
           {/* Left Content */}
           <div className="relative z-10">
             {/* Competitor badges */}
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-6 opacity-0 animate-fadeInDown animation-delay-100">
               <span className="text-gray-400 text-sm">Coders in Flow vs. Competition</span>
             </div>
             
             {/* Main Title */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Coders in Flow<br />
-              <span className="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+              <span className="inline-block opacity-0 animate-slideInLeft animation-delay-200">
+                Coders in Flow
+              </span>
+              <br />
+              <span className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent opacity-0 animate-slideInRight animation-delay-400">
                 AI Powered Development team
-              </span><br />
-              <span className="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+              </span>
+              <br />
+              <span className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent opacity-0 animate-slideInLeft animation-delay-600">
                 in VS Code.
               </span>
             </h1>
             
             {/* Description */}
-            <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+            <p className="text-gray-400 text-lg mb-8 leading-relaxed opacity-0 animate-fadeInUp animation-delay-800">
               Work 10x faster, its like having a full development team in the palm of your hands. Powerful AI coding assistant that works for 
               engineers, developers and the average person, boosting productivity, code quality, and 
               collaboration.
             </p>
             
-            <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+            <p className="text-gray-400 text-lg mb-8 leading-relaxed opacity-0 animate-fadeInUp animation-delay-1000">
               When comparing Coders in Flow and other AI assistants, discover how 
               our true multitasking platform with AI Companion capabilities can transform 
               team collaboration, reduce costs, and enhance the experience for 
@@ -39,21 +43,22 @@ const HeroComparison: React.FC = () => {
             
             {/* CTA Button */}
             <button 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-purple-500/25"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-purple-500/25 opacity-0 animate-fadeInUp animation-delay-1200"
               onClick={() => window.location.href = '/features'}
             >
-              ↓Scroll for more↓ , or click for features
+              ↓ Scroll ↓ for more, or click for features
             </button>
           </div>
           
           {/* Right Images */}
           <div className="relative h-[400px] lg:h-[500px]">
             {/* Background glow effects */}
-            <div className="absolute top-20 right-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-20 left-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl" />
+            <div className="absolute top-20 right-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl opacity-0 animate-fadeIn animation-delay-500" />
+            <div className="absolute bottom-20 left-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl opacity-0 animate-fadeIn animation-delay-700" />
             
             {/* Main IDE Screenshot */}
-            <div className="absolute top-0 right-0 w-[320px] md:w-[380px] transform rotate-3 hover:rotate-2 transition-transform duration-300">
+            <div className="absolute top-0 right-0 w-[320px] md:w-[380px] hover:rotate-2 transition-transform duration-300 opacity-0 animate-slideInRightRotated animation-delay-1400"
+                 style={{ transform: 'rotate(3deg)' }}>
               <div className="bg-gray-900 rounded-xl shadow-2xl border border-gray-800 overflow-hidden">
                 <div className="bg-gray-800 px-4 py-2 flex items-center gap-2">
                   <div className="flex gap-1.5">
@@ -83,7 +88,8 @@ const HeroComparison: React.FC = () => {
             </div>
             
             {/* Feature Card */}
-            <div className="absolute bottom-0 left-0 w-[280px] md:w-[340px] transform -rotate-3 hover:-rotate-2 transition-transform duration-300">
+            <div className="absolute bottom-0 left-0 w-[280px] md:w-[340px] hover:-rotate-2 transition-transform duration-300 opacity-0 animate-slideInLeftRotated animation-delay-1600"
+                 style={{ transform: 'rotate(-3deg)' }}>
               <div className="bg-white rounded-xl shadow-2xl p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
@@ -107,15 +113,15 @@ const HeroComparison: React.FC = () => {
             </div>
             
             {/* Floating badges */}
-            <div className="absolute top-10 left-10 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2 text-green-400 text-sm font-semibold animate-pulse">
+            <div className="absolute top-10 left-10 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2 text-green-400 text-sm font-semibold opacity-0 animate-bounceIn animation-delay-1800">
               20× Faster
             </div>
             
-            <div className="absolute top-32 right-10 bg-blue-500/10 border border-blue-500/30 rounded-full px-4 py-2 text-blue-400 text-sm font-semibold animate-pulse animation-delay-300">
+            <div className="absolute top-32 right-10 bg-blue-500/10 border border-blue-500/30 rounded-full px-4 py-2 text-blue-400 text-sm font-semibold opacity-0 animate-bounceIn animation-delay-2000">
               60% Cheaper
             </div>
             
-            <div className="absolute bottom-32 right-20 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-2 text-purple-400 text-sm font-semibold animate-pulse animation-delay-600">
+            <div className="absolute bottom-32 right-20 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-2 text-purple-400 text-sm font-semibold opacity-0 animate-bounceIn animation-delay-2200">
               100% Better
             </div>
           </div>
@@ -129,6 +135,99 @@ const HeroComparison: React.FC = () => {
       </div>
 
       <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-100px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(100px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRightRotated {
+          from {
+            opacity: 0;
+            transform: translateX(100px) rotate(3deg);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0) rotate(3deg);
+          }
+        }
+
+        @keyframes slideInLeftRotated {
+          from {
+            opacity: 0;
+            transform: translateX(-100px) rotate(-3deg);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0) rotate(-3deg);
+          }
+        }
+
+        @keyframes bounceIn {
+          0% {
+            opacity: 0;
+            transform: scale(0.3);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.05);
+          }
+          70% {
+            transform: scale(0.9);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
         @keyframes pulse {
           0%, 100% {
             opacity: 1;
@@ -140,17 +239,53 @@ const HeroComparison: React.FC = () => {
           }
         }
 
-        .animate-pulse {
-          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .animate-fadeIn {
+          animation: fadeIn 0.8s ease-out forwards;
         }
 
-        .animation-delay-300 {
-          animation-delay: 0.3s;
+        .animate-fadeInUp {
+          animation: fadeInUp 0.8s ease-out forwards;
         }
 
-        .animation-delay-600 {
-          animation-delay: 0.6s;
+        .animate-fadeInDown {
+          animation: fadeInDown 0.8s ease-out forwards;
         }
+
+        .animate-slideInLeft {
+          animation: slideInLeft 0.8s ease-out forwards;
+        }
+
+        .animate-slideInRight {
+          animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        .animate-slideInRightRotated {
+          animation: slideInRightRotated 0.8s ease-out forwards;
+        }
+
+        .animate-slideInLeftRotated {
+          animation: slideInLeftRotated 0.8s ease-out forwards;
+        }
+
+        .animate-bounceIn {
+          animation: bounceIn 0.8s ease-out forwards, pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite 2.5s;
+        }
+
+        .animation-delay-100 { animation-delay: 0.1s; }
+        .animation-delay-200 { animation-delay: 0.2s; }
+        .animation-delay-300 { animation-delay: 0.3s; }
+        .animation-delay-400 { animation-delay: 0.4s; }
+        .animation-delay-500 { animation-delay: 0.5s; }
+        .animation-delay-600 { animation-delay: 0.6s; }
+        .animation-delay-700 { animation-delay: 0.7s; }
+        .animation-delay-800 { animation-delay: 0.8s; }
+        .animation-delay-1000 { animation-delay: 1s; }
+        .animation-delay-1200 { animation-delay: 1.2s; }
+        .animation-delay-1400 { animation-delay: 1.4s; }
+        .animation-delay-1600 { animation-delay: 1.6s; }
+        .animation-delay-1800 { animation-delay: 1.8s; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-2200 { animation-delay: 2.2s; }
       `}</style>
     </section>
   );

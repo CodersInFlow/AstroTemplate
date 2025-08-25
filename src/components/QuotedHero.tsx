@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface QuotedHeroProps {
   title: string;
@@ -12,7 +12,42 @@ interface QuotedHeroProps {
 }
 
 const QuotedHero: React.FC<QuotedHeroProps> = ({ title, subtitle, quote }) => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isInView, setIsInView] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
+    // Set mounted after a delay to prevent initial trigger
+    const mountTimer = setTimeout(() => {
+      setIsMounted(true);
+    }, 500);
+
+    return () => clearTimeout(mountTimer);
+  }, []);
+
+  useEffect(() => {
+    // Only start observing after component is mounted
+    if (!isMounted) return;
+
+    // Intersection Observer for scroll-triggered animations
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !isInView) {
+            setIsInView(true);
+          }
+        });
+      },
+      { 
+        threshold: 0.5, // Trigger when 50% of the component is visible
+        rootMargin: '-100px 0px' // Additional offset to ensure component is well into view
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
     // Smooth scroll behavior for scroll indicator
     const scrollIndicator = document.querySelector('.scroll-indicator');
     if (scrollIndicator) {
@@ -23,24 +58,30 @@ const QuotedHero: React.FC<QuotedHeroProps> = ({ title, subtitle, quote }) => {
         }
       });
     }
-  }, []);
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, [isInView, isMounted]);
 
   // Split title into words for individual animation
   const titleWords = title.split(' ');
 
   return (
-    <section className="quoted-hero min-h-screen flex flex-col justify-center items-center text-center p-8 relative bg-gradient-to-br from-[#0a0e27] to-[#151935] overflow-hidden">
+    <section ref={sectionRef} className="quoted-hero min-h-screen flex flex-col justify-center items-center text-center p-8 relative bg-gradient-to-br from-[#0a0e27] to-[#151935] overflow-hidden">
       <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 text-white">
         {titleWords.map((word, index) => (
           <span
             key={index}
             className={`inline-block mr-4 ${
-              index % 2 === 0 ? 'animate-slideInLeft' : 'animate-slideInRight'
+              isInView ? (index % 2 === 0 ? 'animate-slideInLeft' : 'animate-slideInRight') : ''
             }`}
             style={{ 
-              animationDelay: `${index * 0.15}s`,
-              opacity: 0,
-              transform: index % 2 === 0 ? 'translateX(-100%)' : 'translateX(100%)',
+              animationDelay: isInView ? `${index * 0.15}s` : '0s',
+              opacity: isInView ? undefined : 0,
+              transform: !isInView ? (index % 2 === 0 ? 'translateX(-100%)' : 'translateX(100%)') : undefined,
               animationFillMode: 'forwards'
             }}
           >
@@ -50,22 +91,22 @@ const QuotedHero: React.FC<QuotedHeroProps> = ({ title, subtitle, quote }) => {
           </span>
         ))}
       </h1>
-      <p className="text-xl md:text-2xl text-gray-400 max-w-3xl animate-slideInRight mb-24"
+      <p className={`text-xl md:text-2xl text-gray-400 max-w-3xl mb-24 ${isInView ? 'animate-slideInRight' : ''}`}
          style={{ 
-           opacity: 0,
-           transform: 'translateX(100%)',
-           animationDelay: '0.6s',
+           opacity: isInView ? undefined : 0,
+           transform: !isInView ? 'translateX(100%)' : undefined,
+           animationDelay: isInView ? '0.6s' : '0s',
            animationFillMode: 'forwards'
          }}>
         {subtitle}
       </p>
       
       {/* Quote Section */}
-      <div className="quote-container max-w-4xl mx-auto animate-slideInLeft flex items-start gap-12 px-8"
+      <div className={`quote-container max-w-4xl mx-auto flex items-start gap-12 px-8 ${isInView ? 'animate-slideInLeft' : ''}`}
            style={{ 
-             opacity: 0,
-             transform: 'translateX(-100%)',
-             animationDelay: '0.9s',
+             opacity: isInView ? undefined : 0,
+             transform: !isInView ? 'translateX(-100%)' : undefined,
+             animationDelay: isInView ? '0.9s' : '0s',
              animationFillMode: 'forwards'
            }}>
         <div className="quote-content flex-1 relative">
@@ -99,10 +140,10 @@ const QuotedHero: React.FC<QuotedHeroProps> = ({ title, subtitle, quote }) => {
         </div>
       </div>
       
-      <div className="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 animate-fadeIn cursor-pointer"
+      <div className={`scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer ${isInView ? 'animate-fadeIn' : ''}`}
            style={{ 
-             opacity: 0,
-             animationDelay: '1.2s',
+             opacity: isInView ? undefined : 0,
+             animationDelay: isInView ? '1.2s' : '0s',
              animationFillMode: 'forwards'
            }}>
         <svg className="w-8 h-8 fill-purple-500 animate-bounce" viewBox="0 0 24 24">
