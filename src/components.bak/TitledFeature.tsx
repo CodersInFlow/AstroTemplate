@@ -67,7 +67,7 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
       
       const rect = sectionRef.current.getBoundingClientRect();
       const contentHeight = contentRef.current.offsetHeight;
-      const titleHeight = titleTextRef.current.offsetHeight;
+      const titleContainerHeight = titleTextRef.current.offsetHeight;
       
       // Calculate scroll progress
       let scrollProgress = 0;
@@ -79,17 +79,17 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
         scrollProgress = Math.min(1, (window.innerHeight + distancePastTop) / rect.height);
       }
       
-      // Calculate target Y position
-      const startY = contentHeight - titleHeight;
-      const targetY = startY - (scrollProgress * startY);
+      // Original title animation - container (with learn more + title) moves from top of content down
+      const titleStartY = contentHeight - titleContainerHeight;
+      const titleTargetY = titleStartY - (scrollProgress * titleStartY);
       
       // Smooth interpolation
-      const smoothY = lerp(titlePositionRef.current, targetY, 0.1);
-      titlePositionRef.current = smoothY;
+      const smoothTitleY = lerp(titlePositionRef.current, titleTargetY, 0.1);
+      titlePositionRef.current = smoothTitleY;
       
-      // Apply transform
+      // Apply transform to the container div (includes both learn more and title)
       if (titleTextRef.current) {
-        titleTextRef.current.style.transform = `translate3d(0, ${smoothY}px, 0)`;
+        titleTextRef.current.style.transform = `translate3d(0, ${smoothTitleY}px, 0)`;
       }
       
       // Fade in/out based on visibility
@@ -144,50 +144,45 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
             isRightLayout ? 'lg:order-2' : ''
           }`}
         >
-          <div className="relative">
-            {learnMoreLink ? (
-              <a href={learnMoreLink} className="inline-block mb-4 hover:opacity-90 transition-opacity">
-                <h2 
-                  ref={titleTextRef}
-                  className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent will-change-transform"
-                  style={{
-                    transform: 'translateZ(0)',
-                    WebkitFontSmoothing: 'antialiased',
-                    backfaceVisibility: 'hidden'
-                  }}
+          <div 
+            ref={titleTextRef}
+            className="relative will-change-transform"
+            style={{
+              transform: 'translateZ(0)',
+              WebkitFontSmoothing: 'antialiased',
+              backfaceVisibility: 'hidden'
+            }}
+          >
+            {learnMoreLink && (
+              <>
+                <a 
+                  href={learnMoreLink} 
+                  className="inline-flex items-center gap-2 text-sm md:text-base text-blue-400 hover:text-blue-300 transition-colors group cursor-pointer mb-2"
                 >
+                  <span className="underline-offset-4 hover:underline">Learn more</span>
+                  <svg 
+                    className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </a>
+                <br />
+              </>
+            )}
+            {learnMoreLink ? (
+              <a href={learnMoreLink} className="inline-block hover:opacity-90 transition-opacity">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
                   {title}
                 </h2>
               </a>
             ) : (
-              <h2 
-                ref={titleTextRef}
-                className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent will-change-transform mb-4"
-                style={{
-                  transform: 'translateZ(0)',
-                  WebkitFontSmoothing: 'antialiased',
-                  backfaceVisibility: 'hidden'
-                }}
-              >
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent mb-4">
                 {title}
               </h2>
-            )}
-            {learnMoreLink && (
-              <a 
-                href={learnMoreLink} 
-                className="inline-flex items-center gap-2 text-sm md:text-base text-blue-400 hover:text-blue-300 transition-colors group cursor-pointer"
-              >
-              <span className="underline-offset-4 hover:underline">Learn more</span>
-              <svg 
-                className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
             )}
           </div>
         </div>
@@ -244,8 +239,7 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
             margin-bottom: 2rem;
           }
 
-          .feature-title h2 {
-            position: relative !important;
+          .feature-title > div {
             transform: none !important;
           }
         }

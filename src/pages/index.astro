@@ -3,6 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/HeaderSimple.astro';
 import Footer from '../components/Footer.astro';
 
+// Import data
+import featuresData from '../data/features.json';
+import comparisonData from '../data/comparison.json';
+import videosData from '../data/videos.json';
+
 // Hero and Feature Showcase components
 import HeroComparison from '../components/HeroComparison';
 import FeatureShowcaseSection from '../components/FeatureShowcaseSection';
@@ -31,16 +36,16 @@ import CallToAction from '../components/CallToAction';
   <HeroComparison client:load />
   
   <!-- Feature Showcase Section with Hero and Features -->
-  <FeatureShowcaseSection client:load />
+  <FeatureShowcaseSection client:load data={featuresData} />
   
   <!-- Comparison Table -->
-  <ComparisonTable client:load />
+  <ComparisonTable client:load data={comparisonData} />
   
   <!-- Why We're Better Section -->
   <WhyBetterSection client:load />
   
   <!-- Video Section -->
-  <VideoSection client:load />
+  <VideoSection client:only="react" data={videosData} />
   
   <!-- Tech Stack Section -->
   <!-- TechStackSection client:visible -->

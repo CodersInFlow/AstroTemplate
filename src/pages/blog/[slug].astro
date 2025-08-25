@@ -1,11 +1,11 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import HeaderSimple from '../../components/HeaderSimple.astro';
-import BlogPost from '../../components/BlogPost';
+import BlogPostPage from '../../../../blog-module/src/pages/BlogPost.astro';
 
 const { slug } = Astro.params;
 
-// Fetch the post
+// Need to fetch just the title for the layout
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
 const response = await fetch(`${API_URL}/api/posts/${slug}`);
 
@@ -17,61 +17,6 @@ const post = await response.json();
 ---
 
 <Layout title={`${post.title} - Blog`}>
-  <div class="min-h-screen bg-gray-900 text-gray-300">
-    <HeaderSimple />
-    
-    <main class="pt-16">
-      <BlogPost client:load post={post} />
-      
-      <div class="container mx-auto px-4 max-w-4xl">
-        <div class="mt-12 pt-8 border-t border-gray-800">
-          <a href="/blog" class="text-blue-400 hover:text-blue-300">
-            ← Back to Blog
-          </a>
-        </div>
-      </div>
-    </main>
-  </div>
+  <HeaderSimple />
+  <BlogPostPage slug={slug} />
 </Layout>
-
-<style>
-  .prose {
-    @apply text-gray-300;
-  }
-  
-  .prose h1, .prose h2, .prose h3 {
-    @apply text-white font-bold;
-  }
-  
-  .prose h1 {
-    @apply text-3xl mt-8 mb-4;
-  }
-  
-  .prose h2 {
-    @apply text-2xl mt-6 mb-3;
-  }
-  
-  .prose h3 {
-    @apply text-xl mt-4 mb-2;
-  }
-  
-  .prose p {
-    @apply mb-4 leading-relaxed;
-  }
-  
-  .prose code {
-    @apply bg-gray-800 px-1 py-0.5 rounded;
-  }
-  
-  .prose pre {
-    @apply bg-gray-900 p-4 rounded-lg overflow-x-auto;
-  }
-  
-  .prose a {
-    @apply text-blue-400 hover:text-blue-300 underline;
-  }
-  
-  .prose blockquote {
-    @apply border-l-4 border-gray-700 pl-4 italic;
-  }
-</style>

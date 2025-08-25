@@ -1,0 +1,1 @@
+../../shared-scripts/generate-docker-compose.js
