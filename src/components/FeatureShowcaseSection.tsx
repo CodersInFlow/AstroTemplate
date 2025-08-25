@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import QuotedHero from './QuotedHero';
 import TitledFeature from './TitledFeature';
-import billingData from '../data/features.json';
+import featureShowcaseData from '../data/features.json';
 
-const BillingSection: React.FC = () => {
+const FeatureShowcaseSection: React.FC = () => {
   useEffect(() => {
     // Parallax effect for shapes (even though they're not visible, keeping for future use)
     const handleParallax = () => {
@@ -24,16 +24,16 @@ const BillingSection: React.FC = () => {
   }, []);
 
   return (
-    <div className="billing-section">
+    <div className="feature-showcase-section">
       {/* Hero Section */}
       <QuotedHero 
-        title={billingData.hero.title}
-        subtitle={billingData.hero.subtitle}
-        quote={billingData.hero.quote}
+        title={featureShowcaseData.hero.title}
+        subtitle={featureShowcaseData.hero.subtitle}
+        quote={featureShowcaseData.hero.quote}
       />
       
       {/* Feature Sections */}
-      {billingData.features.map((feature, index) => (
+      {featureShowcaseData.features.map((feature, index) => (
         <TitledFeature
           key={index}
           title={feature.title}
@@ -113,4 +113,4 @@ const BillingSection: React.FC = () => {
   );
 };
 
-export default BillingSection;
+export default FeatureShowcaseSection;

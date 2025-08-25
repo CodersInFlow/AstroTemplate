@@ -52,7 +52,7 @@ const QuotedHero: React.FC<QuotedHeroProps> = ({ title, subtitle, quote }) => {
     const scrollIndicator = document.querySelector('.scroll-indicator');
     if (scrollIndicator) {
       scrollIndicator.addEventListener('click', () => {
-        const firstSection = document.querySelector('.billing-feature-section');
+        const firstSection = document.querySelector('.feature-showcase-item');
         if (firstSection) {
           firstSection.scrollIntoView({ behavior: 'smooth' });
         }

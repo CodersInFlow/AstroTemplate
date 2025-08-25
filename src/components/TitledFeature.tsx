@@ -128,7 +128,7 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
   return (
     <section 
       ref={sectionRef}
-      className={`billing-feature-section min-h-[50vh] flex items-center py-12 px-8 relative ${getBgGradient()} ${isInView ? 'in-view' : ''}`}
+      className={`feature-showcase-item min-h-[50vh] flex items-center py-12 px-8 relative ${getBgGradient()} ${isInView ? 'in-view' : ''}`}
     >
       <div className={`feature-container max-w-7xl mx-auto grid gap-16 items-start w-full pt-8 ${
         isRightLayout ? 'lg:grid-cols-[1.5fr_1fr]' : 'lg:grid-cols-[1fr_1.5fr]'
@@ -208,11 +208,11 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
       <div className="absolute bottom-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-20" />
 
       <style>{`
-        .billing-feature-section.in-view .feature-title {
+        .feature-showcase-item.in-view .feature-title {
           opacity: 1;
         }
 
-        .billing-feature-section.in-view .feature-content {
+        .feature-showcase-item.in-view .feature-content {
           opacity: 1;
           transform: translateX(0);
         }
