@@ -5,6 +5,7 @@
   },
   "features": [
     {
+      "id": "multitasking",
       "title": "True Multi-Tasking Architecture",
       "description": "Run 20+ AI tasks simultaneously without any interference. Each task maintains its own context, model selection, and permissions - true parallel processing for lightning-fast development.",
       "features": [
@@ -20,6 +21,7 @@
       "reverse": false
     },
     {
+      "id": "codebase-intelligence",
       "title": "Intelligent Codebase Understanding",
       "description": "AI analyzes and documents your entire codebase on startup, creating a deep understanding that dramatically reduces token usage and improves response accuracy.",
       "features": [
@@ -35,6 +37,7 @@
       "reverse": true
     },
     {
+      "id": "git-management",
       "title": "Shadow Git with Selective Staging",
       "description": "Perfect human-AI collaboration with our shadow git system. Review and selectively apply AI changes at the chunk level for complete control over your codebase.",
       "features": [
@@ -50,6 +53,7 @@
       "reverse": false
     },
     {
+      "id": "mobile-apps",
       "title": "Native Mobile Development",
       "description": "Continue coding on the go with our native iOS and Android apps. Full task management, real-time sync, and all the power of Coders In Flow in your pocket.",
       "features": [
@@ -65,6 +69,7 @@
       "reverse": true
     },
     {
+      "id": "context-control",
       "title": "Advanced Context Management",
       "description": "Revolutionary context management with AI self-editing capabilities. The AI intelligently prunes unnecessary information in real-time, dramatically reducing costs.",
       "features": [
@@ -80,6 +85,7 @@
       "reverse": false
     },
     {
+      "id": "enterprise-cloud",
       "title": "Enterprise Cloud & Team Management",
       "description": "Complete cloud synchronization with powerful team management capabilities. Monitor productivity, control access, and track ROI across your entire development team.",
       "features": [
@@ -95,6 +101,7 @@
       "reverse": true
     },
     {
+      "id": "provider-system",
       "title": "Dynamic Provider System",
       "description": "Unlike competitors with hardcoded providers, our JSON-based system allows instant provider addition without code changes. Add any AI provider in minutes.",
       "features": [

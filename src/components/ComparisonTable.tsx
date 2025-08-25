@@ -85,7 +85,22 @@ const ComparisonTable: React.FC = () => {
                   >
                     <td className="sticky left-0 z-10 bg-gray-900/95 backdrop-blur-sm px-3 md:px-8 py-3 md:py-4 text-xs md:text-sm font-medium text-gray-200 relative group">
                       <div className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-0.5 md:w-1 h-4 md:h-5 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span className="block md:inline">{feature.name}</span>
+                      {feature.link ? (
+                        <a 
+                          href={feature.link} 
+                          className="block md:inline hover:text-blue-400 transition-colors cursor-pointer group/link relative"
+                        >
+                          <span className="relative">
+                            {feature.name}
+                            <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-blue-400 transition-all duration-300 group-hover/link:w-full"></span>
+                          </span>
+                          <svg className="inline-block w-3 h-3 ml-1 opacity-0 group-hover/link:opacity-50 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                          </svg>
+                        </a>
+                      ) : (
+                        <span className="block md:inline">{feature.name}</span>
+                      )}
                     </td>
                     {comparisonData.competitors.map((competitor) => {
                       const value = feature.values[competitor.key as keyof typeof feature.values];

@@ -1,17 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 interface TitledFeatureProps {
+  id?: string;
   title: string;
   heading: string;
   paragraphs: string[];
+  learnMoreLink?: string;
   layout?: 'left' | 'right';
   sectionNumber: number;
 }
 
 const TitledFeature: React.FC<TitledFeatureProps> = ({ 
+  id,
   title, 
   heading, 
   paragraphs, 
+  learnMoreLink,
   layout = 'left',
   sectionNumber 
 }) => {
@@ -128,6 +132,7 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
   return (
     <section 
       ref={sectionRef}
+      id={id}
       className={`feature-showcase-item min-h-[50vh] flex items-center py-12 px-8 relative ${getBgGradient()} ${isInView ? 'in-view' : ''}`}
     >
       <div className={`feature-container max-w-7xl mx-auto grid gap-16 items-start w-full pt-8 ${
@@ -140,26 +145,38 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
           }`}
         >
           <div className="relative">
-            <h2 
-              ref={titleTextRef}
-              className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent will-change-transform mb-4"
-              style={{
-                transform: 'translateZ(0)',
-                WebkitFontSmoothing: 'antialiased',
-                backfaceVisibility: 'hidden'
-              }}
-            >
-              {title}
-            </h2>
-            <a 
-              href="#" 
-              className="inline-flex items-center gap-2 text-sm md:text-base text-blue-400 hover:text-blue-300 transition-colors group cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                // Add navigation logic here if needed
-                console.log('Learn more clicked for:', title);
-              }}
-            >
+            {learnMoreLink ? (
+              <a href={learnMoreLink} className="inline-block mb-4 hover:opacity-90 transition-opacity">
+                <h2 
+                  ref={titleTextRef}
+                  className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent will-change-transform"
+                  style={{
+                    transform: 'translateZ(0)',
+                    WebkitFontSmoothing: 'antialiased',
+                    backfaceVisibility: 'hidden'
+                  }}
+                >
+                  {title}
+                </h2>
+              </a>
+            ) : (
+              <h2 
+                ref={titleTextRef}
+                className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent will-change-transform mb-4"
+                style={{
+                  transform: 'translateZ(0)',
+                  WebkitFontSmoothing: 'antialiased',
+                  backfaceVisibility: 'hidden'
+                }}
+              >
+                {title}
+              </h2>
+            )}
+            {learnMoreLink && (
+              <a 
+                href={learnMoreLink} 
+                className="inline-flex items-center gap-2 text-sm md:text-base text-blue-400 hover:text-blue-300 transition-colors group cursor-pointer"
+              >
               <span className="underline-offset-4 hover:underline">Learn more</span>
               <svg 
                 className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
@@ -171,6 +188,7 @@ const TitledFeature: React.FC<TitledFeatureProps> = ({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </a>
+            )}
           </div>
         </div>
         

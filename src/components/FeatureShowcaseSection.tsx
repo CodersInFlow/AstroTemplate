@@ -36,9 +36,11 @@ const FeatureShowcaseSection: React.FC = () => {
       {featureShowcaseData.features.map((feature, index) => (
         <TitledFeature
           key={index}
+          id={feature.id}
           title={feature.title}
           heading={feature.heading}
           paragraphs={feature.paragraphs}
+          learnMoreLink={feature.learnMoreLink}
           layout={index % 2 === 0 ? 'left' : 'right'}
           sectionNumber={index}
         />

@@ -49,7 +49,8 @@ const FeatureGrid = () => {
       className: 'col-span-2 row-span-2',
       mobileClass: 'col-span-1',
       hasImage: true,
-      imageSrc: '/iphone-v2.png'
+      imageSrc: '/iphone-v2.png',
+      learnMoreLink: '/features#mobile-apps'
     },
     {
       id: 2,
@@ -78,7 +79,8 @@ const FeatureGrid = () => {
       gradient: 'from-pink-600 to-rose-700',
       pattern: 'dots',
       className: 'col-span-1 row-span-1',
-      mobileClass: 'col-span-1'
+      mobileClass: 'col-span-1',
+      learnMoreLink: '/features#context-control'
     },
     {
       id: 4,
@@ -93,7 +95,8 @@ const FeatureGrid = () => {
       gradient: 'from-indigo-600 to-purple-700',
       pattern: 'waves',
       className: 'col-span-2 row-span-1',
-      mobileClass: 'col-span-1'
+      mobileClass: 'col-span-1',
+      learnMoreLink: '/features#codebase-intelligence'
     },
     {
       id: 5,
@@ -120,7 +123,8 @@ const FeatureGrid = () => {
       gradient: 'from-slate-700 to-gray-900',
       pattern: 'circuit',
       className: 'col-span-1 row-span-1',
-      mobileClass: 'col-span-1'
+      mobileClass: 'col-span-1',
+      learnMoreLink: '/features#git-management'
     },
     {
       id: 7,
@@ -529,6 +533,11 @@ const FeatureGrid = () => {
               }`}
               onMouseEnter={() => setHoveredCard(feature.id)}
               onMouseLeave={() => setHoveredCard(null)}
+              onClick={() => {
+                if (feature.learnMoreLink) {
+                  window.location.href = feature.learnMoreLink;
+                }
+              }}
             >
               {/* Background Gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-95 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -589,6 +598,11 @@ const FeatureGrid = () => {
               }`}
               onMouseEnter={() => setHoveredCard(feature.id)}
               onMouseLeave={() => setHoveredCard(null)}
+              onClick={() => {
+                if (feature.learnMoreLink) {
+                  window.location.href = feature.learnMoreLink;
+                }
+              }}
             >
               {/* Background Gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-95`} />

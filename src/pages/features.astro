@@ -28,15 +28,17 @@ import detailedFeaturesData from '../data/detailed-features.json';
   
   <!-- Detailed Feature Cards -->
   {detailedFeaturesData.features.map((feature) => (
-    <DetailedFeatureCard
-      title={feature.title}
-      description={feature.description}
-      features={feature.features}
-      gradient={feature.gradient}
-      videoSrc={feature.videoSrc}
-      youtubeUrl={feature.youtubeUrl}
-      reverse={feature.reverse}
-    />
+    <div id={feature.id}>
+      <DetailedFeatureCard
+        title={feature.title}
+        description={feature.description}
+        features={feature.features}
+        gradient={feature.gradient}
+        videoSrc={feature.videoSrc}
+        youtubeUrl={feature.youtubeUrl}
+        reverse={feature.reverse}
+      />
+    </div>
   ))}
   
   <!-- CTA Section -->

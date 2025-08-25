@@ -31,6 +31,7 @@
   "features": [
     {
       "name": "Concurrent Tasks",
+      "link": "/features#multitasking",
       "values": {
         "cline": { "status": false, "value": "1" },
         "continue": { "status": false, "value": "1" },
@@ -41,6 +42,7 @@
     },
     {
       "name": "Automatic Subtasks",
+      "link": "/features#multitasking",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -51,6 +53,7 @@
     },
     {
       "name": "Dynamic Providers",
+      "link": "/features#provider-system",
       "values": {
         "cline": { "status": false, "value": "Hardcoded" },
         "continue": { "status": false, "value": "Hardcoded" },
@@ -61,6 +64,7 @@
     },
     {
       "name": "Model Discovery",
+      "link": "/features#provider-system",
       "values": {
         "cline": { "status": false, "value": "Manual" },
         "continue": { "status": false, "value": "Manual" },
@@ -71,6 +75,7 @@
     },
     {
       "name": "Mobile App",
+      "link": "/features#mobile-apps",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -81,6 +86,7 @@
     },
     {
       "name": "Selective Staging",
+      "link": "/features#git-management",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -91,6 +97,7 @@
     },
     {
       "name": "Cloud Backup",
+      "link": "/features#enterprise-cloud",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -101,6 +108,7 @@
     },
     {
       "name": "Team Management",
+      "link": "/features#enterprise-cloud",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -111,6 +119,7 @@
     },
     {
       "name": "AI Context Editing",
+      "link": "/features#context-control",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -121,6 +130,7 @@
     },
     {
       "name": "Cost Optimization",
+      "link": "/features#context-control",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -131,6 +141,7 @@
     },
     {
       "name": "Code Analysis",
+      "link": "/features#codebase-intelligence",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "Basic" },
@@ -141,6 +152,7 @@
     },
     {
       "name": "Security Scanner",
+      "link": "/features#codebase-intelligence",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -151,6 +163,7 @@
     },
     {
       "name": "Auto-Fixes",
+      "link": "/features#codebase-intelligence",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "Limited" },
@@ -161,6 +174,7 @@
     },
     {
       "name": "Automatic MCP Passthrough",
+      "link": "/features#provider-system",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -171,6 +185,7 @@
     },
     {
       "name": "Message Indexing",
+      "link": "/features",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
@@ -181,6 +196,7 @@
     },
     {
       "name": "Lazy Loading",
+      "link": "/features",
       "values": {
         "cline": { "status": false, "value": "No" },
         "continue": { "status": false, "value": "No" },
