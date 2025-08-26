@@ -122,6 +122,9 @@ server {
     listen [::]:443 ssl http2;
 
     server_name ${DOMAIN} www.${DOMAIN};
+    
+    # Maximum upload size (25MB)
+    client_max_body_size 25M;
 
     # SSL configuration (update paths as needed)
     ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
@@ -160,12 +163,12 @@ server {
         proxy_pass_request_headers on;
     }
 
-    # Uploaded files
+    # Uploaded files - serve directly from nginx
     location /uploads/ {
-        proxy_pass http://localhost:${BACKEND_PORT};
-        proxy_cache_valid 200 1d;
-        proxy_cache_bypass \$http_pragma;
-        proxy_cache_revalidate on;
+        alias ${SERVER_PATH}/runtime/uploads/;
+        expires 30d;
+        add_header Cache-Control "public";
+        try_files \$uri =404;
     }
 
     # Static assets
@@ -174,15 +177,15 @@ server {
         add_header Cache-Control "public, immutable";
     }
 
-    # Other static files
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 30d;
-        add_header Cache-Control "public";
-    }
-
-    # Main location
+    # Main location - but exclude /uploads/
     location / {
         try_files \$uri @astro;
+    }
+    
+    # Other static files (but not from uploads directory)
+    location ~* ^(?!/uploads/).*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 30d;
+        add_header Cache-Control "public";
     }
 
     # Astro server proxy
