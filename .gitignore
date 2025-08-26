@@ -1,33 +1,22 @@
+out
+dist
+node_modules
+.vscode-test/
+*.vsix
+.DS_Store
+.env
+Roo-Code/
+
 # Coders in Flow shadow git storage
 .codersinflow/
-
-# macOS system files
-.DS_Store
-node_modules
-dist
 
 # Coders in Flow
 .codersinflow
 .vscode
-.env
 reference/
-
-# Runtime data
-runtime/
-
 
 # Coders in Flow
 .venv
 .codex
-out
-*.vsix
 .claude
 CLAUDE.md
-.git
-*.log
-*.tmp
-__pycache__
-*.pyc
-.env.local
-.next
-.github
