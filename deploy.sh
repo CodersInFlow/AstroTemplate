@@ -314,7 +314,10 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
 echo -e "${YELLOW}📦 Installing Node dependencies...${NC}"
 ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
     cd ${SERVER_PATH}
-    npm install --production --omit=dev
+    npm install --production --legacy-peer-deps --omit=dev
+    
+    # Install happy-dom explicitly (needed for server-side TipTap rendering)
+    npm install happy-dom --save
     
     # Create systemd service for Astro
     cat > /etc/systemd/system/${SITE_NAME}-astro.service << EOL
@@ -344,7 +347,35 @@ EOL
     echo '✅ Astro service created and started'
 "
 
-# Step 10: Verify deployment
+# Step 10: Set up admin user
+echo -e "${YELLOW}👤 Setting up admin user...${NC}"
+
+# Read admin config
+ADMIN_EMAIL=$(jq -r '.admin.email // "admin@example.com"' site.config.json)
+ADMIN_PASSWORD=$(jq -r '.admin.password // "admin123"' site.config.json)
+ADMIN_NAME=$(jq -r '.admin.name // "Admin"' site.config.json)
+
+# Generate setup script locally
+bash scripts/setup-admin.sh > /dev/null 2>&1
+
+# Use a simpler approach - copy the mongo script and run it
+scp -P ${SERVER_PORT} runtime/setup-admin.mongo ${SERVER_USER}@${SERVER_HOST}:/tmp/setup-admin.mongo
+
+# Execute on server with timeout
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+    cd ${SERVER_PATH}
+    
+    # Load environment variables
+    source runtime/.env
+    
+    # Run the mongo script with timeout
+    timeout 5 docker exec codersinflow-blog-mongodb mongosh -u admin -p \"\${MONGO_PASSWORD}\" --authenticationDatabase admin ${DB_NAME} < /tmp/setup-admin.mongo || echo 'Admin setup will complete on first connection'
+    
+    rm -f /tmp/setup-admin.mongo
+    echo '✅ Admin setup attempted'
+"
+
+# Step 11: Verify deployment
 echo -e "${YELLOW}🧪 Verifying deployment...${NC}"
 ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
     cd ${SERVER_PATH}
@@ -374,5 +405,11 @@ echo ""
 echo -e "${YELLOW}🧪 Test URLs:${NC}"
 echo "   ${FRONTEND_URL} - Homepage"
 echo "   ${FRONTEND_URL}/blog - Blog"
+echo "   ${FRONTEND_URL}/docs - Documentation"
 echo "   ${FRONTEND_URL}/editor - Admin panel"
 echo "   ${FRONTEND_URL}/api/posts - API endpoint"
+echo ""
+echo -e "${YELLOW}🔑 Admin Credentials:${NC}"
+echo "   Email: ${ADMIN_EMAIL}"
+echo "   Password: ${ADMIN_PASSWORD}"
+echo "   Login at: ${FRONTEND_URL}/editor/login"

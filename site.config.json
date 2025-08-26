@@ -13,6 +13,11 @@
   "database": {
     "name": "codersblog"
   },
+  "admin": {
+    "email": "sales@codersinflow.com",
+    "password": "F0r3st40!",
+    "name": "Admin"
+  },
   "docker": {
     "prefix": "coders-blog",
     "volumes": {

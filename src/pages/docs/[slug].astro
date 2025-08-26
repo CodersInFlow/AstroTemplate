@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogPost from '../../../../blog-module/src/pages/BlogPost.astro';
+
+const { slug } = Astro.params;
+---
+
+<Layout title="Documentation - Coders in Flow">
+  <BlogPost slug={slug} />
+</Layout>

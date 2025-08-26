@@ -12,6 +12,49 @@ A modern blog and documentation system built with Astro, Go, and MongoDB.
 - **Categories**: Organize content with categories
 - **SEO Optimized**: Static site generation for optimal performance
 
+## ⚙️ Configuration
+
+### Site Configuration (site.config.json)
+
+All site-specific settings are centralized in `site.config.json`. This file controls:
+
+```json
+{
+  "site": {
+    "name": "codersinflow",           // Internal name (used for containers)
+    "displayName": "Coders in Flow",   // Display name  
+    "domain": "codersinflow.com",      // Your domain
+    "description": "Site description"
+  },
+  "ports": {
+    "frontend": 4916,  // Astro server port (must be unique per site)
+    "backend": 8752,   // API server port (must be unique per site)
+    "mongodb": 27421   // MongoDB port (must be unique per site)
+  },
+  "database": {
+    "name": "codersblog"  // MongoDB database name
+  },
+  "admin": {
+    "email": "admin@codersinflow.com",  // Default admin email
+    "password": "admin123",              // Default admin password
+    "name": "Admin"                      // Admin display name
+  },
+  "deployment": {
+    "server": {
+      "host": "your-server.com",  // Server hostname/IP
+      "user": "root",              // SSH user
+      "port": 22,                  // SSH port
+      "path": "/var/www/codersinflow.com"  // Deployment path
+    }
+  }
+}
+```
+
+**Important Notes:**
+- Each site MUST have unique port numbers to avoid conflicts
+- Admin credentials are automatically created/updated during deployment
+- The deployment path should match your domain name for clarity
+
 ## 🏗️ System Architecture Overview
 
 ### Tech Stack
@@ -322,7 +365,7 @@ This will start:
 - **Blog**: http://localhost:4321/blog
 - **Docs**: http://localhost:4321/docs
 - **Editor**: http://localhost:4321/editor
-  - Default login: `admin@example.com` / `admin123`
+  - Default login: Check `site.config.json` for admin credentials
 - **API**: http://localhost:8749
 - **MongoDB**: `mongodb://admin:password@localhost:27419`
 
@@ -368,62 +411,73 @@ coders.website/
 
 ## 📦 Production Deployment
 
-### 1. Build the Frontend
+### Automated Deployment with deploy.sh
+
+The easiest way to deploy is using the automated deployment script:
 
 ```bash
-# Set production environment
-cp .env.production .env
+# Configure your site settings first
+nano site.config.json  # Edit server details and admin credentials
 
-# Build the static site
+# Run the deployment
+./deploy.sh
+```
+
+The deployment script will:
+1. Build the Astro site with production settings
+2. Create Docker configurations dynamically from your config
+3. Sync all files to your server
+4. Set up nginx with SSL (requires existing certificates)
+5. Start all services (MongoDB, Go API, Astro frontend)
+6. **Automatically create/update the admin user** from site.config.json
+7. Set up systemd services for automatic startup
+
+### What the Deploy Script Does
+
+#### 1. Reads Configuration
+The script reads all settings from `site.config.json`:
+- Site name, domain, and ports
+- Server connection details (host, user, SSH port)
+- Admin credentials for automatic setup
+- Database configuration
+
+#### 2. Builds the Frontend
+```bash
+export PUBLIC_API_URL="https://yourdomain.com"
 npm run build
 ```
 
-The built files will be in the `dist/` directory.
+#### 3. Creates Production Docker Compose
+Generates `docker-compose.prod.yml` with your specific ports and settings.
 
-### 2. Deploy to Server
+#### 4. Syncs to Server
+Uses rsync to efficiently transfer files:
+- Excludes node_modules, .git, runtime directories
+- Preserves file permissions
+- Deletes removed files
 
-```bash
-# Copy built files to your server
-rsync -avz dist/ user@server:/var/www/codersinflow.com/
+#### 5. Sets Up Admin User
+The script automatically:
+- Generates a bcrypt hash of the admin password
+- Creates or updates the admin user in MongoDB
+- Uses credentials from site.config.json
 
-# Copy backend and deployment files
-rsync -avz backend/ docker-compose.prod.yml user@server:/opt/codersinflow-blog/
-```
+Admin will be accessible at:
+- URL: `https://yourdomain.com/editor/login`
+- Email: From `admin.email` in config
+- Password: From `admin.password` in config
 
-### 3. Set Up Production Environment
+#### 6. Configures Nginx
+Creates and deploys nginx configuration with:
+- SSL certificate paths
+- Reverse proxy to Astro frontend
+- API proxy to Go backend
+- Static asset caching
 
-On your server:
-
-```bash
-cd /opt/codersinflow-blog
-
-# Create environment file
-cat > .env << EOF
-JWT_SECRET=your-very-strong-secret-here
-MONGO_PASSWORD=your-strong-mongo-password
-MONGODB_URI=mongodb://admin:your-strong-mongo-password@blog-mongodb:27017/codersblog?authSource=admin
-EOF
-
-# Start services
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### 4. Configure Nginx
-
-Add the blog locations to your Nginx config:
-
-```bash
-# Copy Nginx configuration
-cp nginx/includes/blog-locations.conf /etc/nginx/includes/
-
-# Edit your site config to include it
-# Add this line after your existing includes:
-# include /etc/nginx/includes/blog-locations.conf;
-
-# Test and reload
-nginx -t
-systemctl reload nginx
-```
+#### 7. Starts Services
+- Docker containers for MongoDB and Go API
+- Systemd service for Astro frontend
+- Automatic restart on failure
 
 ## 🔧 Configuration
 
@@ -454,13 +508,90 @@ systemctl reload nginx
 ## 📝 Creating Content
 
 1. **Access the Editor**: Go to http://localhost:4321/editor
-2. **Login**: Use the default credentials or create a new account
+2. **Login**: Use credentials from `site.config.json` (admin section)
 3. **Create Content**: 
    - Click "New Blog Post" or "New Documentation"
    - Use the rich text editor to write
    - Add code blocks with syntax highlighting
    - Upload images by clicking the image button
    - Save as draft or publish immediately
+
+## 🔑 Admin User Management
+
+### Setting Admin Credentials
+
+Admin credentials are configured in `site.config.json`:
+
+```json
+"admin": {
+  "email": "admin@codersinflow.com",
+  "password": "admin123",
+  "name": "Admin"
+}
+```
+
+### Automatic Admin Setup
+
+When you run `./deploy.sh`, the admin user is automatically:
+- Created if it doesn't exist
+- Updated with new password if it does exist
+- Given full admin privileges
+
+### Manual Password Reset
+
+If you need to manually reset the admin password:
+
+1. **Update site.config.json** with new password
+2. **Run the setup script**:
+   ```bash
+   node scripts/setup-admin.js
+   ```
+   This will output the MongoDB commands needed.
+
+3. **For local development**:
+   ```bash
+   # Connect to local MongoDB
+   docker exec -it coders-blog-mongodb mongosh -u admin -p password codersblog
+   
+   # Paste the commands from setup-admin.js output
+   ```
+
+4. **For production server**:
+   ```bash
+   # SSH to your server
+   ssh user@server
+   
+   # Navigate to site directory
+   cd /var/www/codersinflow.com
+   
+   # Run setup script
+   node scripts/setup-admin.js
+   
+   # Apply to MongoDB
+   docker exec -i codersinflow-blog-mongodb mongosh -u admin -p ${MONGO_PASSWORD} codersblog < runtime/setup-admin.mongo
+   ```
+
+### Quick Password Reset Script
+
+For convenience, use the included reset script:
+
+```bash
+# Edit reset-admin.js with your desired password
+nano reset-admin.js
+
+# Run it to get the hash
+node reset-admin.js
+
+# Copy the MongoDB command it outputs and run it in MongoDB
+```
+
+### Security Best Practices
+
+1. **Change default password immediately** after first deployment
+2. **Use strong passwords** - at least 12 characters with mixed case, numbers, and symbols
+3. **Keep site.config.json secure** - never commit passwords to public repos
+4. **Rotate passwords regularly** - every 3-6 months
+5. **Use different passwords** for development and production
 
 ## 🐛 Troubleshooting
 
