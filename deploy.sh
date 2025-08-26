@@ -46,6 +46,7 @@ echo -e "${GREEN}🚀 Starting deployment for ${DISPLAY_NAME} (${DOMAIN})${NC}"
 # Step 1: Build frontend with production API URL
 echo -e "${YELLOW}📦 Building Astro site with production API...${NC}"
 export PUBLIC_API_URL="${FRONTEND_URL}"
+echo "Building with PUBLIC_API_URL=${PUBLIC_API_URL}"
 npm run build
 
 if [ $? -ne 0 ]; then
@@ -55,7 +56,14 @@ fi
 
 echo -e "${GREEN}✅ Build successful!${NC}"
 
-# Step 2: Create docker-compose.prod.yml
+# Step 2: Create .env file for Docker environment variables
+echo -e "${YELLOW}🔧 Creating .env file...${NC}"
+cat > .env << 'ENVEOF'
+MONGO_PASSWORD=H+kmWOoxKC0yAOwaoimPyQ
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+ENVEOF
+
+# Step 3: Create docker-compose.prod.yml
 echo -e "${YELLOW}🔧 Creating docker-compose.prod.yml...${NC}"
 cat > docker-compose.prod.yml << EOF
 version: '3.8'
@@ -71,7 +79,7 @@ services:
     ports:
       - "127.0.0.1:${BACKEND_PORT}:${BACKEND_PORT}"
     environment:
-      - MONGODB_URI=mongodb://admin:\${MONGO_PASSWORD}@blog-mongodb:27017/${DB_NAME}?authSource=admin
+      - MONGODB_URI=mongodb://admin:\${MONGO_PASSWORD}@${SITE_NAME}-blog-mongodb:27017/${DB_NAME}?authSource=admin
       - JWT_SECRET=\${JWT_SECRET}
       - UPLOAD_DIR=/uploads
       - CORS_ORIGIN=${FRONTEND_URL}
@@ -228,9 +236,11 @@ rsync -avzL --delete \
     --exclude 'dist' \
     --exclude 'runtime' \
     --exclude 'uploads' \
-    --exclude '.env' \
     -e "ssh -p ${SERVER_PORT}" \
     . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
+
+# Explicitly copy .env file
+rsync -avz -e "ssh -p ${SERVER_PORT}" .env ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
 
 # Sync the built dist directory
 rsync -avzL --delete -e "ssh -p ${SERVER_PORT}" dist/ ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/dist/
@@ -254,7 +264,7 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
 JWT_SECRET=\${JWT_SECRET}
 MONGO_PASSWORD=\${MONGO_PASSWORD}
 MONGO_USERNAME=admin
-MONGODB_URI=mongodb://admin:\${MONGO_PASSWORD}@blog-mongodb:27017/${DB_NAME}?authSource=admin
+MONGODB_URI=mongodb://admin:\${MONGO_PASSWORD}@${SERVICE_PREFIX}-blog-mongodb:27017/${DB_NAME}?authSource=admin
 EOL
         echo '✅ Environment file created'
     else
@@ -334,7 +344,7 @@ User=root
 WorkingDirectory=${SERVER_PATH}
 Environment=\"PORT=${FRONTEND_PORT}\"
 Environment=\"HOST=0.0.0.0\"
-Environment=\"PUBLIC_API_URL=${FRONTEND_URL}\"
+Environment=\"PUBLIC_API_URL=https://${DOMAIN}\"
 ExecStart=/usr/bin/node ${SERVER_PATH}/dist/server/entry.mjs
 Restart=always
 RestartSec=10

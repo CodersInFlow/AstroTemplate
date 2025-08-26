@@ -11,7 +11,7 @@ services:
     ports:
       - "127.0.0.1:8752:8752"
     environment:
-      - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@blog-mongodb:27017/codersblog?authSource=admin
+      - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@codersinflow-blog-mongodb:27017/codersblog?authSource=admin
       - JWT_SECRET=${JWT_SECRET}
       - UPLOAD_DIR=/uploads
       - CORS_ORIGIN=https://codersinflow.com

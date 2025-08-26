@@ -140,9 +140,9 @@ if [ "$RESTART_BACKEND" = true ]; then
 fi
 
 if [ "$RESTART_FRONTEND" = true ]; then
-    echo -e "${YELLOW}🔄 Restarting Astro service...${NC}"
+    echo -e "${YELLOW}🔄 Building and restarting Astro service...${NC}"
     ssh -p $SERVER_PORT $SERVER_USER@$SERVER_HOST "
-        systemctl restart ${SITE_NAME}-astro
+        cd $SERVER_PATH && PUBLIC_API_URL=https://$DOMAIN npm run build && systemctl restart ${SITE_NAME}-astro
     "
     
     # Wait a moment for service to start
