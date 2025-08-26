@@ -645,6 +645,35 @@ docker exec coders-blog-mongodb mongorestore --authenticationDatabase admin -u a
 
 ## 🖥️ Server Deployment
 
+### Important: Disable IPv6 on Server
+
+Before deploying, it's crucial to disable IPv6 on your server to prevent connection issues. Services that only listen on IPv4 will fail if nginx tries to connect via IPv6.
+
+#### Quick Method:
+```bash
+# SSH to your server
+ssh root@yourserver
+
+# Disable IPv6 immediately
+echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
+echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf
+echo 'net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
+sysctl -p
+```
+
+#### Using the Included Script:
+```bash
+# Copy and run the disable-ipv6 script on your server
+scp scripts/disable-ipv6.sh root@yourserver:/tmp/
+ssh root@yourserver "bash /tmp/disable-ipv6.sh"
+```
+
+#### Why This is Necessary:
+- Astro and other services often bind only to IPv4 (0.0.0.0)
+- Nginx defaults to `localhost` which resolves to both IPv4 and IPv6
+- When nginx tries IPv6 `[::1]` first and the service isn't listening there, connections fail
+- Our configs use `127.0.0.1` instead of `localhost` to force IPv4
+
 ### Directory Structure on Production Server
 
 Everything is deployed to `/var/www/codersinflow.com/`:
