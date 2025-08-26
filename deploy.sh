@@ -150,7 +150,7 @@ server {
 
     # API proxy to backend
     location /api/ {
-        proxy_pass http://localhost:${BACKEND_PORT};
+        proxy_pass http://127.0.0.1:${BACKEND_PORT};
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -190,7 +190,7 @@ server {
 
     # Astro server proxy
     location @astro {
-        proxy_pass http://localhost:${FRONTEND_PORT};
+        proxy_pass http://127.0.0.1:${FRONTEND_PORT};
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
