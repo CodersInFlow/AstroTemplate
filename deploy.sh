@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Generic deployment script that reads from site.config.json
+# This script should be copied and customized for each site
+
 # Exit on any error
 set -e
 
@@ -9,11 +12,40 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}🚀 Starting deployment to codersinflow.com${NC}"
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo -e "${RED}❌ jq is required but not installed. Install with: brew install jq${NC}"
+    exit 1
+fi
+
+# Check for site.config.json
+if [ ! -f "site.config.json" ]; then
+    echo -e "${RED}❌ site.config.json not found!${NC}"
+    exit 1
+fi
+
+# Read configuration
+SITE_NAME=$(jq -r '.site.name' site.config.json)
+DISPLAY_NAME=$(jq -r '.site.displayName' site.config.json)
+DOMAIN=$(jq -r '.site.domain' site.config.json)
+FRONTEND_PORT=$(jq -r '.ports.frontend' site.config.json)
+BACKEND_PORT=$(jq -r '.ports.backend' site.config.json)
+MONGODB_PORT=$(jq -r '.ports.mongodb' site.config.json)
+DB_NAME=$(jq -r '.database.name' site.config.json)
+FRONTEND_URL="https://${DOMAIN}"
+BACKEND_URL="https://${DOMAIN}"
+
+# Read server connection details from config
+SERVER_USER=$(jq -r '.deployment.server.user // "root"' site.config.json)
+SERVER_HOST=$(jq -r '.deployment.server.host // "your-server.com"' site.config.json)
+SERVER_PORT=$(jq -r '.deployment.server.port // 22' site.config.json)
+SERVER_PATH=$(jq -r '.deployment.server.path // "/var/www/\(.site.domain)"' site.config.json)
+
+echo -e "${GREEN}🚀 Starting deployment for ${DISPLAY_NAME} (${DOMAIN})${NC}"
 
 # Step 1: Build frontend with production API URL
 echo -e "${YELLOW}📦 Building Astro site with production API...${NC}"
-export PUBLIC_API_URL=https://codersinflow.com
+export PUBLIC_API_URL="${FRONTEND_URL}"
 npm run build
 
 if [ $? -ne 0 ]; then
@@ -23,27 +55,27 @@ fi
 
 echo -e "${GREEN}✅ Build successful!${NC}"
 
-# Step 2: Update docker-compose.prod.yml for runtime paths
-echo -e "${YELLOW}🔧 Updating docker-compose.prod.yml...${NC}"
-cat > docker-compose.prod.yml << 'EOF'
+# Step 2: Create docker-compose.prod.yml
+echo -e "${YELLOW}🔧 Creating docker-compose.prod.yml...${NC}"
+cat > docker-compose.prod.yml << EOF
 version: '3.8'
 
 services:
   # Blog backend service
   blog-backend:
-    container_name: codersinflow-blog-backend
+    container_name: ${SITE_NAME}-blog-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8749:8749"  # Only expose to localhost
+      - "127.0.0.1:${BACKEND_PORT}:${BACKEND_PORT}"
     environment:
-      - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@blog-mongodb:27017/codersblog?authSource=admin
-      - JWT_SECRET=${JWT_SECRET}
+      - MONGODB_URI=mongodb://admin:\${MONGO_PASSWORD}@blog-mongodb:27017/${DB_NAME}?authSource=admin
+      - JWT_SECRET=\${JWT_SECRET}
       - UPLOAD_DIR=/uploads
-      - CORS_ORIGIN=https://codersinflow.com
-      - PORT=8749
+      - CORS_ORIGIN=${FRONTEND_URL}
+      - PORT=${BACKEND_PORT}
     volumes:
       - ./runtime/uploads:/uploads
     depends_on:
@@ -53,16 +85,17 @@ services:
 
   # MongoDB for blog
   blog-mongodb:
-    container_name: codersinflow-blog-mongodb
+    container_name: ${SITE_NAME}-blog-mongodb
     image: mongo:7.0
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MONGODB_PORT}:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=codersblog
+      - MONGO_INITDB_ROOT_PASSWORD=\${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
     volumes:
       - ./runtime/mongodb:/data/db
-      - ./backend/scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     networks:
       - blog-network
     command: mongod --bind_ip 0.0.0.0
@@ -72,147 +105,120 @@ networks:
     driver: bridge
 EOF
 
-# Step 3: Create merged nginx configuration
-echo -e "${YELLOW}📝 Creating merged nginx configuration...${NC}"
-cat > nginx-merged.conf << 'EOF'
+# Step 3: Create nginx configuration
+echo -e "${YELLOW}📝 Creating nginx configuration...${NC}"
+cat > nginx-site.conf << EOF
 server {
     # Redirect HTTP to HTTPS
     listen 80;
     listen [::]:80;
-    server_name codersinflow.com www.codersinflow.com;
-    return 301 https://$host$request_uri;
+    server_name ${DOMAIN} www.${DOMAIN};
+    return 301 https://\$host\$request_uri;
 }
 
 server {
     # HTTPS configuration
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    include snippets/block-middleware-subrequest.conf;
 
-    # Define the server names
-    server_name codersinflow.com www.codersinflow.com;
+    server_name ${DOMAIN} www.${DOMAIN};
 
-    # SSL configuration
-    ssl_certificate /etc/letsencrypt/live/codersinflow.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/codersinflow.com/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/codersinflow.com/chain.pem;
+    # SSL configuration (update paths as needed)
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/${DOMAIN}/chain.pem;
 
-    # Recommended SSL settings
+    # SSL security settings
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
 
-    # Set the root directory for static files
-    root /var/www/codersinflow.com/dist/client;
-
-    # Define the index files
+    # Set root directory
+    root ${SERVER_PATH}/dist/client;
     index index.html index.htm;
 
-    # Add logs for debugging and access tracking
-    access_log /var/log/nginx/codersinflow.com.access.log;
-    error_log /var/log/nginx/codersinflow.com.error.log;
+    # Logs
+    access_log /var/log/nginx/${DOMAIN}.access.log;
+    error_log /var/log/nginx/${DOMAIN}.error.log;
 
     # Security headers
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
 
-    # Include Codersinflow unified server location blocks
-    include /etc/nginx/includes/codersinflow-locations.conf;
-
-    # Proxy API requests to the Go backend (blog API)
+    # API proxy to backend
     location /api/ {
-        proxy_pass http://localhost:8749;
+        proxy_pass http://localhost:${BACKEND_PORT};
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-        
-        # Important for cookies/auth
-        proxy_set_header Cookie $http_cookie;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header Cookie \$http_cookie;
         proxy_pass_request_headers on;
     }
 
-    # Serve uploaded images (blog uploads)
+    # Uploaded files
     location /uploads/ {
-        proxy_pass http://localhost:8749;
+        proxy_pass http://localhost:${BACKEND_PORT};
         proxy_cache_valid 200 1d;
-        proxy_cache_bypass $http_pragma;
+        proxy_cache_bypass \$http_pragma;
         proxy_cache_revalidate on;
     }
 
-    # Downloads directory - ensure it's accessible
-    location /downloads/ {
-        autoindex off;
-        try_files $uri $uri/ =404;
-        
-        # Add headers for download files
-        add_header Content-Disposition "attachment";
-    }
-
-    # Serve static assets directly
+    # Static assets
     location /_astro/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 
-    # Serve other static files
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|vsix)$ {
+    # Other static files
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         expires 30d;
         add_header Cache-Control "public";
-        
-        # Special handling for .vsix files
-        location ~* \.vsix$ {
-            add_header Content-Type "application/vsix";
-            add_header Content-Disposition "attachment";
-        }
     }
 
-    # Main location block - try static files first, then proxy to Astro server
+    # Main location
     location / {
-        try_files $uri @astro;
+        try_files \$uri @astro;
     }
 
+    # Astro server proxy
     location @astro {
-        proxy_pass http://localhost:4321;
+        proxy_pass http://localhost:${FRONTEND_PORT};
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
     }
 
     # Redirect www to non-www
-    if ($host = www.codersinflow.com) {
-        return 301 https://codersinflow.com$request_uri;
+    if (\$host = www.${DOMAIN}) {
+        return 301 https://${DOMAIN}\$request_uri;
     }
 }
 EOF
 
-# Step 4: Add runtime to .gitignore
-echo -e "${YELLOW}📄 Updating .gitignore...${NC}"
-if ! grep -q "runtime/" .gitignore 2>/dev/null; then
-    echo -e "\n# Runtime data\nruntime/\n" >> .gitignore
-fi
+echo -e "${GREEN}✅ Configuration files created!${NC}"
 
-# Step 5: Backup current site
+# Step 4: Backup current site on server
 echo -e "${YELLOW}💾 Backing up current site...${NC}"
-ssh -p 12222 root@ny "
-    if [ -d /var/www/codersinflow.com ]; then
-        cp -r /var/www/codersinflow.com /var/www/codersinflow.com.backup.\$(date +%Y%m%d_%H%M%S)
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+    if [ -d ${SERVER_PATH} ]; then
+        cp -r ${SERVER_PATH} ${SERVER_PATH}.backup.\$(date +%Y%m%d_%H%M%S)
         echo '✅ Backup created'
     fi
 "
 
-# Step 6: Sync files to server
+# Step 5: Sync files to server
 echo -e "${YELLOW}📤 Syncing files to server...${NC}"
-# First sync the main codebase (excluding large directories)
+# Sync main codebase (excluding large directories)
 rsync -avz --delete \
     --exclude 'node_modules' \
     --exclude '.git' \
@@ -220,16 +226,16 @@ rsync -avz --delete \
     --exclude 'runtime' \
     --exclude 'uploads' \
     --exclude '.env' \
-    -e "ssh -p 12222" \
-    . root@ny:/var/www/codersinflow.com/
+    -e "ssh -p ${SERVER_PORT}" \
+    . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
 
-# Then sync the built dist directory
-rsync -avz --delete -e "ssh -p 12222" dist/ root@ny:/var/www/codersinflow.com/dist/
+# Sync the built dist directory
+rsync -avz --delete -e "ssh -p ${SERVER_PORT}" dist/ ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/dist/
 
-# Step 7: Set up server environment
+# Step 6: Set up server environment
 echo -e "${YELLOW}🔧 Setting up server environment...${NC}"
-ssh -p 12222 root@ny "
-    cd /var/www/codersinflow.com
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+    cd ${SERVER_PATH}
     
     # Create runtime directories
     echo '📁 Creating runtime directories...'
@@ -245,7 +251,7 @@ ssh -p 12222 root@ny "
 JWT_SECRET=\${JWT_SECRET}
 MONGO_PASSWORD=\${MONGO_PASSWORD}
 MONGO_USERNAME=admin
-MONGODB_URI=mongodb://admin:\${MONGO_PASSWORD}@blog-mongodb:27017/codersblog?authSource=admin
+MONGODB_URI=mongodb://admin:\${MONGO_PASSWORD}@blog-mongodb:27017/${DB_NAME}?authSource=admin
 EOL
         echo '✅ Environment file created'
     else
@@ -257,58 +263,38 @@ EOL
     chmod -R 755 runtime/uploads
 "
 
-# Step 8: Deploy nginx configuration
+# Step 7: Deploy nginx configuration
 echo -e "${YELLOW}🔧 Updating nginx configuration...${NC}"
-echo -e "${YELLOW}⚠️  IMPORTANT: This only updates codersinflow.com config, not other sites${NC}"
-scp -P 12222 nginx-merged.conf root@ny:/tmp/codersinflow.com.nginx
+scp -P ${SERVER_PORT} nginx-site.conf ${SERVER_USER}@${SERVER_HOST}:/tmp/${DOMAIN}.nginx
 
-ssh -p 12222 root@ny "
-    # Backup ALL nginx configs for safety
-    mkdir -p /etc/nginx/backups /etc/tmp/nginx-emergency-backup
-    
-    # Create emergency backup of ALL sites
-    echo '📦 Creating emergency backup of all nginx configs...'
-    cp -r /etc/nginx/sites-enabled/* /etc/tmp/nginx-emergency-backup/ 2>/dev/null || true
-    
-    # Backup existing codersinflow config
-    if [ -f /etc/nginx/sites-enabled/codersinflow.com ]; then
-        cp /etc/nginx/sites-enabled/codersinflow.com /etc/nginx/backups/codersinflow.com.backup.\$(date +%Y%m%d_%H%M%S)
-        echo '✅ Backed up existing codersinflow.com nginx config'
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+    # Backup existing nginx config
+    if [ -f /etc/nginx/sites-enabled/${DOMAIN} ]; then
+        cp /etc/nginx/sites-enabled/${DOMAIN} /etc/nginx/backups/${DOMAIN}.backup.\$(date +%Y%m%d_%H%M%S)
+        echo '✅ Backed up existing nginx config'
     fi
     
-    # Copy new config (ONLY for codersinflow.com)
-    cp /tmp/codersinflow.com.nginx /etc/nginx/sites-enabled/codersinflow.com
+    # Copy new config
+    cp /tmp/${DOMAIN}.nginx /etc/nginx/sites-enabled/${DOMAIN}
     
     # Test nginx config
     nginx -t
     if [ \$? -eq 0 ]; then
         echo '✅ Nginx config test passed'
-        
-        # Verify other sites still exist
-        if [ ! -f /etc/nginx/sites-enabled/dock-hub.com ]; then
-            echo '⚠️  WARNING: dock-hub.com config missing! Check /etc/tmp/nginx-emergency-backup/'
-        fi
-        
         systemctl reload nginx
         echo '✅ Nginx reloaded successfully'
     else
-        echo '❌ Nginx config test failed! Rolling back...'
-        LATEST_BACKUP=\$(ls -t /etc/nginx/backups/codersinflow.com.backup.* 2>/dev/null | head -n1)
-        if [ -f \"\$LATEST_BACKUP\" ]; then
-            cp \"\$LATEST_BACKUP\" /etc/nginx/sites-enabled/codersinflow.com
-            systemctl reload nginx
-            echo '✅ Restored from backup'
-        fi
+        echo '❌ Nginx config test failed! Check configuration.'
         exit 1
     fi
     
-    rm /tmp/codersinflow.com.nginx
+    rm /tmp/${DOMAIN}.nginx
 "
 
-# Step 9: Start Docker containers
+# Step 8: Start Docker containers
 echo -e "${YELLOW}🐳 Starting Docker containers...${NC}"
-ssh -p 12222 root@ny "
-    cd /var/www/codersinflow.com
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+    cd ${SERVER_PATH}
     
     # Stop any existing containers
     docker compose -f docker-compose.prod.yml --env-file runtime/.env down 2>/dev/null || true
@@ -324,74 +310,44 @@ ssh -p 12222 root@ny "
     docker compose -f docker-compose.prod.yml --env-file runtime/.env ps
 "
 
-# Step 10: Install Node dependencies
+# Step 9: Install Node dependencies and start Astro
 echo -e "${YELLOW}📦 Installing Node dependencies...${NC}"
-ssh -p 12222 root@ny "
-    cd /var/www/codersinflow.com
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+    cd ${SERVER_PATH}
     npm install --production --omit=dev
-    echo '✅ Dependencies installed'
-"
-
-# Step 11: Create systemd services for auto-start
-echo -e "${YELLOW}🔧 Setting up systemd services...${NC}"
-ssh -p 12222 root@ny "
-    cat > /etc/systemd/system/codersinflow-blog.service << 'EOL'
+    
+    # Create systemd service for Astro
+    cat > /etc/systemd/system/${SITE_NAME}-astro.service << EOL
 [Unit]
-Description=Codersinflow Blog Backend
-Requires=docker.service
-After=docker.service network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-WorkingDirectory=/var/www/codersinflow.com
-EnvironmentFile=/var/www/codersinflow.com/runtime/.env
-ExecStart=/usr/bin/docker compose -f /var/www/codersinflow.com/docker-compose.prod.yml up -d
-ExecStop=/usr/bin/docker compose -f /var/www/codersinflow.com/docker-compose.prod.yml down
-StandardOutput=journal
-
-[Install]
-WantedBy=multi-user.target
-EOL
-
-    # Create Astro frontend service
-    cat > /etc/systemd/system/codersinflow-astro.service << 'EOL'
-[Unit]
-Description=Codersinflow Astro Frontend
+Description=${DISPLAY_NAME} Astro Frontend
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/var/www/codersinflow.com
-Environment="PORT=4321"
-Environment="HOST=0.0.0.0"
-Environment="PUBLIC_API_URL=https://codersinflow.com"
-ExecStart=/usr/bin/node /var/www/codersinflow.com/dist/server/entry.mjs
+WorkingDirectory=${SERVER_PATH}
+Environment=\"PORT=${FRONTEND_PORT}\"
+Environment=\"HOST=0.0.0.0\"
+Environment=\"PUBLIC_API_URL=${FRONTEND_URL}\"
+ExecStart=/usr/bin/node ${SERVER_PATH}/dist/server/entry.mjs
 Restart=always
 RestartSec=10
-StandardOutput=journal
-StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
 EOL
 
     systemctl daemon-reload
-    systemctl enable codersinflow-blog.service
-    systemctl enable codersinflow-astro.service
+    systemctl enable ${SITE_NAME}-astro.service
+    systemctl restart ${SITE_NAME}-astro.service
     
-    # Start/restart services
-    systemctl restart codersinflow-astro.service
-    
-    echo '✅ Systemd services created and enabled'
+    echo '✅ Astro service created and started'
 "
 
-# Step 12: Verify deployment
+# Step 10: Verify deployment
 echo -e "${YELLOW}🧪 Verifying deployment...${NC}"
-ssh -p 12222 root@ny "
-    cd /var/www/codersinflow.com
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+    cd ${SERVER_PATH}
     
     # Check Docker containers
     echo '🐳 Docker container status:'
@@ -399,28 +355,24 @@ ssh -p 12222 root@ny "
     
     # Check if backend is responding
     echo -e '\n🔍 Testing backend API...'
-    curl -s -o /dev/null -w '%{http_code}' http://localhost:8749/api/health || echo 'Backend not responding yet'
-    
-    # Check nginx
-    echo -e '\n🌐 Nginx status:'
-    systemctl status nginx --no-pager | head -5
+    curl -s -o /dev/null -w '%{http_code}' http://localhost:${BACKEND_PORT}/api/health || echo 'Backend check'
     
     # Check Astro frontend
     echo -e '\n🚀 Astro frontend status:'
-    systemctl status codersinflow-astro --no-pager | head -5
+    systemctl status ${SITE_NAME}-astro --no-pager | head -5
 "
 
 echo -e "${GREEN}✅ Deployment complete!${NC}"
-echo -e "${YELLOW}🌐 Site deployed to https://codersinflow.com${NC}"
+echo -e "${YELLOW}🌐 Site deployed to ${FRONTEND_URL}${NC}"
 echo ""
-echo -e "${YELLOW}📌 Important notes:${NC}"
-echo "   - Backend API: https://codersinflow.com/api/"
-echo "   - Admin panel: https://codersinflow.com/editor"
-echo "   - MongoDB data: /var/www/codersinflow.com/runtime/mongodb/"
-echo "   - Uploads: /var/www/codersinflow.com/runtime/uploads/"
+echo -e "${YELLOW}📌 Deployment summary:${NC}"
+echo "   Server: ${SERVER_USER}@${SERVER_HOST}:${SERVER_PORT}"
+echo "   Path: ${SERVER_PATH}"
+echo "   Backend Port: ${BACKEND_PORT}"
+echo "   Database: ${DB_NAME}"
 echo ""
 echo -e "${YELLOW}🧪 Test URLs:${NC}"
-echo "   https://codersinflow.com - Homepage"
-echo "   https://codersinflow.com/blog - Blog"
-echo "   https://codersinflow.com/docs - Documentation"
-echo "   https://codersinflow.com/api/posts - API endpoint"
+echo "   ${FRONTEND_URL} - Homepage"
+echo "   ${FRONTEND_URL}/blog - Blog"
+echo "   ${FRONTEND_URL}/editor - Admin panel"
+echo "   ${FRONTEND_URL}/api/posts - API endpoint"

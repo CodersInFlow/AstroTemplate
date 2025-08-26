@@ -5,28 +5,13 @@
     "domain": "codersinflow.com",
     "description": "AI-Powered Pair Programming with Coders In Flow - VSCode Extension for Developers"
   },
-  "development": {
-    "frontend": {
-      "port": 4323
-    },
-    "backend": {
-      "port": 8749
-    },
-    "mongodb": {
-      "port": 27419,
-      "database": "codersblog"
-    }
+  "ports": {
+    "frontend": 4916,
+    "backend": 8752,
+    "mongodb": 27421
   },
-  "production": {
-    "frontend": {
-      "port": 4323
-    },
-    "backend": {
-      "port": 8749
-    },
-    "mongodb": {
-      "database": "codersblog"
-    }
+  "database": {
+    "name": "codersblog"
   },
   "docker": {
     "prefix": "coders-blog",

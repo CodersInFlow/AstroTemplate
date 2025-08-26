@@ -1,56 +1,45 @@
 version: '3.8'
 
 services:
-  coders-blog-frontend:
-    container_name: coders-blog-frontend
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "4323:4323"
-    environment:
-      - PUBLIC_API_URL=https://codersinflow.com/api
-      - NODE_ENV=production
-      - SITE_NAME=codersinflow
-      - SITE_CONFIG=/app/site.config.json
-    depends_on:
-      - coders-blog-backend
-    volumes:
-      - ./site.config.json:/app/site.config.json:ro
-    restart: unless-stopped
-
-  coders-blog-backend:
-    container_name: coders-blog-backend
+  # Blog backend service
+  blog-backend:
+    container_name: codersinflow-blog-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
-      - "8749:8749"
+      - "127.0.0.1:8752:8752"
     environment:
-      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@blog-mongodb:27017/codersblog?authSource=admin
       - JWT_SECRET=${JWT_SECRET}
-      - UPLOAD_DIR=/var/www/codersinflow.com/uploads
+      - UPLOAD_DIR=/uploads
       - CORS_ORIGIN=https://codersinflow.com
-      - PORT=8749
-      - NODE_ENV=production
-      - SITE_NAME=codersinflow
+      - PORT=8752
     volumes:
-      - /var/www/codersinflow.com/uploads:/var/www/codersinflow.com/uploads
-      - /var/log/codersinflow.com:/var/log/codersinflow.com
-      - ./site.config.json:/app/site.config.json:ro
-    restart: unless-stopped
-
-  coders-blog-nginx:
-    container_name: coders-blog-nginx
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - /var/www/codersinflow.com/uploads:/var/www/codersinflow.com/uploads:ro
+      - ./runtime/uploads:/uploads
     depends_on:
-      - coders-blog-frontend
-      - coders-blog-backend
+      - blog-mongodb
+    networks:
+      - blog-network
+
+  # MongoDB for blog
+  blog-mongodb:
+    container_name: codersinflow-blog-mongodb
+    image: mongo:7.0
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:27421:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=codersblog
+    volumes:
+      - ./runtime/mongodb:/data/db
+    networks:
+      - blog-network
+    command: mongod --bind_ip 0.0.0.0
+
+networks:
+  blog-network:
+    driver: bridge
