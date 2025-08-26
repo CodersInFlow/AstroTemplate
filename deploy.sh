@@ -222,7 +222,7 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
 # Step 5: Sync files to server
 echo -e "${YELLOW}📤 Syncing files to server...${NC}"
 # Sync main codebase (excluding large directories)
-rsync -avz --delete \
+rsync -avzL --delete \
     --exclude 'node_modules' \
     --exclude '.git' \
     --exclude 'dist' \
@@ -233,7 +233,7 @@ rsync -avz --delete \
     . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
 
 # Sync the built dist directory
-rsync -avz --delete -e "ssh -p ${SERVER_PORT}" dist/ ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/dist/
+rsync -avzL --delete -e "ssh -p ${SERVER_PORT}" dist/ ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/dist/
 
 # Step 6: Set up server environment
 echo -e "${YELLOW}🔧 Setting up server environment...${NC}"

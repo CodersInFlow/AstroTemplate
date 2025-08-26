@@ -44,7 +44,7 @@ case $SYNC_MODE in
         echo -e "${YELLOW}📤 Syncing frontend files (dist/, src/, public/)...${NC}"
         
         # Sync frontend files only
-        rsync -avz \
+        rsync -avzL \
             -e "ssh -p $SERVER_PORT" \
             --exclude 'node_modules' \
             --exclude '.git' \
@@ -52,7 +52,7 @@ case $SYNC_MODE in
             dist/ \
             $SERVER_USER@$SERVER_HOST:$SERVER_PATH/dist/
             
-        rsync -avz \
+        rsync -avzL \
             -e "ssh -p $SERVER_PORT" \
             --exclude 'node_modules' \
             --exclude '.DS_Store' \
@@ -85,8 +85,8 @@ case $SYNC_MODE in
     both)
         echo -e "${YELLOW}📤 Syncing both frontend and backend...${NC}"
         
-        # Sync frontend
-        rsync -avz \
+        # Sync frontend (follow symlinks)
+        rsync -avzL \
             -e "ssh -p $SERVER_PORT" \
             --exclude 'node_modules' \
             --exclude '.DS_Store' \
@@ -107,8 +107,8 @@ case $SYNC_MODE in
     all)
         echo -e "${YELLOW}📤 Syncing all files except node_modules...${NC}"
         
-        # Sync everything except large directories
-        rsync -avz \
+        # Sync everything except large directories (follow symlinks)
+        rsync -avzL \
             -e "ssh -p $SERVER_PORT" \
             --exclude 'node_modules' \
             --exclude '.git' \

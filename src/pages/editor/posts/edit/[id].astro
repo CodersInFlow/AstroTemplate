@@ -136,32 +136,49 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
 
         <!-- Cover Image -->
         <div>
-          <label for="coverImage" class="block text-sm font-medium mb-2 text-gray-300">
+          <label class="block text-sm font-medium mb-2 text-gray-300">
             Cover Image
             <span class="text-gray-400 text-xs ml-2">Optional</span>
           </label>
-          <div class="flex gap-2">
+          <div class="flex items-center gap-4">
+            <!-- Hidden input to store the URL -->
             <input
-              type="text"
+              type="hidden"
               id="coverImage"
               name="coverImage"
               value={post.coverImage || ''}
-              class="flex-1 px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="/uploads/cover-image.jpg or click Upload to select"
             />
-            <button
-              type="button"
-              id="uploadCoverBtn"
-              class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors flex items-center gap-2"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-              </svg>
-              <span id="uploadBtnText">Upload</span>
-            </button>
-          </div>
-          <div id="coverPreview" class={`mt-2 ${post.coverImage ? '' : 'hidden'}`}>
-            <img id="coverPreviewImg" src={post.coverImage || ''} class="max-w-xs rounded-md border border-gray-700" />
+            
+            <!-- Image preview or placeholder -->
+            <div id="coverPreviewContainer" class="relative">
+              <div id="coverPlaceholder" class={`w-32 h-32 bg-gray-800 rounded-md border-2 border-dashed border-gray-600 flex items-center justify-center ${post.coverImage ? 'hidden' : ''}`}>
+                <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <img id="coverPreviewImg" src={post.coverImage || ''} class={`w-32 h-32 object-cover rounded-md border border-gray-700 ${post.coverImage ? '' : 'hidden'}`} />
+            </div>
+            
+            <!-- Upload/Change button -->
+            <div class="flex flex-col gap-2">
+              <button
+                type="button"
+                id="uploadCoverBtn"
+                class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors flex items-center gap-2"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                <span id="uploadBtnText">{post.coverImage ? 'Change Image' : 'Upload Image'}</span>
+              </button>
+              <button
+                type="button"
+                id="removeCoverBtn"
+                class={`px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded-md transition-colors ${post.coverImage ? '' : 'hidden'}`}
+              >
+                Remove
+              </button>
+            </div>
           </div>
         </div>
 
@@ -229,9 +246,10 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
   // Cover image upload
   const uploadBtn = document.getElementById('uploadCoverBtn') as HTMLButtonElement;
   const coverImageInput = document.getElementById('coverImage') as HTMLInputElement;
-  const coverPreview = document.getElementById('coverPreview') as HTMLDivElement;
+  const coverPlaceholder = document.getElementById('coverPlaceholder') as HTMLDivElement;
   const coverPreviewImg = document.getElementById('coverPreviewImg') as HTMLImageElement;
   const uploadBtnText = document.getElementById('uploadBtnText') as HTMLSpanElement;
+  const removeCoverBtn = document.getElementById('removeCoverBtn') as HTMLButtonElement;
   
   uploadBtn.addEventListener('click', () => {
     const input = document.createElement('input');
@@ -273,12 +291,17 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
         
         const data = await response.json();
         if (data.url) {
-          // Set the URL in the input field
+          // Set the URL in the hidden input
           coverImageInput.value = data.url;
           
-          // Show preview
+          // Show preview and hide placeholder
           coverPreviewImg.src = data.url;
-          coverPreview.classList.remove('hidden');
+          coverPreviewImg.classList.remove('hidden');
+          coverPlaceholder.classList.add('hidden');
+          
+          // Update button text and show remove button
+          uploadBtnText.textContent = 'Change Image';
+          removeCoverBtn.classList.remove('hidden');
           
           // Clear any error
           errorDiv.classList.add('hidden');
@@ -290,22 +313,20 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
       } finally {
         // Reset button state
         uploadBtn.disabled = false;
-        uploadBtnText.textContent = 'Upload';
       }
     };
     
     input.click();
   });
   
-  // Show preview if URL is manually entered
-  coverImageInput.addEventListener('input', () => {
-    const url = coverImageInput.value.trim();
-    if (url) {
-      coverPreviewImg.src = url;
-      coverPreview.classList.remove('hidden');
-    } else {
-      coverPreview.classList.add('hidden');
-    }
+  // Remove cover image
+  removeCoverBtn.addEventListener('click', () => {
+    coverImageInput.value = '';
+    coverPreviewImg.src = '';
+    coverPreviewImg.classList.add('hidden');
+    coverPlaceholder.classList.remove('hidden');
+    uploadBtnText.textContent = 'Upload Image';
+    removeCoverBtn.classList.add('hidden');
   });
   
   // Form submission
