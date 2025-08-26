@@ -11,8 +11,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Default to frontend if no argument
-SYNC_MODE=${1:-frontend}
+# Default to all if no argument
+SYNC_MODE=${1:-all}
 
 echo -e "${GREEN}🚀 Quick Upload - Syncing $SYNC_MODE changes to production${NC}"
 

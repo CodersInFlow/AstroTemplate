@@ -101,16 +101,31 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
         <!-- Cover Image -->
         <div>
           <label for="coverImage" class="block text-sm font-medium mb-2 text-gray-300">
-            Cover Image URL
+            Cover Image
             <span class="text-gray-400 text-xs ml-2">Optional</span>
           </label>
-          <input
-            type="text"
-            id="coverImage"
-            name="coverImage"
-            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="/uploads/cover-image.jpg"
-          />
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="coverImage"
+              name="coverImage"
+              class="flex-1 px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="/uploads/cover-image.jpg or click Upload to select"
+            />
+            <button
+              type="button"
+              id="uploadCoverBtn"
+              class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors flex items-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+              <span id="uploadBtnText">Upload</span>
+            </button>
+          </div>
+          <div id="coverPreview" class="mt-2 hidden">
+            <img id="coverPreviewImg" class="max-w-xs rounded-md border border-gray-700" />
+          </div>
         </div>
 
         <!-- Content -->
@@ -185,6 +200,88 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
   
   slugInput.addEventListener('input', () => {
     slugInput.dataset.manual = 'true';
+  });
+  
+  // Cover image upload
+  const uploadBtn = document.getElementById('uploadCoverBtn') as HTMLButtonElement;
+  const coverImageInput = document.getElementById('coverImage') as HTMLInputElement;
+  const coverPreview = document.getElementById('coverPreview') as HTMLDivElement;
+  const coverPreviewImg = document.getElementById('coverPreviewImg') as HTMLImageElement;
+  const uploadBtnText = document.getElementById('uploadBtnText') as HTMLSpanElement;
+  
+  uploadBtn.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      try {
+        // Update button to show uploading state
+        uploadBtn.disabled = true;
+        uploadBtnText.textContent = 'Uploading...';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Upload using relative URL (nginx will proxy correctly)
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Upload failed:', response.status, errorText);
+          let errorMessage = 'Failed to upload image';
+          if (response.status === 401) {
+            errorMessage = 'Authentication required. Please log in again.';
+          } else if (response.status === 413) {
+            errorMessage = 'Image file is too large (max 25MB)';
+          }
+          errorDiv.textContent = errorMessage;
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+        
+        const data = await response.json();
+        if (data.url) {
+          // Set the URL in the input field
+          coverImageInput.value = data.url;
+          
+          // Show preview
+          coverPreviewImg.src = data.url;
+          coverPreview.classList.remove('hidden');
+          
+          // Clear any error
+          errorDiv.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        errorDiv.textContent = 'Failed to upload image. Please try again.';
+        errorDiv.classList.remove('hidden');
+      } finally {
+        // Reset button state
+        uploadBtn.disabled = false;
+        uploadBtnText.textContent = 'Upload';
+      }
+    };
+    
+    input.click();
+  });
+  
+  // Show preview if URL is manually entered
+  coverImageInput.addEventListener('input', () => {
+    const url = coverImageInput.value.trim();
+    if (url) {
+      coverPreviewImg.src = url;
+      coverPreview.classList.remove('hidden');
+    } else {
+      coverPreview.classList.add('hidden');
+    }
   });
   
   // Form submission
