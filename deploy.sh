@@ -243,18 +243,20 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
     systemctl disable ${SITE_NAME}-app 2>/dev/null || true
     rm -f /etc/systemd/system/${SITE_NAME}-astro.service /etc/systemd/system/${SITE_NAME}-app.service
     
-    # Reload systemd and start services
+    # Reload systemd to pick up any service file changes
     systemctl daemon-reload
     
-    # Enable and start backend service
+    # Enable and restart backend service
     systemctl enable ${SITE_NAME}-backend.service
     systemctl restart ${SITE_NAME}-backend.service
-    echo '✅ Backend service started'
+    echo '✅ Backend service restarted'
     
-    # Enable and start frontend service
+    # Enable and restart frontend service  
     systemctl enable ${SITE_NAME}-frontend.service
     systemctl restart ${SITE_NAME}-frontend.service
-    echo '✅ Frontend service started'
+    echo '✅ Frontend service restarted'
+    
+    echo '✅ All services deployed and restarted successfully'
 "
 
 # Step 10: Set up admin user directly in MongoDB

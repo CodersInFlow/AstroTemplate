@@ -1,0 +1,2 @@
+export MONGO_PASSWORD='H+kmWOoxKC0yAOwaoimPyQ'
+export JWT_SECRET='dv2ounuLU2BljGbtkSGg659GMpT21YNcmWthfSeSAHe5hSK4uB32XheEusuBMAI4auebg4g'
