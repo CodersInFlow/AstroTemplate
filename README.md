@@ -340,18 +340,34 @@ This ensures:
 
 ## 🛠️ Development Setup
 
+### Repository Structure
+
+This repository uses Git submodules for components and blog functionality:
+- `src/components` - React components (submodule)
+- `src/pages/blog` - Blog system (submodule)
+
 ### Quick Start
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd coders.website
+# Clone the repository with submodules
+git clone --recurse-submodules <your-repo-url>
+cd codersinflow.com
 
-# Install dependencies
-npm install
+# OR if you already cloned without submodules
+git submodule update --init --recursive
+
+# Run setup script (initializes submodules and installs dependencies)
+./setup.sh
 
 # Start the development environment
 ./scripts/dev-blog.sh
+```
+
+### Updating Submodules
+
+```bash
+# Pull latest changes from all repositories
+./pull_submodules.sh
 ```
 
 This will start:
