@@ -15,6 +15,10 @@ Roo-Code/
 .vscode
 reference/
 
+# Independent git modules (have their own .git)
+src/components
+src/pages/blog
+
 # Coders in Flow
 .venv
 .codex
