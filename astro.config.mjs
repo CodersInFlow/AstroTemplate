@@ -14,10 +14,14 @@ export default defineConfig({
   integrations: [react(), tailwind()],
   // Enable sitemap generation
   build: {
-    sitemap: true
+    sitemap: true,
+    inlineStylesheets: 'always'
   },
   // Exclude reference directory from file watching
   vite: {
+    resolve: {
+      preserveSymlinks: true
+    },
     server: {
       watch: {
         ignored: ['**/reference/**']

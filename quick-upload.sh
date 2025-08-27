@@ -41,6 +41,12 @@ RESTART_BACKEND=false
 
 case $SYNC_MODE in
     frontend)
+        echo -e "${YELLOW}🏗️ Building frontend with production API...${NC}"
+        PUBLIC_API_URL="https://${DOMAIN}" npm run build || {
+            echo -e "${RED}Frontend build failed!${NC}"
+            exit 1
+        }
+        
         echo -e "${YELLOW}📤 Syncing frontend files (dist/, src/, public/)...${NC}"
         
         # Sync frontend files only
@@ -69,6 +75,14 @@ case $SYNC_MODE in
         ;;
         
     backend)
+        echo -e "${YELLOW}🔧 Building backend for Linux...${NC}"
+        cd backend
+        GOOS=linux GOARCH=amd64 go build -o server cmd/server/main.go || {
+            echo -e "${RED}Backend build failed!${NC}"
+            exit 1
+        }
+        cd ..
+        
         echo -e "${YELLOW}📤 Syncing backend files...${NC}"
         
         # Sync backend source files
@@ -83,6 +97,24 @@ case $SYNC_MODE in
         ;;
         
     both)
+        echo -e "${YELLOW}🏗️ Building both frontend and backend...${NC}"
+        
+        # Build frontend for production
+        echo -e "${YELLOW}🏗️ Building frontend with production API...${NC}"
+        PUBLIC_API_URL="https://${DOMAIN}" npm run build || {
+            echo -e "${RED}Frontend build failed!${NC}"
+            exit 1
+        }
+        
+        # Build backend for Linux
+        echo -e "${YELLOW}🔧 Building backend for Linux...${NC}"
+        cd backend
+        GOOS=linux GOARCH=amd64 go build -o server cmd/server/main.go || {
+            echo -e "${RED}Backend build failed!${NC}"
+            exit 1
+        }
+        cd ..
+        
         echo -e "${YELLOW}📤 Syncing both frontend and backend...${NC}"
         
         # Sync frontend (follow symlinks)
@@ -105,6 +137,24 @@ case $SYNC_MODE in
         ;;
         
     all)
+        echo -e "${YELLOW}🏗️ Building everything...${NC}"
+        
+        # Build frontend for production
+        echo -e "${YELLOW}🏗️ Building frontend with production API...${NC}"
+        PUBLIC_API_URL="https://${DOMAIN}" npm run build || {
+            echo -e "${RED}Frontend build failed!${NC}"
+            exit 1
+        }
+        
+        # Build backend for Linux
+        echo -e "${YELLOW}🔧 Building backend for Linux...${NC}"
+        cd backend
+        GOOS=linux GOARCH=amd64 go build -o server cmd/server/main.go || {
+            echo -e "${RED}Backend build failed!${NC}"
+            exit 1
+        }
+        cd ..
+        
         echo -e "${YELLOW}📤 Syncing all files except node_modules...${NC}"
         
         # Sync everything except large directories (follow symlinks)
@@ -131,18 +181,18 @@ esac
 
 # Handle service restarts if needed
 if [ "$RESTART_BACKEND" = true ]; then
-    echo -e "${YELLOW}🔄 Rebuilding and restarting backend container...${NC}"
+    echo -e "${YELLOW}🔄 Restarting backend service...${NC}"
     ssh -p $SERVER_PORT $SERVER_USER@$SERVER_HOST "
-        cd $SERVER_PATH
-        docker-compose -f docker-compose.prod.yml up --build -d blog-backend
+        systemctl restart ${SITE_NAME}-backend
+        echo 'Backend service restarted'
     " &
     BACKEND_PID=$!
 fi
 
 if [ "$RESTART_FRONTEND" = true ]; then
-    echo -e "${YELLOW}🔄 Building and restarting Astro service...${NC}"
+    echo -e "${YELLOW}🔄 Restarting Astro service...${NC}"
     ssh -p $SERVER_PORT $SERVER_USER@$SERVER_HOST "
-        cd $SERVER_PATH && PUBLIC_API_URL=https://$DOMAIN npm run build && systemctl restart ${SITE_NAME}-astro
+        systemctl restart ${SITE_NAME}-astro
     "
     
     # Wait a moment for service to start

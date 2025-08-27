@@ -1,35 +1,11 @@
-version: '3.8'
-
 services:
-  # Blog backend service
-  blog-backend:
-    container_name: codersinflow-blog-backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:8752:8752"
-    environment:
-      - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@codersinflow-blog-mongodb:27017/codersblog?authSource=admin
-      - JWT_SECRET=${JWT_SECRET}
-      - UPLOAD_DIR=/uploads
-      - CORS_ORIGIN=https://codersinflow.com
-      - PORT=8752
-    volumes:
-      - ./runtime/uploads:/uploads
-    depends_on:
-      - blog-mongodb
-    networks:
-      - blog-network
-
-  # MongoDB for blog
+  # MongoDB for blog - this is the only service in Docker
   blog-mongodb:
     container_name: codersinflow-blog-mongodb
     image: mongo:7.0
     restart: unless-stopped
     ports:
-      - "127.0.0.1:27421:27017"
+      - "127.0.0.1:27018:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}

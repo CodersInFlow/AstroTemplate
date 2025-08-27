@@ -1,81 +1,49 @@
 #!/bin/bash
 
-# Read site config using jq
-ADMIN_EMAIL=$(jq -r '.admin.email // "admin@example.com"' site.config.json)
-ADMIN_PASSWORD=$(jq -r '.admin.password // "admin123"' site.config.json)
-ADMIN_NAME=$(jq -r '.admin.name // "Admin"' site.config.json)
-DB_NAME=$(jq -r '.database.name' site.config.json)
+# Setup admin user script
+# This script creates the admin user for the blog system
 
-# Generate bcrypt hash using Python (available on most systems)
-HASH=$(python3 -c "
-import bcrypt
-password = '$ADMIN_PASSWORD'.encode('utf-8')
-salt = bcrypt.gensalt(10)
-hash = bcrypt.hashpw(password, salt)
-print(hash.decode('utf-8'))
-" 2>/dev/null)
+# Load configuration from site.config.json
+CONFIG_FILE="site.config.json"
 
-# If Python bcrypt fails, try using htpasswd as fallback
-if [ -z "$HASH" ]; then
-    # Use a simple pre-generated hash for the known password
-    if [ "$ADMIN_PASSWORD" = "F0r3st40!" ]; then
-        HASH='$2b$10$gAmg7rvy0LTIEM7sdIg.JO1Aicw4Tr7j7E/LRoPxJTvWFLKIK3CJy'
-    else
-        echo "Warning: Could not generate password hash. Using placeholder."
-        HASH='$2b$10$PLACEHOLDER'
-    fi
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: $CONFIG_FILE not found"
+    exit 1
 fi
 
-echo "============================================================"
-echo "ADMIN USER SETUP"
-echo "============================================================"
-echo "Admin Email: $ADMIN_EMAIL"
-echo "Admin Password: $ADMIN_PASSWORD"
-echo "Password Hash: $HASH"
-echo ""
+# Parse JSON config using node
+ADMIN_EMAIL=$(node -p "require('./$CONFIG_FILE').admin.email")
+ADMIN_PASSWORD=$(node -p "require('./$CONFIG_FILE').admin.password")
+ADMIN_NAME=$(node -p "require('./$CONFIG_FILE').admin.name")
+DB_NAME=$(node -p "require('./$CONFIG_FILE').database.name")
 
-# Create MongoDB commands file
+# Generate password hash if bcryptjs is available
+if [ -f "scripts/generate-password-hash.mjs" ]; then
+    PASSWORD_HASH=$(node scripts/generate-password-hash.mjs "${ADMIN_PASSWORD}")
+else
+    # Fallback to hardcoded hash for F0r3st40!
+    PASSWORD_HASH='$2b$10$62w9VDXA6OGXB.m7iUJ0/ewOb7AWTLXRyvXaxHq029UBvNK6QWZwi'
+fi
+
+# Create MongoDB script for admin user
 cat > runtime/setup-admin.mongo << EOF
-// Admin User Setup Script
-// Run this in MongoDB to create/update the admin user
-
 use ${DB_NAME};
 
-// Check if user exists
-var existingUser = db.users.findOne({ email: "${ADMIN_EMAIL}" });
+// Delete existing admin user if exists
+db.users.deleteOne({ email: "${ADMIN_EMAIL}" });
 
-if (existingUser) {
-  // Update existing user
-  db.users.updateOne(
-    { email: "${ADMIN_EMAIL}" },
-    { 
-      \$set: { 
-        password: "${HASH}",
-        name: "${ADMIN_NAME}",
-        role: "admin",
-        approved: true,
-        updatedAt: new Date()
-      }
-    }
-  );
-  print("Admin user updated successfully!");
-} else {
-  // Create new user
-  db.users.insertOne({
-    name: "${ADMIN_NAME}",
-    email: "${ADMIN_EMAIL}",
-    password: "${HASH}",
-    role: "admin",
-    approved: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  });
-  print("Admin user created successfully!");
-}
+// Create admin user
+db.users.insertOne({
+  email: "${ADMIN_EMAIL}",
+  password: "${PASSWORD_HASH}",
+  name: "${ADMIN_NAME}",
+  role: "admin",
+  approved: true,
+  created_at: new Date(),
+  updated_at: new Date()
+});
 
-print("Email: ${ADMIN_EMAIL}");
-print("Password: ${ADMIN_PASSWORD}");
+print("Admin user created successfully");
 EOF
 
-echo "MongoDB script saved to: runtime/setup-admin.mongo"
-echo "============================================================"
+echo "Admin setup script created at runtime/setup-admin.mongo"
