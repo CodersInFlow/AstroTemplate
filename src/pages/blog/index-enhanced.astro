@@ -6,7 +6,7 @@ import HeaderSimple from '../../components/HeaderSimple.astro';
 const currentCategory = Astro.url.searchParams.get('category');
 
 // Fetch posts from API
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const postsUrl = currentCategory 
   ? `${API_URL}/api/posts?type=blog&category=${currentCategory}`
   : `${API_URL}/api/posts?type=blog`;

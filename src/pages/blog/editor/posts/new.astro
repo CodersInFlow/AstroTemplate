@@ -15,7 +15,7 @@ if (!token) {
 const postType = Astro.url.searchParams.get('type') || 'blog';
 
 // Fetch categories
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const categoriesResponse = await fetch(`${API_URL}/api/categories?type=${postType}`, {
   headers: {
     'Cookie': `auth-token=${token.value}`
@@ -331,7 +331,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
     
     
     try {
-      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/posts`, {
+      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

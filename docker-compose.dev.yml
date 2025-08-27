@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  coders-blog-mongodb:
+    container_name: coders-blog-mongodb
+    image: mongo:7.0
+    ports:
+      - "${MONGODB_PORT:-27419}:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=${MONGODB_DB:-codersblog}
+    volumes:
+      - coders_blog_mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  coders_blog_mongodb_data:

@@ -1,9 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import BlogPostViewer from '../../components/blog/BlogPostViewer';
+import BlogPostViewer from './components/BlogPostViewer';
 
 const { slug } = Astro.params;
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const response = await fetch(`${API_URL}/api/posts/${slug}`);
 const post = response.ok ? await response.json() : null;
 
@@ -13,20 +13,5 @@ if (!post) {
 ---
 
 <Layout title={post.title}>
-  <main class="container mx-auto px-4 py-8 max-w-4xl">
-    <article>
-      <h1 class="text-4xl font-bold mb-4">{post.title}</h1>
-      <div class="text-gray-600 dark:text-gray-400 mb-8">
-        <span>{new Date(post.publishDate || post.created_at).toLocaleDateString()}</span>
-        {post.category_data && (
-          <span class="ml-4 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-            {post.category_data.name}
-          </span>
-        )}
-      </div>
-      <div class="prose dark:prose-invert max-w-none">
-        <BlogPostViewer client:load content={post.content} />
-      </div>
-    </article>
-  </main>
+  <BlogPostViewer client:load post={post} />
 </Layout>

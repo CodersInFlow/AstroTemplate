@@ -1,39 +1,17 @@
-// Admin User Setup Script
-// Run this in MongoDB to create/update the admin user
-
 use codersblog;
 
-// Check if user exists
-var existingUser = db.users.findOne({ email: "sales@codersinflow.com" });
+// Delete existing admin user if exists
+db.users.deleteOne({ email: "sales@codersinflow.com" });
 
-if (existingUser) {
-  // Update existing user
-  db.users.updateOne(
-    { email: "sales@codersinflow.com" },
-    { 
-      $set: { 
-        password: "$2b$10$gAmg7rvy0LTIEM7sdIg.JO1Aicw4Tr7j7E/LRoPxJTvWFLKIK3CJy",
-        name: "Admin",
-        role: "admin",
-        approved: true,
-        updatedAt: new Date()
-      }
-    }
-  );
-  print("Admin user updated successfully!");
-} else {
-  // Create new user
-  db.users.insertOne({
-    name: "Admin",
-    email: "sales@codersinflow.com",
-    password: "$2b$10$gAmg7rvy0LTIEM7sdIg.JO1Aicw4Tr7j7E/LRoPxJTvWFLKIK3CJy",
-    role: "admin",
-    approved: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  });
-  print("Admin user created successfully!");
-}
+// Create admin user
+db.users.insertOne({
+  email: "sales@codersinflow.com",
+  password: "$2b$10$rmcx.PRO5JE7dRxYNKWoluib4G0/9K3zQwZQUHzyotZ615Qs7cetK",
+  name: "Admin",
+  role: "admin",
+  approved: true,
+  created_at: new Date(),
+  updated_at: new Date()
+});
 
-print("Email: sales@codersinflow.com");
-print("Password: F0r3st40!");
+print("Admin user created successfully");

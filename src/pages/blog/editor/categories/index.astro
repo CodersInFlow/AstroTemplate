@@ -11,7 +11,7 @@ if (!token) {
 }
 
 // Check if user is admin
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const userResponse = await fetch(`${API_URL}/api/auth/me`, {
   headers: {
     'Cookie': `auth-token=${token.value}`
@@ -187,7 +187,7 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
     };
     
     try {
-      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/categories`, {
+      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
       }
       
       try {
-        const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/categories/${categoryId}`, {
+        const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/categories/${categoryId}`, {
           method: 'DELETE',
           credentials: 'include',
         });

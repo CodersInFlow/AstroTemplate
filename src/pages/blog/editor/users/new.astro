@@ -11,7 +11,7 @@ if (!token) {
 }
 
 // Check if user is admin
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const userResponse = await fetch(`${API_URL}/api/auth/me`, {
   headers: {
     'Cookie': `auth-token=${token.value}`
@@ -136,7 +136,7 @@ if (currentUser.role !== 'admin') {
     const role = formData.get('role') as string;
 
     try {
-      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/admin/users`, {
+      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/admin/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

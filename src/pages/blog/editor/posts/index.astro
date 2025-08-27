@@ -11,7 +11,7 @@ if (!token) {
 }
 
 // Fetch posts
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8749';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const postsResponse = await fetch(`${API_URL}/api/posts`, {
   headers: {
     'Cookie': `auth-token=${token.value}`
@@ -202,7 +202,7 @@ if (posts.length > 0) {
       }
       
       try {
-        const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/posts/${postId}`, {
+        const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/posts/${postId}`, {
           method: 'DELETE',
           credentials: 'include',
         });
