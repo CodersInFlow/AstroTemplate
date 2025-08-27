@@ -15,9 +15,7 @@ Roo-Code/
 .vscode
 reference/
 
-# Independent git modules (have their own .git)
-src/components
-src/pages/blog
+# Git submodules (managed by .gitmodules)
 
 # Coders in Flow
 .venv
