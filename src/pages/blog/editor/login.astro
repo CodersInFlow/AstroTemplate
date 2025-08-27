@@ -4,10 +4,29 @@ export const prerender = false;
 import '../../../styles/global.css';
 import Layout from '../../../layouts/Layout.astro';
 
-// If already logged in, redirect to editor
+// If already logged in, check if token is still valid
 const token = Astro.cookies.get('auth-token');
 if (token) {
-  return Astro.redirect('/blog/editor');
+  // Verify token is still valid
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
+  const verifyResponse = await fetch(`${API_URL}/api/auth/me`, {
+    headers: {
+      'Cookie': `auth-token=${token.value}`
+    }
+  });
+  
+  if (verifyResponse.ok) {
+    // Token is valid, redirect to editor
+    return Astro.redirect('/blog/editor');
+  } else {
+    // Token is invalid, clear it
+    Astro.cookies.delete('auth-token', {
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax'
+    });
+  }
 }
 ---
 

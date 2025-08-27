@@ -39,6 +39,13 @@ const userResponse = await fetch(`${API_URL}/api/admin/users/${id}`, {
 });
 
 if (!userResponse.ok) {
+  // Clear invalid token to prevent redirect loop
+  Astro.cookies.delete('auth-token', {
+    path: '/' ,
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax'
+  });
   return Astro.redirect('/blog/editor/users');
 }
 
