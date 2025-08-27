@@ -100,7 +100,7 @@ export default function SocialPublishModal({
   const [customMessages, setCustomMessages] = useState<Record<string, string>>({});
   const [publishing, setPublishing] = useState(false);
   const [publishStatus, setPublishStatus] = useState<PublishStatus[]>([]);
-  const [subreddit, setSubreddit] = useState('darkflows,codersinflow,freeiacoding');
+  const [subreddit, setSubreddit] = useState('webdev');
   
   const onClose = () => {
     setIsOpen(false);
@@ -146,7 +146,7 @@ export default function SocialPublishModal({
 
     // Create EventSource for real-time updates
     const eventSource = new EventSource(
-      `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8752'}/api/social/publish-stream`
+      `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/social/publish-stream`
     );
 
     eventSource.onmessage = (event) => {
@@ -162,7 +162,7 @@ export default function SocialPublishModal({
 
     // Send publish request
     const response = await fetch(
-      `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8752'}/api/social/publish`,
+      `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8749'}/api/social/publish`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -179,25 +179,8 @@ export default function SocialPublishModal({
       }
     );
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.results) {
-        // Update status based on results
-        setPublishStatus(data.results.map((r: any) => ({
-          platform: r.platform,
-          status: r.status === 'success' ? 'success' : r.status === 'error' ? 'error' : 'pending',
-          url: r.url,
-          message: r.message
-        })));
-      }
-    } else {
+    if (!response.ok) {
       console.error('Failed to publish');
-      // Set all as error
-      setPublishStatus(selectedPlatforms.map(p => ({
-        platform: p,
-        status: 'error',
-        message: 'Failed to publish'
-      })));
     }
 
     eventSource.close();
@@ -255,9 +238,8 @@ export default function SocialPublishModal({
                           type="text"
                           value={subreddit}
                           onChange={(e) => setSubreddit(e.target.value)}
-                          placeholder="subreddits (comma-separated)"
-                          className="ml-2 px-3 py-1 bg-gray-700 rounded text-sm w-64"
-                          title="Enter subreddit names separated by commas. You can use r/ prefix or just the name."
+                          placeholder="subreddit"
+                          className="ml-2 px-2 py-1 bg-gray-700 rounded text-sm"
                         />
                       )}
                     </label>
