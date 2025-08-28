@@ -32,6 +32,7 @@
     "@types/react-dom": "^19.1.6",
     "astro": "^5.9.3",
     "bcryptjs": "^3.0.2",
+    "happy-dom": "^18.0.1",
     "highlight.js": "^11.11.1",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.522.0",

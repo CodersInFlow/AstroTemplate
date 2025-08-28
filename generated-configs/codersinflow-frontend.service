@@ -12,9 +12,20 @@ Environment="PORT=4916"
 Environment="HOST=0.0.0.0"
 Environment="PUBLIC_API_URL=https://codersinflow.com"
 Environment="BACKEND_PORT=8752"
+# Increase Node.js memory limit and enable better error handling
+Environment="NODE_OPTIONS=--max-old-space-size=2048 --trace-warnings"
+# Ensure happy-dom is available for SSR
+Environment="ASTRO_TELEMETRY_DISABLED=1"
 ExecStart=/usr/bin/node /var/www/codersinflow.com/dist/server/entry.mjs
 Restart=always
 RestartSec=10
+# Add resource limits to prevent lockups
+LimitNOFILE=65536
+LimitNPROC=512
+# Kill configuration for better cleanup
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
 StandardOutput=append:/var/www/codersinflow.com/runtime/frontend.log
 StandardError=append:/var/www/codersinflow.com/runtime/frontend.log
 
