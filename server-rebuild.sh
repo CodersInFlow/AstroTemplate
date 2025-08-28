@@ -109,7 +109,36 @@ if [ -f "generated-configs/nginx-site.conf" ]; then
     fi
 fi
 
-# Step 6: Restart services
+# Step 6: Update systemd service files if changed
+if [ -f "generated-configs/${SITE_NAME}-backend.service" ]; then
+    echo -e "${YELLOW}🔧 Checking backend service configuration...${NC}"
+    
+    # Check if backend service has changed
+    if ! diff -q generated-configs/${SITE_NAME}-backend.service /etc/systemd/system/${SITE_NAME}-backend.service >/dev/null 2>&1; then
+        echo "Backend service config has changed, updating..."
+        cp generated-configs/${SITE_NAME}-backend.service /etc/systemd/system/
+        systemctl daemon-reload
+        echo -e "${GREEN}✅ Backend service config updated${NC}"
+    else
+        echo -e "${GREEN}✅ Backend service config unchanged${NC}"
+    fi
+fi
+
+if [ -f "generated-configs/${SITE_NAME}-frontend.service" ]; then
+    echo -e "${YELLOW}🔧 Checking frontend service configuration...${NC}"
+    
+    # Check if frontend service has changed
+    if ! diff -q generated-configs/${SITE_NAME}-frontend.service /etc/systemd/system/${SITE_NAME}-frontend.service >/dev/null 2>&1; then
+        echo "Frontend service config has changed, updating..."
+        cp generated-configs/${SITE_NAME}-frontend.service /etc/systemd/system/
+        systemctl daemon-reload
+        echo -e "${GREEN}✅ Frontend service config updated${NC}"
+    else
+        echo -e "${GREEN}✅ Frontend service config unchanged${NC}"
+    fi
+fi
+
+# Step 7: Restart services
 echo -e "${YELLOW}🔄 Restarting services...${NC}"
 
 # Restart backend service
@@ -120,14 +149,14 @@ echo -e "${GREEN}✅ Backend service restarted${NC}"
 systemctl restart ${SITE_NAME}-frontend
 echo -e "${GREEN}✅ Frontend service restarted${NC}"
 
-# Step 7: Docker containers (if using docker-compose)
+# Step 8: Docker containers (if using docker-compose)
 if [ -f "docker-compose.prod.yml" ]; then
     echo -e "${YELLOW}🐳 Updating Docker containers...${NC}"
     docker compose -f docker-compose.prod.yml up -d
     echo -e "${GREEN}✅ Docker containers updated${NC}"
 fi
 
-# Step 8: Health check
+# Step 9: Health check
 echo -e "${YELLOW}🏥 Running health checks...${NC}"
 echo "  Waiting for services to stabilize..."
 sleep 5
