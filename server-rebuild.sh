@@ -48,7 +48,15 @@ echo -e "${GREEN}✅ Frontend built successfully${NC}"
 # Step 3: Build backend
 echo -e "${YELLOW}🔧 Building backend...${NC}"
 cd backend
-go build -o server cmd/server/main.go
+# Use full path to go binary if not in PATH
+if command -v go &> /dev/null; then
+    go build -o server cmd/server/main.go
+elif [ -x "/usr/local/go/bin/go" ]; then
+    /usr/local/go/bin/go build -o server cmd/server/main.go
+else
+    echo -e "${RED}❌ Go not found! Please install Go or update the path.${NC}"
+    exit 1
+fi
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Backend build failed!${NC}"
     exit 1
