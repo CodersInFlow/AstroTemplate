@@ -185,37 +185,29 @@ case "$MODE" in
         # Explicitly copy important files
         scp -P ${SERVER_PORT} .env docker-compose.prod.yml server-update.sh ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/ 2>/dev/null || true
         
-        # Step 4: Run update script on server (or just restart services)
-        echo -e "${YELLOW}🔄 Restarting services on server...${NC}"
+        # Step 4: Run rebuild script on server (no git operations)
+        echo -e "${YELLOW}🔄 Running rebuild on server...${NC}"
         
-        # Read site name from config for service names
-        SITE_NAME=$(jq -r '.site.name' site.config.json)
+        # Copy the rebuild script if it doesn't exist
+        scp -P ${SERVER_PORT} server-rebuild.sh ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/ 2>/dev/null || true
         
-        # First try to run the full update script
-        if ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "[ -f ${SERVER_PATH}/server-update.sh ]"; then
-            echo "  Running server-update.sh..."
-            ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
-                cd ${SERVER_PATH}
-                chmod +x server-update.sh
-                bash ./server-update.sh
-            " || {
-                echo -e "${YELLOW}⚠️  Update script failed, trying direct service restart...${NC}"
-                # Fallback: just restart the services directly
-                ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
-                    sudo systemctl restart ${SITE_NAME}-backend || true
-                    sudo systemctl restart ${SITE_NAME}-frontend || true
-                    echo '✅ Services restarted'
-                "
-            }
-        else
-            echo -e "${YELLOW}⚠️  No update script found, restarting services directly...${NC}"
-            # Just restart the services
-            ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+        # Run the rebuild script with real-time output using ssh -t for TTY allocation
+        echo -e "${YELLOW}📺 Showing server output:${NC}"
+        ssh -t -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+            cd ${SERVER_PATH}
+            chmod +x server-rebuild.sh
+            bash ./server-rebuild.sh
+        " || {
+            echo -e "${YELLOW}⚠️  Rebuild script failed, trying direct service restart...${NC}"
+            # Read site name from config for service names
+            SITE_NAME=$(jq -r '.site.name' site.config.json)
+            # Fallback: just restart the services directly
+            ssh -t -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
                 sudo systemctl restart ${SITE_NAME}-backend || true
                 sudo systemctl restart ${SITE_NAME}-frontend || true
-                echo '✅ Services restarted'
+                echo '✅ Services restarted (fallback mode)'
             "
-        fi
+        }
         
         echo -e "${GREEN}✅ Update deployment complete!${NC}"
         ;;
