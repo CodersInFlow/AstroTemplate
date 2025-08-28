@@ -174,8 +174,8 @@ case "$MODE" in
             scp -P ${SERVER_PORT} .git/config ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/.git/
         fi
         
-        # Sync submodule .git/config files
-        for submodule_config in $(find . -path '*/.git/config' -not -path './.git/config' 2>/dev/null); do
+        # Sync submodule .git/config files (excluding reference directories)
+        for submodule_config in $(find . -path '*/.git/config' -not -path './.git/config' -not -path './reference/*' 2>/dev/null); do
             submodule_path=$(dirname $(dirname "$submodule_config"))
             echo "  Syncing $submodule_path/.git/config..."
             ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${SERVER_PATH}/$submodule_path/.git"
