@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from '../components/coders/HeaderSimple.astro';
 import Footer from '../components/coders/Footer.astro';
 import DetailedFeatureCard from '../components/coders/DetailedFeatureCard.astro';
 import detailedFeaturesData from '../data/detailed-features.json';
@@ -11,11 +10,8 @@ import detailedFeaturesData from '../data/detailed-features.json';
   description="Explore all the powerful features of Coders In Flow - from multi-tasking AI to enterprise team management"
   keywords="AI coding features, multi-tasking, Claude Code integration, semantic search, git integration, mobile app, enterprise features"
 >
-  <!-- Header -->
-  <Header />
-  
   <!-- Hero Section -->
-  <div class="pt-14 bg-gray-950">
+  <div class="bg-gray-950">
     <div class="max-w-7xl mx-auto py-16 px-4 text-center">
       <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
         {detailedFeaturesData.hero.title}
