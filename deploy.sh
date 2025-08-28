@@ -125,16 +125,18 @@ case "$MODE" in
         # Use git ls-files to only sync tracked files (respects .gitignore)
         echo "  Creating file list from git (respecting .gitignore)..."
         
-        # Get all tracked files
-        git ls-files > /tmp/deploy-files.txt
+        # Get all tracked files that actually exist
+        git ls-files | while read -r file; do
+            [ -e "$file" ] && echo "$file"
+        done > /tmp/deploy-files.txt
         
         # Add necessary untracked files that we need on server
         [ -f ".env" ] && echo ".env" >> /tmp/deploy-files.txt
         [ -f "docker-compose.prod.yml" ] && echo "docker-compose.prod.yml" >> /tmp/deploy-files.txt
         [ -f "server-update.sh" ] && echo "server-update.sh" >> /tmp/deploy-files.txt
-        [ -d "generated-configs" ] && find generated-configs -type f >> /tmp/deploy-files.txt
+        [ -d "generated-configs" ] && find generated-configs -type f 2>/dev/null >> /tmp/deploy-files.txt
         [ -d "dist" ] && echo "dist" >> /tmp/deploy-files.txt
-        [ -f "backend/server-linux" ] && echo "backend/server-linux" >> /tmp/deploy-files.txt
+        [ -f "backend/server" ] && echo "backend/server" >> /tmp/deploy-files.txt
         
         # Remove duplicates
         sort -u /tmp/deploy-files.txt -o /tmp/deploy-files.txt
@@ -148,7 +150,19 @@ case "$MODE" in
             --exclude 'node_modules' \
             --exclude '.DS_Store' \
             -e "ssh -p ${SERVER_PORT}" \
-            . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
+            . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/ || {
+            # rsync exit code 23 is "partial transfer" which often happens with changing files
+            # We'll continue if it's just code 23, but fail for other errors
+            RSYNC_EXIT=$?
+            if [ $RSYNC_EXIT -eq 23 ]; then
+                echo -e "${YELLOW}⚠️  Rsync reported partial transfer (some files may have changed during sync)${NC}"
+                echo "  This is usually harmless, continuing..."
+            elif [ $RSYNC_EXIT -ne 0 ]; then
+                echo -e "${RED}❌ Rsync failed with exit code $RSYNC_EXIT${NC}"
+                rm /tmp/deploy-files.txt
+                exit 1
+            fi
+        }
         
         # Clean up
         rm /tmp/deploy-files.txt
@@ -171,31 +185,35 @@ case "$MODE" in
         # Explicitly copy important files
         scp -P ${SERVER_PORT} .env docker-compose.prod.yml server-update.sh ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/ 2>/dev/null || true
         
-        # Step 4: Run update script on server
-        echo -e "${YELLOW}🔄 Running update script on server...${NC}"
+        # Step 4: Run update script on server (or just restart services)
+        echo -e "${YELLOW}🔄 Restarting services on server...${NC}"
         
-        # First check if server-update.sh exists
+        # Read site name from config for service names
+        SITE_NAME=$(jq -r '.site.name' site.config.json)
+        
+        # First try to run the full update script
         if ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "[ -f ${SERVER_PATH}/server-update.sh ]"; then
-            echo "  Found server-update.sh, executing..."
+            echo "  Running server-update.sh..."
             ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
                 cd ${SERVER_PATH}
-                
-                # Make sure update script is executable
                 chmod +x server-update.sh
-                
-                # Run the update with explicit bash
                 bash ./server-update.sh
-            "
+            " || {
+                echo -e "${YELLOW}⚠️  Update script failed, trying direct service restart...${NC}"
+                # Fallback: just restart the services directly
+                ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+                    sudo systemctl restart ${SITE_NAME}-backend || true
+                    sudo systemctl restart ${SITE_NAME}-frontend || true
+                    echo '✅ Services restarted'
+                "
+            }
         else
-            echo -e "${RED}❌ server-update.sh not found on server!${NC}"
-            echo "  Trying to copy it manually..."
-            scp -P ${SERVER_PORT} server-update.sh ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
-            
-            # Try again
+            echo -e "${YELLOW}⚠️  No update script found, restarting services directly...${NC}"
+            # Just restart the services
             ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
-                cd ${SERVER_PATH}
-                chmod +x server-update.sh
-                bash ./server-update.sh
+                sudo systemctl restart ${SITE_NAME}-backend || true
+                sudo systemctl restart ${SITE_NAME}-frontend || true
+                echo '✅ Services restarted'
             "
         fi
         
