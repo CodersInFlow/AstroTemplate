@@ -119,52 +119,85 @@ case "$MODE" in
             bash scripts/process-templates.sh
         fi
         
-        # Step 3: Sync files to server (including .git if it exists locally)
+        # Step 3: Sync files to server (respecting .gitignore)
         echo -e "${YELLOW}📤 Syncing files to server...${NC}"
         
-        # Create a file list of what to sync
-        SYNC_EXCLUDES="
-            --exclude 'node_modules'
-            --exclude 'runtime/mongodb'
-            --exclude 'runtime/uploads'
-            --exclude '.DS_Store'
-            --exclude '*.log'
-            --exclude 'test-*'
-            --exclude 'playwright*'
-            --exclude '.env.local'
-            --exclude '.env.development'
-        "
+        # Use git ls-files to only sync tracked files (respects .gitignore)
+        echo "  Creating file list from git (respecting .gitignore)..."
         
-        # If we have a local git repo, sync it
-        if [ -d ".git" ]; then
-            echo "  Including git repository..."
-            rsync -rltz \
-                ${SYNC_EXCLUDES} \
-                -e "ssh -p ${SERVER_PORT}" \
-                . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
-        else
-            # Exclude .git if we don't have it locally
-            rsync -rltz \
-                ${SYNC_EXCLUDES} \
-                --exclude '.git' \
-                -e "ssh -p ${SERVER_PORT}" \
-                . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
+        # Get all tracked files
+        git ls-files > /tmp/deploy-files.txt
+        
+        # Add necessary untracked files that we need on server
+        [ -f ".env" ] && echo ".env" >> /tmp/deploy-files.txt
+        [ -f "docker-compose.prod.yml" ] && echo "docker-compose.prod.yml" >> /tmp/deploy-files.txt
+        [ -f "server-update.sh" ] && echo "server-update.sh" >> /tmp/deploy-files.txt
+        [ -d "generated-configs" ] && find generated-configs -type f >> /tmp/deploy-files.txt
+        [ -d "dist" ] && echo "dist" >> /tmp/deploy-files.txt
+        [ -f "backend/server-linux" ] && echo "backend/server-linux" >> /tmp/deploy-files.txt
+        
+        # Remove duplicates
+        sort -u /tmp/deploy-files.txt -o /tmp/deploy-files.txt
+        
+        echo "  Syncing files (this may take a moment)..."
+        rsync -rltzv --progress \
+            --files-from=/tmp/deploy-files.txt \
+            --exclude '.codersinflow' \
+            --exclude '.claude' \
+            --exclude '.vscode' \
+            --exclude 'node_modules' \
+            --exclude '.DS_Store' \
+            -e "ssh -p ${SERVER_PORT}" \
+            . ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
+        
+        # Clean up
+        rm /tmp/deploy-files.txt
+        
+        # Only sync .git/config files for proper remote URLs
+        if [ -f ".git/config" ]; then
+            echo "  Syncing main .git/config..."
+            ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${SERVER_PATH}/.git"
+            scp -P ${SERVER_PORT} .git/config ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/.git/
         fi
+        
+        # Sync submodule .git/config files
+        for submodule_config in $(find . -path '*/.git/config' -not -path './.git/config' 2>/dev/null); do
+            submodule_path=$(dirname $(dirname "$submodule_config"))
+            echo "  Syncing $submodule_path/.git/config..."
+            ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${SERVER_PATH}/$submodule_path/.git"
+            scp -P ${SERVER_PORT} "$submodule_config" ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/$submodule_config
+        done
         
         # Explicitly copy important files
         scp -P ${SERVER_PORT} .env docker-compose.prod.yml server-update.sh ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/ 2>/dev/null || true
         
         # Step 4: Run update script on server
         echo -e "${YELLOW}🔄 Running update script on server...${NC}"
-        ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
-            cd ${SERVER_PATH}
+        
+        # First check if server-update.sh exists
+        if ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "[ -f ${SERVER_PATH}/server-update.sh ]"; then
+            echo "  Found server-update.sh, executing..."
+            ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+                cd ${SERVER_PATH}
+                
+                # Make sure update script is executable
+                chmod +x server-update.sh
+                
+                # Run the update with explicit bash
+                bash ./server-update.sh
+            "
+        else
+            echo -e "${RED}❌ server-update.sh not found on server!${NC}"
+            echo "  Trying to copy it manually..."
+            scp -P ${SERVER_PORT} server-update.sh ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/
             
-            # Make sure update script is executable
-            chmod +x server-update.sh
-            
-            # Run the update
-            ./server-update.sh
-        "
+            # Try again
+            ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
+                cd ${SERVER_PATH}
+                chmod +x server-update.sh
+                bash ./server-update.sh
+            "
+        fi
         
         echo -e "${GREEN}✅ Update deployment complete!${NC}"
         ;;
