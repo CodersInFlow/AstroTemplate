@@ -6,7 +6,7 @@ Wants=docker.service
 [Service]
 Type=simple
 User=root
-WorkingDirectory={{SERVER_PATH}}/backend
+WorkingDirectory={{SERVER_PATH}}
 Environment="PORT={{BACKEND_PORT}}"
 Environment="MONGODB_URI=mongodb://admin:{{MONGO_PASSWORD}}@127.0.0.1:{{MONGODB_PORT}}/{{DB_NAME}}?authSource=admin"
 Environment="JWT_SECRET={{JWT_SECRET}}"

@@ -3,7 +3,8 @@
 # This script should be run from the deployment directory on the server
 # Used when files are synced via rsync instead of git
 
-set -e
+# Don't exit on error - we want to see all issues
+set +e
 
 # Color output
 RED='\033[0;31m'
@@ -128,20 +129,32 @@ fi
 
 # Step 8: Health check
 echo -e "${YELLOW}🏥 Running health checks...${NC}"
-sleep 3
+echo "  Waiting for services to stabilize..."
+sleep 5
 
 # Check frontend
-if curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${FRONTEND_PORT} | grep -q '200'; then
-    echo -e "${GREEN}✅ Frontend is responding${NC}"
+echo -n "  Checking frontend on port ${FRONTEND_PORT}... "
+FRONTEND_STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${FRONTEND_PORT} 2>/dev/null)
+if [ "$FRONTEND_STATUS" = "200" ]; then
+    echo -e "${GREEN}✅ OK (HTTP ${FRONTEND_STATUS})${NC}"
 else
-    echo -e "${RED}⚠️  Frontend may not be responding correctly${NC}"
+    echo -e "${RED}⚠️  Not responding (HTTP ${FRONTEND_STATUS:-timeout})${NC}"
 fi
 
 # Check backend API
-if curl -s http://127.0.0.1:${BACKEND_PORT}/api/posts >/dev/null 2>&1; then
-    echo -e "${GREEN}✅ Backend API is responding${NC}"
+echo -n "  Checking backend API on port ${BACKEND_PORT}... "
+BACKEND_STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${BACKEND_PORT}/api/health 2>/dev/null)
+if [ "$BACKEND_STATUS" = "200" ]; then
+    echo -e "${GREEN}✅ OK (HTTP ${BACKEND_STATUS})${NC}"
 else
-    echo -e "${RED}⚠️  Backend API may not be responding correctly${NC}"
+    # Try /api/posts as fallback
+    BACKEND_STATUS=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:${BACKEND_PORT}/api/posts 2>/dev/null)
+    if [ "$BACKEND_STATUS" = "200" ]; then
+        echo -e "${GREEN}✅ OK (HTTP ${BACKEND_STATUS})${NC}"
+    else
+        echo -e "${YELLOW}⚠️  May still be starting (HTTP ${BACKEND_STATUS:-timeout})${NC}"
+        echo "     Check with: systemctl status ${SITE_NAME}-backend"
+    fi
 fi
 
 # Check MongoDB

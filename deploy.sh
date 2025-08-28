@@ -197,17 +197,12 @@ case "$MODE" in
             cd ${SERVER_PATH}
             chmod +x server-rebuild.sh
             bash ./server-rebuild.sh
-        " || {
-            echo -e "${YELLOW}⚠️  Rebuild script failed, trying direct service restart...${NC}"
-            # Read site name from config for service names
-            SITE_NAME=$(jq -r '.site.name' site.config.json)
-            # Fallback: just restart the services directly
-            ssh -t -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "
-                sudo systemctl restart ${SITE_NAME}-backend || true
-                sudo systemctl restart ${SITE_NAME}-frontend || true
-                echo '✅ Services restarted (fallback mode)'
-            "
-        }
+        "
+        
+        REBUILD_EXIT=$?
+        if [ $REBUILD_EXIT -ne 0 ]; then
+            echo -e "${YELLOW}⚠️  Rebuild script exited with code $REBUILD_EXIT${NC}"
+        fi
         
         echo -e "${GREEN}✅ Update deployment complete!${NC}"
         ;;
