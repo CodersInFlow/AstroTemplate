@@ -1,12 +1,14 @@
+# AUTO-GENERATED FROM site.config.json - DO NOT EDIT DIRECTLY
+# Run setup-docker.js to regenerate this file
 version: '3.8'
 
 services:
   codersinflow:
     container_name: codersinflow
-    image: proggod/codersinflow:latest
+    image: ${DOCKER_USERNAME}/codersinflow:latest
     ports:
-      - "127.0.0.1:4001:3001"  # Backend API port - only accessible locally
-      - "127.0.0.1:4000:3000"  # Frontend port (if serving from container)
+      - "127.0.0.1:8752:8752"  # Backend API port
+      - "127.0.0.1:4916:4916"  # Frontend port
     env_file:
       - .env.production
     restart: unless-stopped
@@ -26,9 +28,11 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - DOMAIN=${DOMAIN}
       - PUBLIC_API_URL=https://${DOMAIN}
+      - PORT=8752
+      - FRONTEND_PORT=4916
       
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8752/api/health"]
       interval: 30s
       timeout: 10s
       retries: 5

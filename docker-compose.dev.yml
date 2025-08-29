@@ -1,3 +1,5 @@
+# AUTO-GENERATED FROM site.config.json - DO NOT EDIT DIRECTLY
+# Run setup-docker.js to regenerate this file
 version: '3.8'
 
 services:
@@ -8,8 +10,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"  # Frontend dev server
-      - "3001:3001"  # Backend API
+      - "4321:4321"  # Frontend dev server
+      - "8752:8752"  # Backend API
     env_file:
       - .env.development
     volumes:
@@ -22,9 +24,11 @@ services:
       - NODE_ENV=development
       - MONGODB_URI=mongodb://admin:devpassword@mongodb:27017/codersblog?authSource=admin
       - JWT_SECRET=${JWT_SECRET:-devsecret123}
-      - PUBLIC_API_URL=http://127.0.0.1:3001
-      - VITE_API_URL=http://127.0.0.1:3001
-      - CORS_ORIGIN=http://127.0.0.1:3000
+      - PUBLIC_API_URL=http://127.0.0.1:8752
+      - VITE_API_URL=http://127.0.0.1:8752
+      - CORS_ORIGIN=http://127.0.0.1:4321
+      - PORT=8752
+      - FRONTEND_PORT=4321
     depends_on:
       mongodb:
         condition: service_healthy
@@ -36,7 +40,7 @@ services:
     image: mongo:7.0
     container_name: codersinflow-mongodb-dev
     ports:
-      - "27017:27017"  # Expose MongoDB for external tools
+      - "27419:27017"  # Expose MongoDB
     volumes:
       - mongodb_data_dev:/data/db
     environment:

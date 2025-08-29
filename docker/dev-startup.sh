@@ -1,4 +1,5 @@
 #!/bin/sh
+# AUTO-GENERATED FROM site.config.json - DO NOT EDIT DIRECTLY
 set -e
 
 echo "Starting development environment initialization..."
@@ -18,7 +19,8 @@ echo "Initializing admin user from site.config.json..."
 # Return to app root
 cd /app
 
-# Start both frontend and backend in parallel
+# Start both frontend and backend in parallel (using ports from site.config.json)
 echo "Starting frontend and backend development servers..."
-npm run dev -- --host 0.0.0.0 --port 3000 &
+echo "Frontend on port 4321, Backend on port 8752 (from site.config.json)"
+npm run dev -- --host 0.0.0.0 --port 4321 &
 cd backend && air

@@ -16,8 +16,8 @@ ENV PATH="/root/go/bin:${PATH}"
 # Set development environment
 ENV NODE_ENV=development
 
-# Expose ports for frontend and backend
-EXPOSE 3000 3001
+# Expose ports for frontend and backend (from site.config.json)
+EXPOSE 4321 8752
 
 # Copy startup script
 COPY docker/dev-startup.sh /usr/local/bin/dev-startup.sh
