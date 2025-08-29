@@ -82,7 +82,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 8000;  // Run on high port, not 80
 app.listen(PORT, () => {
   console.log(`Multi-site server running on port ${PORT}`);
   console.log('Configured sites:', Object.keys(sites));

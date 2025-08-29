@@ -64,7 +64,9 @@ RUN npm install express http-proxy-middleware
 RUN mkdir -p /data/db /app/uploads /var/log/supervisor
 
 # Expose ports
-EXPOSE 80 443 8000
+# 8000 - Main web server for multi-tenant routing
+# 3001 - Backend API server
+EXPOSE 8000 3001
 
 # Start supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

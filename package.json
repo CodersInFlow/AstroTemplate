@@ -9,7 +9,11 @@
     "preview": "astro preview",
     "astro": "astro",
     "deploy:prepare": "npm run build && ./scripts/post-build.sh",
-    "generate:videos": "node scripts/generate-video-list.js"
+    "generate:videos": "node scripts/generate-video-list.js",
+    "site:add": "./scripts/add-site.sh",
+    "site:remove": "./scripts/remove-site.sh",
+    "multi-tenant:build": "./scripts/build-multi-tenant.sh",
+    "multi-tenant:dev": "node scripts/dev-multi-tenant.cjs"
   },
   "dependencies": {
     "@astrojs/node": "^9.3.2",
@@ -32,8 +36,11 @@
     "@types/react-dom": "^19.1.6",
     "astro": "^5.9.3",
     "bcryptjs": "^3.0.2",
+    "compression": "^1.8.1",
+    "express": "^5.1.0",
     "happy-dom": "^18.0.1",
     "highlight.js": "^11.11.1",
+    "http-proxy-middleware": "^3.0.5",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.522.0",
     "marked": "^16.2.0",
