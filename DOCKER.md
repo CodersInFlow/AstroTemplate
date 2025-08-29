@@ -62,7 +62,7 @@ To add a new site:
 ## Initial Setup
 
 ### 1. Configure Site Settings
-The primary configuration is in `site.config.json`:
+The primary configuration is in `site.config.json`. All Docker configurations are generated from this file using templates:
 ```json
 {
   "site": {
@@ -78,13 +78,33 @@ The primary configuration is in `site.config.json`:
     "frontend": 4916,
     "backend": 8752,
     "mongodb": 27419
+  },
+  "development": {
+    "frontend": {"port": 4321},
+    "backend": {"port": 8752},
+    "mongodb": {"port": 27419}
   }
 }
 ```
 
 **IMPORTANT**: Always use `127.0.0.1` instead of `localhost` to avoid IPv6 issues.
 
-### 2. Create Environment File
+### 2. Generate Docker Configurations from Templates
+```bash
+# Generate all Docker configs from site.config.json
+bash scripts/process-docker-templates.sh
+
+# Or use the Node.js wrapper
+node setup-docker.js
+```
+
+This will:
+- Process all template files in `templates/` directory
+- Replace {{VARIABLE}} placeholders with values from site.config.json
+- Generate docker-compose files, nginx configs, .env files, etc.
+- Create secure passwords if not already set
+
+### 3. Create Environment File
 ```bash
 # Copy the example
 cp .env.production.example .env.production
@@ -99,14 +119,14 @@ Required variables:
 - `DOMAIN` - Your domain (from site.config.json)
 - `DOCKER_USERNAME` - Docker Hub username
 
-### 3. Admin Account Initialization
+### 4. Admin Account Initialization
 The admin account is automatically created on first startup from `site.config.json`:
 - The `init-admin` binary runs after MongoDB starts
 - Reads admin credentials from site.config.json
 - Creates or updates the admin user with hashed password
 - Falls back to environment variables if config not found
 
-### 4. Set Docker Hub Credentials
+### 5. Set Docker Hub Credentials
 ```bash
 # Set as environment variable (don't commit!)
 export DOCKER_PASSWORD=your_dockerhub_token
@@ -124,9 +144,9 @@ docker login
 ./dev.sh up
 
 # This runs:
-# - Frontend on http://127.0.0.1:3000 (with hot reload)
-# - Backend API on http://127.0.0.1:3001 (with hot reload via Air)
-# - MongoDB on 127.0.0.1:27017
+# - Frontend on http://127.0.0.1:4321 (with hot reload)
+# - Backend API on http://127.0.0.1:8752 (with hot reload via Air)
+# - MongoDB on 127.0.0.1:27419
 ```
 
 **Note**: Always use `127.0.0.1` instead of `localhost` to avoid IPv6 resolution issues.
@@ -160,7 +180,7 @@ docker login
 | **Compose** | `docker-compose.dev.yml` | `docker-compose.production.yml` |
 | **MongoDB** | Separate container | Inside main container |
 | **Hot Reload** | Yes (Air + npm dev) | No |
-| **Ports** | 3000 (frontend), 3001 (backend) | 4000-4001 |
+| **Ports** | 4321 (frontend), 8752 (backend) | 4916 (frontend), 8752 (backend) |
 | **Image** | Built locally | Pulled from Docker Hub |
 | **Environment** | `.env.development` | `.env.production` |
 | **Data** | Ephemeral (can clean) | Persistent volumes |
@@ -212,6 +232,29 @@ cd /path/to/codersinflow
 git pull
 ./deploy-docker.sh
 ```
+
+## Template System
+
+All Docker configurations are generated from templates using the same approach as the deployment scripts:
+
+### Template Files
+Located in `templates/` directory with {{VARIABLE}} placeholders:
+- `templates/docker/docker-compose.dev.yml.template`
+- `templates/docker/docker-compose.production.yml.template`
+- `templates/docker/.env.development.template`
+- `templates/docker/.env.production.template`
+- `templates/backend/.air.toml.template`
+- `templates/nginx/{{SITE_NAME}}.conf.template`
+- `templates/docker/dev-startup.sh.template`
+
+### Processing Templates
+Run `scripts/process-docker-templates.sh` to:
+1. Read all values from `site.config.json`
+2. Replace {{VARIABLE}} placeholders using sed
+3. Generate final configuration files
+4. Create secure passwords if not set
+
+This ensures nothing is hardcoded and everything comes from site.config.json.
 
 ## File Structure Explained
 
@@ -541,9 +584,9 @@ docker exec -it codersinflow mongorestore \
 ./dev.sh up
 
 # Access:
-# - Frontend: http://127.0.0.1:3000
-# - Backend API: http://127.0.0.1:3001
-# - MongoDB: mongodb://admin:devpassword@127.0.0.1:27017/codersblog?authSource=admin
+# - Frontend: http://127.0.0.1:4321
+# - Backend API: http://127.0.0.1:8752
+# - MongoDB: mongodb://admin:devpassword@127.0.0.1:27419/codersblog?authSource=admin
 
 # Default admin login (from site.config.json):
 # - Email: sales@codersinflow.com
@@ -562,7 +605,7 @@ cd /var/www/codersinflow.com
 
 # Access:
 # - Site: https://codersinflow.com
-# - Container ports: 4000-4001 (proxied by host nginx)
+# - Container ports: 4916 (frontend), 8752 (backend) (proxied by host nginx)
 ```
 
 ## Next Steps

@@ -1,5 +1,5 @@
-# AUTO-GENERATED FROM site.config.json - DO NOT EDIT DIRECTLY
-# Run setup-docker.js to regenerate this file
+# Production Docker Compose Configuration
+# Generated from site.config.json via templates
 version: '3.8'
 
 services:

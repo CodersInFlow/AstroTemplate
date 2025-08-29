@@ -1,5 +1,6 @@
 #!/bin/sh
-# AUTO-GENERATED FROM site.config.json - DO NOT EDIT DIRECTLY
+# Development startup script
+# Generated from site.config.json via templates
 set -e
 
 echo "Starting development environment initialization..."
@@ -22,5 +23,5 @@ cd /app
 # Start both frontend and backend in parallel (using ports from site.config.json)
 echo "Starting frontend and backend development servers..."
 echo "Frontend on port 4321, Backend on port 8752 (from site.config.json)"
-npm run dev -- --host 0.0.0.0 --port 4321 &
+npx astro dev --host 0.0.0.0 --port 4321 &
 cd backend && air
