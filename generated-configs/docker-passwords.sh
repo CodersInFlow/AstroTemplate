@@ -1,3 +1,3 @@
-export MONGO_PASSWORD='FkvZED7hfgnAPQw7vNdXNUcnZ'
-export JWT_SECRET='fOjROnre6GDYsmYTaSKGyY6TSb7KLhW4tokroMLShGtItHBYxx'
+export MONGO_PASSWORD='VtoB2kQg1H1R1ygySP1r3APlc'
+export JWT_SECRET='B7zNmXEjdU80h3FKhBjokzJb4eQPhy9xTzgah1ZHc4AH2TjVpm'
 export DOCKER_USERNAME='yourusername'

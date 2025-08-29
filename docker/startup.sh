@@ -67,6 +67,14 @@ chown -R www-data:www-data /app/dist 2>/dev/null || true
 
 # Admin user will be created by init-admin binary after MongoDB starts
 
+# Set Node.js options if not already set
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096 --trace-warnings}"
+export ASTRO_TELEMETRY_DISABLED=1
+
+# Set Go options if not already set
+export GOMAXPROCS="${GOMAXPROCS:-4}"
+export GOGC="${GOGC:-100}"
+
 # Start all services with supervisor
 echo "Starting all services with supervisor..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
