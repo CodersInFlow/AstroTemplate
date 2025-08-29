@@ -25,7 +25,7 @@ services:
       - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@127.0.0.1:27017/codersblog?authSource=admin
       - JWT_SECRET=${JWT_SECRET}
       - DOMAIN=${DOMAIN}
-      - PUBLIC_API_URL=https://${DOMAIN}/api
+      - PUBLIC_API_URL=https://${DOMAIN}
       
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]

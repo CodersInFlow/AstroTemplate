@@ -15,7 +15,6 @@ ENV PATH="/root/go/bin:${PATH}"
 
 # Set development environment
 ENV NODE_ENV=development
-ENV VITE_API_URL=http://localhost:3001
 
 # Expose ports for frontend and backend
 EXPOSE 3000 3001

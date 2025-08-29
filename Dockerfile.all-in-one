@@ -1,0 +1,109 @@
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install base dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    gnupg \
+    lsb-release \
+    software-properties-common \
+    nginx \
+    supervisor \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MongoDB 7.0
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+    && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list \
+    && apt-get update \
+    && apt-get install -y mongodb-org \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go 1.21
+RUN wget -q https://go.dev/dl/go1.21.0.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz \
+    && rm go1.21.0.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+
+# Create necessary directories
+RUN mkdir -p /data/db /var/log/supervisor /app /etc/nginx/sites-enabled
+
+# Copy application code
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+
+# Build frontend
+ARG PUBLIC_API_URL=http://localhost/api
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
+RUN npm run build
+
+# Build backend
+WORKDIR /app/backend
+RUN go mod download \
+    && CGO_ENABLED=0 GOOS=linux go build -o server cmd/server/main.go
+
+# Setup nginx configuration
+RUN echo 'server { \n\
+    listen 80; \n\
+    server_name _; \n\
+    client_max_body_size 100M; \n\
+    \n\
+    # Frontend \n\
+    location / { \n\
+        root /app/dist; \n\
+        try_files $uri $uri/ /index.html; \n\
+        add_header Cache-Control "public, max-age=3600"; \n\
+    } \n\
+    \n\
+    # API proxy to backend \n\
+    location /api { \n\
+        proxy_pass http://127.0.0.1:3001; \n\
+        proxy_http_version 1.1; \n\
+        proxy_set_header Upgrade $http_upgrade; \n\
+        proxy_set_header Connection "upgrade"; \n\
+        proxy_set_header Host $host; \n\
+        proxy_set_header X-Real-IP $remote_addr; \n\
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
+        proxy_set_header X-Forwarded-Proto $scheme; \n\
+        proxy_read_timeout 86400; \n\
+    } \n\
+    \n\
+    # Static files \n\
+    location /uploads { \n\
+        alias /app/uploads; \n\
+        add_header Cache-Control "public, max-age=31536000"; \n\
+    } \n\
+}' > /etc/nginx/sites-available/default
+
+# Remove default nginx config if exists
+RUN rm -f /etc/nginx/sites-enabled/default \
+    && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+
+# Copy configuration files
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/startup.sh /usr/local/bin/startup.sh
+RUN chmod +x /usr/local/bin/startup.sh
+
+WORKDIR /app
+
+# Expose ports
+EXPOSE 80 443
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost/api/health || exit 1
+
+# Start with our startup script
+CMD ["/usr/local/bin/startup.sh"]

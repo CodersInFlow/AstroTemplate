@@ -22,8 +22,8 @@ services:
       - NODE_ENV=development
       - MONGODB_URI=mongodb://admin:devpassword@mongodb:27017/codersblog?authSource=admin
       - JWT_SECRET=${JWT_SECRET:-devsecret123}
-      - PUBLIC_API_URL=http://127.0.0.1:3001/api
-      - VITE_API_URL=http://127.0.0.1:3001/api
+      - PUBLIC_API_URL=http://127.0.0.1:3001
+      - VITE_API_URL=http://127.0.0.1:3001
       - CORS_ORIGIN=http://127.0.0.1:3000
     depends_on:
       mongodb:
