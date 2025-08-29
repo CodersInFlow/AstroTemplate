@@ -15,6 +15,8 @@
     "site:manage": "./scripts/manage-sites.sh",
     "site:list": "./scripts/manage-sites.sh list",
     "site:reset": "./scripts/manage-sites.sh reset",
+    "dev:site": "./scripts/dev-site.sh",
+    "dev:multi": "./scripts/dev-multi-sites.sh",
     "multi-tenant:build": "./scripts/build-multi-tenant.sh",
     "multi-tenant:dev": "node scripts/dev-multi-tenant.cjs",
     "nginx:generate": "./scripts/generate-nginx-configs.sh"

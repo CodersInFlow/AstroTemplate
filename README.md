@@ -43,16 +43,102 @@ npm run site:remove example.com
 ./scripts/manage-sites.sh reset
 ```
 
-### Development
-```bash
-# Start multi-tenant dev environment
-npm run multi-tenant:dev
+### Local Development
 
+#### Test a Specific Site
+```bash
+# Develop a specific site locally
+npm run dev:site codersinflow.com       # Runs on port 4321
+npm run dev:site darkflows.com 4322     # Runs on custom port
+
+# Or use the script directly
+./scripts/dev-site.sh codersinflow.com
+```
+
+#### Test Multi-Tenant Setup Locally
+```bash
+# Run multi-tenant proxy (simulates production)
+npm run dev:multi
+
+# Add to /etc/hosts:
+127.0.0.1 codersinflow.local darkflows.local
+
+# Visit:
+http://codersinflow.local:8000
+http://darkflows.local:8000
+```
+
+#### Production Deployment
+```bash
 # Generate nginx configs for all sites
 ./scripts/generate-nginx-configs.sh
 
 # Deploy to production
 ./scripts/deploy-multi-tenant.sh production
+```
+
+## 🔧 Local Development Guide
+
+### Developing a Single Site
+
+To work on a specific site locally:
+
+```bash
+# Start development for codersinflow.com
+npm run dev:site codersinflow.com
+
+# Start on a custom port
+npm run dev:site darkflows.com 4322
+```
+
+This will:
+1. Start MongoDB (if not running)
+2. Start the backend API on port 3001
+3. Start the site's frontend on the specified port
+4. Show instructions for testing with domain names
+
+### Testing Multi-Tenant Locally
+
+To test the full multi-tenant setup:
+
+```bash
+# Run the multi-tenant proxy
+npm run dev:multi
+```
+
+Then configure your hosts file:
+```bash
+# Add to /etc/hosts (Mac/Linux) or C:\Windows\System32\drivers\etc\hosts (Windows)
+127.0.0.1 codersinflow.local
+127.0.0.1 darkflows.local
+127.0.0.1 example.local
+```
+
+Visit your sites:
+- http://codersinflow.local:8000
+- http://darkflows.local:8000
+- http://example.local:8000
+
+The proxy server will route to the correct site based on the domain!
+
+### Frontend-Only Development
+
+If you just want to work on the frontend:
+
+```bash
+cd frontends/codersinflow.com
+npm install
+npm run dev
+```
+
+### Backend API Testing
+
+Test the API directly:
+```bash
+cd backend
+go run cmd/server/main.go
+
+# API will be available at http://localhost:3001/api
 ```
 
 ## ✨ New Features (Latest Update)
