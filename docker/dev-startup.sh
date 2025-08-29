@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+echo "Starting development environment initialization..."
+
+# Build and run init-admin to create admin user from site.config.json
+echo "Checking for admin user setup..."
+cd /app/backend
+
+# Always rebuild init-admin to ensure correct architecture
+echo "Building init-admin..."
+go build -o init-admin cmd/init-admin/main.go
+
+# Run init-admin to create/update admin user
+echo "Initializing admin user from site.config.json..."
+./init-admin || echo "Admin initialization completed or skipped"
+
+# Return to app root
+cd /app
+
+# Start both frontend and backend in parallel
+echo "Starting frontend and backend development servers..."
+npm run dev -- --host 0.0.0.0 --port 3000 &
+cd backend && air

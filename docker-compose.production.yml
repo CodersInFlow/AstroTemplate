@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  codersinflow:
+    container_name: codersinflow
+    image: proggod/codersinflow:latest
+    ports:
+      - "127.0.0.1:4001:3001"  # Backend API port - only accessible locally
+      - "127.0.0.1:4000:3000"  # Frontend port (if serving from container)
+    env_file:
+      - .env.production
+    restart: unless-stopped
+    volumes:
+      # Persistent data
+      - /var/www/codersinflow.com/data/db:/data/db
+      - /var/www/codersinflow.com/uploads:/app/uploads
+      - /var/www/codersinflow.com/logs:/var/log/supervisor
+      
+      # SSL certificates
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      
+    environment:
+      - NODE_ENV=production
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@127.0.0.1:27017/codersblog?authSource=admin
+      - JWT_SECRET=${JWT_SECRET}
+      - DOMAIN=${DOMAIN}
+      - PUBLIC_API_URL=https://${DOMAIN}/api
+      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+      
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge

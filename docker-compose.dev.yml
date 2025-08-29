@@ -1,17 +1,48 @@
 version: '3.8'
 
 services:
-  coders-blog-mongodb:
-    container_name: coders-blog-mongodb
-    image: mongo:7.0
+  # Frontend and Backend development container
+  codersinflow-dev:
+    container_name: codersinflow-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
-      - "${MONGODB_PORT:-27419}:27017"
+      - "3000:3000"  # Frontend dev server
+      - "3001:3001"  # Backend API
+    env_file:
+      - .env.development
+    volumes:
+      # Mount source code for hot reloading
+      - .:/app
+      - node_modules:/app/node_modules
+      - go_modules:/root/go
+      - ./uploads:/app/uploads
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://admin:devpassword@mongodb:27017/codersblog?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-devsecret123}
+      - PUBLIC_API_URL=http://127.0.0.1:3001/api
+      - VITE_API_URL=http://127.0.0.1:3001/api
+      - CORS_ORIGIN=http://127.0.0.1:3000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+  # MongoDB for development
+  mongodb:
+    image: mongo:7.0
+    container_name: codersinflow-mongodb-dev
+    ports:
+      - "27017:27017"  # Expose MongoDB for external tools
+    volumes:
+      - mongodb_data_dev:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-      - MONGO_INITDB_DATABASE=${MONGODB_DB:-codersblog}
-    volumes:
-      - coders_blog_mongodb_data:/data/db
+      - MONGO_INITDB_ROOT_PASSWORD=devpassword
+      - MONGO_INITDB_DATABASE=codersblog
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 10s
@@ -19,4 +50,6 @@ services:
       retries: 3
 
 volumes:
-  coders_blog_mongodb_data:
+  mongodb_data_dev:
+  node_modules:
+  go_modules:

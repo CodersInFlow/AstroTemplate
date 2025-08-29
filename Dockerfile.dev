@@ -1,0 +1,29 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies for both frontend and backend development
+COPY package*.json ./
+RUN npm install
+
+# Install Go for backend development
+RUN apk add --no-cache go git curl
+
+# Install air for Go hot reloading
+RUN go install github.com/air-verse/air@latest
+ENV PATH="/root/go/bin:${PATH}"
+
+# Set development environment
+ENV NODE_ENV=development
+ENV VITE_API_URL=http://localhost:3001
+
+# Expose ports for frontend and backend
+EXPOSE 3000 3001
+
+# Copy startup script
+COPY docker/dev-startup.sh /usr/local/bin/dev-startup.sh
+RUN chmod +x /usr/local/bin/dev-startup.sh
+
+# The source code will be mounted as a volume
+# Start both frontend and backend in dev mode with admin initialization
+CMD ["/usr/local/bin/dev-startup.sh"]
