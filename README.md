@@ -20,44 +20,64 @@ Internet → Cloudflare → Nginx (80/443) → Docker Container (8000)
 
 ## 🚀 Quick Start
 
+### Fastest Way - Docker Development
+```bash
+# Start complete development environment (recommended)
+npm run dev
+
+# This starts:
+# - MongoDB database
+# - Builds all sites
+# - Runs multi-tenant container
+# - Available at http://localhost:8000
+
+# With auto-rebuild on changes
+npm run dev:watch
+```
+
 ### Interactive Site Management
 ```bash
 # Launch interactive site manager
 npm run site:manage
-# OR
-./scripts/manage-sites.sh
-```
 
-### Command Line Usage
-```bash
 # Add a new site
 npm run site:add example.com mysite mysite_db
 
 # List all sites
-./scripts/manage-sites.sh list
+npm run site:list
 
 # Remove a site (with backup)
 npm run site:remove example.com
 
 # Reset to clean state (removes ALL sites)
-./scripts/manage-sites.sh reset
+npm run site:reset
 ```
 
-### Local Development
+### Local Development Options
 
-#### Test a Specific Site
+#### Option 1: Full Docker Environment (Recommended)
 ```bash
-# Develop a specific site locally
-npm run dev:site codersinflow.com       # Runs on port 4321
-npm run dev:site darkflows.com 4322     # Runs on custom port
+# Start everything in Docker
+npm run dev
 
-# Or use the script directly
-./scripts/dev-site.sh codersinflow.com
+# With watch mode for auto-rebuild
+npm run dev:watch
+
+# Visit http://localhost:8000
+# Or with domains in /etc/hosts:
+# http://codersinflow.local:8000
 ```
 
-#### Test Multi-Tenant Setup Locally
+#### Option 2: Develop Specific Site
 ```bash
-# Run multi-tenant proxy (simulates production)
+# Work on one site with hot reload
+npm run dev:site codersinflow.com       # Port 4321
+npm run dev:site darkflows.com 4322     # Custom port
+```
+
+#### Option 3: Multi-Tenant Testing
+```bash
+# Test routing without Docker
 npm run dev:multi
 
 # Add to /etc/hosts:

@@ -3,7 +3,9 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "./scripts/dev-docker.sh",
+    "dev:watch": "./scripts/dev-docker-watch.sh",
+    "dev:astro": "astro dev",
     "prebuild": "node scripts/generate-video-list.js",
     "build": "astro build",
     "preview": "astro preview",
