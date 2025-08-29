@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  coders-blog-frontend:
+    container_name: coders-blog-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "4323:4323"
+    environment:
+      - PUBLIC_API_URL=http://localhost:8749
+      - SITE_NAME=codersinflow
+      - SITE_CONFIG=/app/site.config.json
+    depends_on:
+      - coders-blog-backend
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./site.config.json:/app/site.config.json:ro
+    command: npm run dev
+
+  coders-blog-backend:
+    container_name: coders-blog-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8749:8749"
+    environment:
+      - MONGODB_URI=mongodb://admin:password@coders-blog-mongodb:27017/codersblog?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-codersinflow-secret-key}
+      - UPLOAD_DIR=/uploads
+      - CORS_ORIGIN=http://localhost:4323
+      - PORT=8749
+      - SITE_NAME=codersinflow
+    depends_on:
+      - coders-blog-mongodb
+    volumes:
+      - ./uploads:/uploads
+      - ./site.config.json:/app/site.config.json:ro
+
+  coders-blog-mongodb:
+    container_name: coders-blog-mongodb
+    image: mongo:7.0
+    ports:
+      - "27419:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=codersblog
+    volumes:
+      - coders_blog_mongodb_data:/data/db
+      - ./backend/scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  coders_blog_mongodb_data:

@@ -1,13 +1,12 @@
-# Multi-Tenant Blog Platform
+# Multi-Tenant Blog Platform (Multi-Tenant Branch)
 
-A powerful multi-tenant blog and documentation system that can host multiple sites from a single codebase. Each site has its own frontend, theme, and database while sharing the same backend infrastructure.
+A powerful multi-tenant blog and documentation system that hosts multiple sites from a single codebase. Each site has its own frontend, theme, and database while sharing the same backend infrastructure.
 
 ## 🎯 Architecture Overview
 
-This platform supports two deployment modes:
+This is the **multi-tenant branch** - optimized for hosting multiple websites with different domains from a single Docker container.
 
-1. **Single-Site Mode** (Original) - Traditional deployment for one website
-2. **Multi-Tenant Mode** (New) - Host multiple websites with different domains
+> **Note**: For single-site deployment, use the `main` branch which has the traditional single-site setup.
 
 ```
 Multi-Tenant Architecture:
@@ -20,27 +19,17 @@ Multi-Tenant Architecture:
 
 ## 🚀 Quick Start
 
-### For Multi-Tenant Development
-
 ```bash
-# 1. Clone and switch to multi-tenant branch
-git checkout multi-tenant
-
-# 2. Start development server with test interface
+# 1. Start development server with test interface
 ./dev-multi-tenant.sh test
 
-# 3. Visit test URLs:
+# 2. Visit test URLs:
 # http://localhost:3000/?site=codersinflow
 # http://localhost:3000/?site=darkflows
-```
 
-### For Single-Site Development (Original)
-
-```bash
-# Start development environment
-./dev.sh up
-
-# Visit: http://localhost:3000
+# 3. Or build and run with Docker:
+./build-docker-multi-tenant.sh
+docker-compose -f docker-compose.multi-tenant.yml up
 ```
 
 ## 📁 Project Structure
@@ -71,8 +60,6 @@ git checkout multi-tenant
 
 ## 🛠️ Development Scripts
 
-### Multi-Tenant Scripts
-
 | Script | Description |
 |--------|-------------|
 | `./dev-multi-tenant.sh test` | Start test server with domain simulation |
@@ -81,14 +68,7 @@ git checkout multi-tenant
 | `./dev-multi-tenant.sh list` | List all configured sites |
 | `./dev-multi-tenant.sh docker-build` | Build Docker container |
 | `./dev-multi-tenant.sh docker-up` | Run Docker container |
-
-### Original Scripts (Still Work!)
-
-| Script | Description |
-|--------|-------------|
-| `./dev.sh up` | Start single-site dev environment |
-| `./build-docker.sh` | Build single-site Docker image |
-| `./deploy.sh` | Deploy single site to server |
+| `./build-docker-multi-tenant.sh` | Build multi-tenant Docker image |
 
 ## 🎨 Adding a New Site
 
@@ -143,8 +123,6 @@ Edit `frontends/clientabc.com/src/styles/global.css`:
 
 ## 🐳 Docker Deployment
 
-### Multi-Tenant Deployment
-
 ```bash
 # Build multi-tenant container
 ./build-docker-multi-tenant.sh
@@ -154,14 +132,6 @@ docker-compose -f docker-compose.multi-tenant.yml up -d
 
 # Or run directly
 docker run -p 80:80 -p 443:443 multi-site-app:latest
-```
-
-### Single-Site Deployment (Original)
-
-```bash
-# Build and deploy
-./build-docker.sh
-./deploy-docker.sh
 ```
 
 ## 🔧 Configuration Files
@@ -186,21 +156,6 @@ Defines all sites and their routing:
 }
 ```
 
-### Single-Site: `site.config.json`
-
-Traditional configuration for single deployment:
-```json
-{
-  "site": {
-    "name": "codersinflow",
-    "domain": "codersinflow.com"
-  },
-  "ports": {
-    "frontend": 4916,
-    "backend": 8752
-  }
-}
-```
 
 ## 🌐 Production Setup
 
@@ -226,19 +181,19 @@ certbot certonly --webroot -w /var/www/certbot \
   -d darkflows.com -d www.darkflows.com
 ```
 
-## 📊 Features by Mode
+## 📊 Multi-Tenant Features
 
-| Feature | Single-Site | Multi-Tenant |
-|---------|------------|--------------|
-| Blog System | ✅ | ✅ |
-| Rich Text Editor | ✅ | ✅ |
-| Image Uploads | ✅ | ✅ |
-| Authentication | ✅ | ✅ |
-| Multiple Themes | ❌ | ✅ |
-| Separate Databases | ❌ | ✅ |
-| Domain Routing | ❌ | ✅ |
-| Client Isolation | ❌ | ✅ |
-| Single Container | ✅ | ✅ |
+| Feature | Status |
+|---------|--------|
+| Blog System | ✅ |
+| Rich Text Editor | ✅ |
+| Image Uploads | ✅ |
+| Authentication | ✅ |
+| Multiple Themes | ✅ |
+| Separate Databases | ✅ |
+| Domain Routing | ✅ |
+| Client Isolation | ✅ |
+| Single Container | ✅ |
 
 ## 🔒 Site Isolation
 
@@ -270,17 +225,10 @@ http://darkflows.local:3000
 
 ## 📝 Environment Variables
 
-### Multi-Tenant Mode
 - `NODE_ENV` - production/development
 - `JWT_SECRET` - Secret for JWT tokens
 - `MONGODB_URI` - MongoDB connection (uses local by default)
 - `SITES_CONFIG_PATH` - Path to sites-config.json
-
-### Single-Site Mode
-- `MONGO_PASSWORD` - MongoDB password
-- `JWT_SECRET` - JWT secret
-- `DOMAIN` - Your domain name
-- `PUBLIC_API_URL` - API URL for frontend
 
 ## 🚧 Troubleshooting
 
