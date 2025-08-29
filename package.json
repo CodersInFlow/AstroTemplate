@@ -12,8 +12,12 @@
     "generate:videos": "node scripts/generate-video-list.js",
     "site:add": "./scripts/add-site.sh",
     "site:remove": "./scripts/remove-site.sh",
+    "site:manage": "./scripts/manage-sites.sh",
+    "site:list": "./scripts/manage-sites.sh list",
+    "site:reset": "./scripts/manage-sites.sh reset",
     "multi-tenant:build": "./scripts/build-multi-tenant.sh",
-    "multi-tenant:dev": "node scripts/dev-multi-tenant.cjs"
+    "multi-tenant:dev": "node scripts/dev-multi-tenant.cjs",
+    "nginx:generate": "./scripts/generate-nginx-configs.sh"
   },
   "dependencies": {
     "@astrojs/node": "^9.3.2",

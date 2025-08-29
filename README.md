@@ -1,36 +1,86 @@
-# Multi-Tenant Blog Platform (Multi-Tenant Branch)
+# Multi-Tenant SaaS Blog Platform
 
-A powerful multi-tenant blog and documentation system that hosts multiple sites from a single codebase. Each site has its own frontend, theme, and database while sharing the same backend infrastructure.
+A production-ready multi-tenant architecture for hosting multiple websites/blogs from a single Docker container with domain-based routing, CORS support, and comprehensive site management.
 
 ## 🎯 Architecture Overview
 
-This is the **multi-tenant branch** - optimized for hosting multiple websites with different domains from a single Docker container.
+This is the **multi-tenant branch** - a complete SaaS platform for hosting multiple websites with different domains from a single deployment.
 
 > **Note**: For single-site deployment, use the `main` branch which has the traditional single-site setup.
 
 ```
 Multi-Tenant Architecture:
-├── Single Docker Container
-│   ├── MongoDB (all tenant databases)
-│   ├── Go Backend API (serves all sites)
-│   ├── Node.js Frontend Server (routes by domain)
-│   └── Supervisor (manages all processes)
+Internet → Cloudflare → Nginx (80/443) → Docker Container (8000)
+                              ↓
+                    Reads Host header & routes to:
+                    - codersinflow.com → codersinflow frontend
+                    - darkflows.com → darkflows frontend  
+                    - yourdomain.com → your frontend
 ```
 
 ## 🚀 Quick Start
 
+### Interactive Site Management
 ```bash
-# 1. Start development server with test interface
-./dev-multi-tenant.sh test
-
-# 2. Visit test URLs:
-# http://localhost:3000/?site=codersinflow
-# http://localhost:3000/?site=darkflows
-
-# 3. Or build and run with Docker:
-./build-docker-multi-tenant.sh
-docker-compose -f docker-compose.multi-tenant.yml up
+# Launch interactive site manager
+npm run site:manage
+# OR
+./scripts/manage-sites.sh
 ```
+
+### Command Line Usage
+```bash
+# Add a new site
+npm run site:add example.com mysite mysite_db
+
+# List all sites
+./scripts/manage-sites.sh list
+
+# Remove a site (with backup)
+npm run site:remove example.com
+
+# Reset to clean state (removes ALL sites)
+./scripts/manage-sites.sh reset
+```
+
+### Development
+```bash
+# Start multi-tenant dev environment
+npm run multi-tenant:dev
+
+# Generate nginx configs for all sites
+./scripts/generate-nginx-configs.sh
+
+# Deploy to production
+./scripts/deploy-multi-tenant.sh production
+```
+
+## ✨ New Features (Latest Update)
+
+### Production-Ready Multi-Tenant System
+- **Dynamic CORS Support** - Automatically handles multiple domains
+- **Nginx Template System** - Generate configs for all sites automatically
+- **Custom Routes Per Domain** - Each site can have unique nginx routes
+- **Site Management CLI** - Interactive tool to add/remove/list sites
+- **Per-Tenant Isolation** - Separate databases, uploads, JWT secrets
+- **SSL Automation** - Automatic certificate setup for new domains
+- **Health Monitoring** - Per-tenant health checks and metrics
+- **Zero-Downtime Deployment** - Automated deployment with rollback
+
+### Site Management Features
+- `manage-sites.sh` - Interactive site manager with menu
+- Add/remove sites with single commands
+- Reset to clean state (remove all sites)
+- Automatic backups when removing sites
+- List all sites with status checks
+- View detailed information per site
+
+### Security Enhancements
+- Per-tenant database isolation
+- File upload isolation (`/uploads/{tenant-id}/`)
+- Per-tenant JWT secrets
+- CORS protection with allowed domains list
+- Cloudflare integration for DDoS protection
 
 ## 📁 Project Structure
 
