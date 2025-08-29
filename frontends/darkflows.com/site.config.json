@@ -1,0 +1,57 @@
+{
+  "// IMPORTANT": "Always use 127.0.0.1 instead of localhost to avoid IPv6 conflicts",
+  "site": {
+    "name": "codersinflow",
+    "displayName": "Coders in Flow",
+    "domain": "codersinflow.com",
+    "description": "AI-Powered Pair Programming with Coders In Flow - VSCode Extension for Developers"
+  },
+  "ports": {
+    "frontend": 4916,
+    "backend": 8752,
+    "mongodb": 27419
+  },
+  "database": {
+    "name": "codersblog"
+  },
+  "admin": {
+    "email": "sales@codersinflow.com",
+    "password": "F0r3st40!",
+    "name": "Admin"
+  },
+  "docker": {
+    "prefix": "coders-blog",
+    "volumes": {
+      "mongodb": "coders_blog_mongodb_data"
+    }
+  },
+  "paths": {
+    "uploads": "/var/www/codersinflow.com/uploads",
+    "logs": "/var/log/codersinflow.com"
+  },
+  "theme": {
+    "type": "dark",
+    "primaryColor": "#3b82f6",
+    "accentColor": "#60a5fa"
+  },
+  "development": {
+    "frontend": {
+      "port": 4321
+    },
+    "backend": {
+      "port": 8752
+    },
+    "mongodb": {
+      "port": 27419,
+      "database": "codersblog"
+    }
+  },
+  "deployment": {
+    "server": {
+      "host": "ny",
+      "user": "root",
+      "port": 12222,
+      "path": "/var/www/codersinflow.com"
+    }
+  }
+}

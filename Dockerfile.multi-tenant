@@ -1,0 +1,70 @@
+# Multi-tenant single container Dockerfile
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /build
+
+# Copy all frontends and shared components
+COPY frontends/ /build/frontends/
+COPY package.json /build/
+
+# Build all frontend sites
+RUN for dir in /build/frontends/*/; do \
+      echo "Building $(basename $dir)..."; \
+      cd "$dir" && npm ci && npm run build; \
+    done
+
+# Backend builder
+FROM golang:1.21-alpine AS backend-builder
+
+WORKDIR /build
+
+# Copy backend source
+COPY backend/ /build/
+
+# Build backend
+RUN go mod download && \
+    go build -o server cmd/server/main.go
+
+# Runtime stage
+FROM ubuntu:22.04
+
+# Install Node.js, MongoDB, Supervisor
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    supervisor \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
+       gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor \
+    && echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | \
+       tee /etc/apt/sources.list.d/mongodb-org-7.0.list \
+    && apt-get update \
+    && apt-get install -y mongodb-org \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy built frontends
+COPY --from=frontend-builder /build/frontends/*/dist /app/sites/
+
+# Copy backend
+COPY --from=backend-builder /build/server /app/backend/server
+
+# Copy configuration and server files
+COPY docker/supervisord-multi.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/server.js /app/server.js
+COPY sites-config.json /app/sites-config.json
+
+# Install Node dependencies for the server
+RUN npm install express http-proxy-middleware
+
+# Create directories
+RUN mkdir -p /data/db /app/uploads /var/log/supervisor
+
+# Expose ports
+EXPOSE 80 443 8000
+
+# Start supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

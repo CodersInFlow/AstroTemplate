@@ -1,0 +1,48 @@
+{
+  "name": "codersinflow-astro",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "node scripts/generate-video-list.js",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "deploy:prepare": "npm run build && ./scripts/post-build.sh",
+    "generate:videos": "node scripts/generate-video-list.js"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.3.2",
+    "@astrojs/react": "^4.3.0",
+    "@tiptap/core": "^2.26.1",
+    "@tiptap/extension-code-block-lowlight": "^2.26.1",
+    "@tiptap/extension-color": "^2.26.1",
+    "@tiptap/extension-highlight": "^2.26.1",
+    "@tiptap/extension-image": "^2.26.1",
+    "@tiptap/extension-link": "^2.26.1",
+    "@tiptap/extension-text-align": "^2.26.1",
+    "@tiptap/extension-text-style": "^2.26.1",
+    "@tiptap/extension-underline": "^2.26.1",
+    "@tiptap/extension-youtube": "^2.26.1",
+    "@tiptap/html": "^2.26.1",
+    "@tiptap/pm": "^2.26.1",
+    "@tiptap/react": "^2.26.1",
+    "@tiptap/starter-kit": "^2.26.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "astro": "^5.9.3",
+    "bcryptjs": "^3.0.2",
+    "happy-dom": "^18.0.1",
+    "highlight.js": "^11.11.1",
+    "lowlight": "^3.3.0",
+    "lucide-react": "^0.522.0",
+    "marked": "^16.2.0",
+    "marked-highlight": "^2.2.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/tailwind": "^6.0.2",
+    "tailwindcss": "^3.4.17"
+  }
+}

@@ -1,0 +1,119 @@
+---
+import '../styles/global.css';
+import Header from '../components/coders/HeaderSimple.astro';
+
+export interface Props {
+  title: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+  url?: string;
+  author?: string;
+  noHeader?: boolean;
+}
+
+const { 
+  title, 
+  description = 'Coders in Flow - AI-Powered Code Assistance that is Efficient, Affordable, and Effective. Advanced context management, 90% lower costs, superior code generation.',
+  keywords = 'AI coding assistant, code generation, intelligent code completion, context-aware programming, DeepSeek, Claude Code, OpenAI, affordable AI coding, code refactoring, multi-file editing, semantic code analysis',
+  image = '/og-image.png',
+  url = 'https://codersinflow.com',
+  author = 'Coders in Flow',
+  noHeader = false
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, url);
+const imageURL = new URL(image, url);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Basic Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- SEO Meta Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content={author} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageURL} />
+    <meta property="og:site_name" content="Coders in Flow" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageURL} />
+    
+    <!-- Mobile App Meta -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Coders in Flow" />
+    
+    <!-- Performance & Security -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#111827" />
+    
+    <!-- Robots -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Coders in Flow",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "description": description,
+      "url": url,
+      "author": {
+        "@type": "Organization",
+        "name": "Coders in Flow"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1247"
+      }
+    })} />
+  </head>
+  <body class="bg-blog-bg text-blog-text-primary">
+    {!noHeader && <Header />}
+    {!noHeader && <div class="mt-14" />}
+    <slot />
+  </body>
+</html>
