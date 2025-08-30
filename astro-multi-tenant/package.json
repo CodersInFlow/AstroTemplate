@@ -3,11 +3,12 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "astro dev",
+    "generate-css": "./scripts/generate-all-css.sh",
+    "dev": "npm run generate-css && astro dev",
     "dev:codersinflow": "SITE=codersinflow.com astro dev",
     "dev:darkflows": "SITE=darkflows.com astro dev",
     "dev:prestongarrison": "SITE=prestongarrison.com astro dev",
-    "build": "astro build",
+    "build": "npm run generate-css && astro build",
     "build:codersinflow": "SITE=codersinflow.com astro build",
     "build:darkflows": "SITE=darkflows.com astro build",
     "build:prestongarrison": "SITE=prestongarrison.com astro build",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.4.1",
+    "cssnano": "^7.1.1",
     "typescript": "^5.3.0"
   }
 }

@@ -3,7 +3,8 @@ module.exports = {
   content: [
     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
     './src/sites/darkflows.com/**/*.{astro,tsx}',
-    './src/modules/blog/**/*.{astro,tsx}'
+    './src/modules/blog/**/*.{astro,tsx}',
+    './src/shared/components/**/*.{astro,jsx,tsx}'
   ],
   theme: {
     extend: {

@@ -11,12 +11,12 @@ const Menu = ({ data = {} }) => {
   } = data;
 
   return (
-    <nav className="bg-gray-800 p-0">
+    <nav className="bg-surface border-b border-border p-0">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-white text-header_smdescpt font-poppins">{brandText}</div>
+        <div className="text-text-primary text-header_smdescpt font-poppins">{brandText}</div>
         <div className="md:hidden">
           <button
-            className="text-white focus:outline-none"
+            className="text-text-primary focus:outline-none"
             id="menu-toggle"
             onClick={() => {
               const mobileMenu = document.getElementById('mobile-menu')
@@ -38,7 +38,7 @@ const Menu = ({ data = {} }) => {
         <ul className="hidden md:flex space-x-6">
           {links.map((link, index) => (
             <li key={index}>
-              <a href={link.href} className="text-white hover:text-gray-300 font-poppins">
+              <a href={link.href} className="text-text-secondary hover:text-link-hover font-poppins">
                 {link.text}
               </a>
             </li>
@@ -46,10 +46,10 @@ const Menu = ({ data = {} }) => {
         </ul>
       </div>
       <div className="md:hidden">
-        <ul className="hidden bg-gray-700 mt-2 py-2 px-4 space-y-2" id="mobile-menu">
+        <ul className="hidden bg-surface-hover mt-2 py-2 px-4 space-y-2" id="mobile-menu">
           {links.map((link, index) => (
             <li key={index}>
-              <a href={link.href} className="block text-white hover:text-gray-300 font-poppins">
+              <a href={link.href} className="block text-text-secondary hover:text-link-hover font-poppins">
                 {link.text}
               </a>
             </li>

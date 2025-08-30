@@ -63,91 +63,182 @@ astro-multi-tenant/
 
 ## Color/Theme System
 
-### CORRECT Theme Architecture Using Tailwind
-Each site has its own Tailwind configuration file IN ITS SITE FOLDER that defines semantic color names. Components use these semantic names directly. NO theme props, NO hardcoded colors in components.
+### NEW Theme Architecture: Combined Tailwind with Theme Scoping
+**UPDATE (2024-08-30)**: The previous approach required separate builds for each site, which made development difficult. The new approach combines all site themes into a single CSS file with theme scoping, allowing runtime theme switching with a single build.
 
-### How It Actually Works
+### How the New System Works
 
-#### Build Time (Not Runtime!)
-1. **Each site has its own Tailwind config IN its folder**:
-   - `src/sites/codersinflow.com/tailwind.config.js` - Dark theme with blue accents
-   - `src/sites/darkflows.com/tailwind.config.js` - Dark/black theme with red accents  
-   - `src/sites/prestongarrison.com/tailwind.config.js` - Light theme with gray accents
+#### Overview
+1. **Single build serves all sites** - No need for SITE environment variable
+2. **Theme-scoped CSS classes** - Each theme's styles are scoped under `[data-theme="sitename"]`
+3. **Runtime theme detection** - Theme is applied based on hostname at runtime
+4. **Shared components** - All components use the same semantic class names
 
-2. **When building/developing, specify which site**:
-   ```bash
-   # Development
-   SITE=codersinflow.com npm run dev
-   SITE=darkflows.com npm run dev
-   SITE=prestongarrison.com npm run dev
-   
-   # Production builds
-   SITE=codersinflow.com npm run build
-   SITE=darkflows.com npm run build
-   SITE=prestongarrison.com npm run build
-   ```
+#### Architecture
 
-3. **PostCSS loads the correct Tailwind config**:
-   ```javascript
-   // postcss.config.js
-   const site = process.env.SITE || 'codersinflow.com';
-   module.exports = {
-     plugins: {
-       tailwindcss: {
-         config: `./src/sites/${site}/tailwind.config.js`
-       }
-     }
-   }
-   ```
+##### 1. Combined Tailwind Generation
+A build script generates theme-scoped CSS for each site:
+```css
+/* Generated combined CSS */
+[data-theme="codersinflow"] .bg-primary {
+  background-color: #3B82F6; /* blue */
+}
+[data-theme="darkflows"] .bg-primary {
+  background-color: #DC2626; /* red */
+}
+[data-theme="prestongarrison"] .bg-primary {
+  background-color: #111827; /* gray */
+}
+```
 
-4. **Each Tailwind config defines THE SAME semantic color names**:
-   ```javascript
-   // src/sites/codersinflow.com/tailwind.config.js
-   colors: {
-     'primary': '#3B82F6',         // blue for CodersInFlow
-     'background': '#111827',      // dark gray
-     'surface': '#1F2937',         // darker gray
-     'text-primary': '#F3F4F6',    // light gray
-   }
-   
-   // src/sites/darkflows.com/tailwind.config.js  
-   colors: {
-     'primary': '#DC2626',         // red for DarkFlows
-     'background': '#000000',      // black
-     'surface': '#111827',         // dark gray
-     'text-primary': '#F3F4F6',    // light gray
-   }
-   
-   // src/sites/prestongarrison.com/tailwind.config.js
-   colors: {
-     'primary': '#111827',         // dark gray for Preston
-     'background': '#FFFFFF',      // white
-     'surface': '#FFFFFF',         // white
-     'text-primary': '#111827',    // dark gray
-   }
-   ```
+##### 2. Runtime Theme Application
+The layout detects the site from hostname and applies the theme:
+```astro
+---
+// src/layouts/BaseLayout.astro
+const hostname = Astro.request.headers.get('host') || '';
+let theme = 'codersinflow'; // default
 
-5. **Components use ONLY semantic class names**:
-   ```astro
-   <!-- SAME code for ALL sites -->
-   <div class="bg-background">
-     <div class="bg-surface border border-border rounded-lg">
-       <h1 class="text-text-primary">Title</h1>
-       <p class="text-text-secondary">Description</p>
-       <button class="bg-primary hover:bg-primary/90 text-white">
-         Action
-       </button>
-     </div>
-   </div>
-   ```
+if (hostname.includes('darkflows')) {
+  theme = 'darkflows';
+} else if (hostname.includes('prestongarrison')) {
+  theme = 'prestongarrison';
+}
+---
+<html data-theme={theme}>
+```
 
-### Why This Works
-- **Build-time compilation**: Tailwind CSS is compiled at BUILD time, not runtime
-- **One build per site**: Each site gets its own build with its own colors
-- **Site isolation**: People can edit their site folder including Tailwind config
-- **Clean separation**: No mixing of configs, no theme props, no complexity
+##### 3. Site Configurations Remain Separate
+Each site still has its own Tailwind config defining its colors:
+- `src/sites/codersinflow.com/tailwind.config.js` - Blue theme
+- `src/sites/darkflows.com/tailwind.config.js` - Red theme  
+- `src/sites/prestongarrison.com/tailwind.config.js` - Gray theme
 
-### Implementation Steps (IN ORDER)
+##### 4. Build Process
+```bash
+# Development (single process, all sites)
+npm run dev
+
+# Production (single build, all sites)
+npm run build
+
+# Access sites via:
+# http://codersinflow.localhost:4321
+# http://darkflows.localhost:4321
+# http://prestongarrison.localhost:4321
+```
+
+### Implementation Plan
+
+#### Phase 1: Create Theme Combination Script
+1. Create `scripts/combine-themes.js` that:
+   - Reads all site Tailwind configs
+   - Generates CSS for each site
+   - Wraps each site's CSS in `[data-theme="sitename"]` selectors
+   - Outputs combined CSS file
+
+#### Phase 2: Update Build Process
+1. Modify `package.json` scripts to run theme combination
+2. Update `postcss.config.js` to use combined approach
+3. Create single `tailwind.config.combined.js` that merges all configs
+
+#### Phase 3: Update Layouts
+1. Add theme detection logic to layouts
+2. Apply `data-theme` attribute to HTML element
+3. Remove SITE environment variable dependencies
+
+#### Phase 4: Testing
+1. Test all three sites from single dev server
+2. Verify theme switching works correctly
+3. Ensure no CSS conflicts between themes
+
+### Benefits of New Approach
+✅ **Single dev server** - No need to run multiple processes  
+✅ **Single production build** - Deploy once, serve all sites  
+✅ **Runtime theme switching** - Themes change based on domain  
+✅ **Easier development** - Switch between sites instantly  
+✅ **Maintains isolation** - Each site's config stays separate  
+✅ **No CSS variables needed** - Works with standard Tailwind  
+
+### Technical Details
+
+#### Theme Combination Script Structure
+```javascript
+// scripts/combine-themes.js
+const sites = ['codersinflow.com', 'darkflows.com', 'prestongarrison.com'];
+
+for (const site of sites) {
+  // 1. Load site's Tailwind config
+  // 2. Generate CSS using Tailwind
+  // 3. Wrap in [data-theme] selector
+  // 4. Append to combined CSS
+}
+```
+
+#### PostCSS Plugin for Theme Scoping
+```javascript
+// postcss-theme-scope.js
+module.exports = (opts = {}) => {
+  return {
+    postcssPlugin: 'postcss-theme-scope',
+    Once(root) {
+      // Wrap all rules in theme selector
+      root.walkRules(rule => {
+        rule.selector = `[data-theme="${opts.theme}"] ${rule.selector}`;
+      });
+    }
+  }
+}
+```
+
+### Migration Path
+
+#### From Current System
+1. **Keep existing configs** - No changes to individual site configs needed
+2. **Add combination layer** - New build step combines existing configs
+3. **Update layouts** - Add theme detection (backward compatible)
+4. **Remove SITE variable** - Can be done gradually
+
+#### Rollback Plan
+If issues arise, can instantly revert to SITE-based builds by:
+1. Using old build scripts
+2. Removing data-theme attributes
+3. Re-enabling SITE environment variable
+
+### Implementation Checklist
+
+#### ✅ Prerequisites (Already Done)
+- [x] Each site has its own Tailwind config in site folder
+- [x] Components use semantic class names (bg-primary, text-primary, etc.)
+- [x] PostCSS configured to load site-specific configs
+
+#### 📝 TODO: Phase 1 - Theme Combination Script
+- [ ] Create `scripts/combine-themes.js` script
+- [ ] Install required dependencies (postcss, tailwindcss programmatic API)
+- [ ] Generate CSS for each site configuration
+- [ ] Wrap generated CSS in `[data-theme]` selectors
+- [ ] Output combined `themes.css` file
+
+#### 📝 TODO: Phase 2 - Build Integration
+- [ ] Create `postcss-theme-scope.js` plugin
+- [ ] Update `package.json` scripts to run theme combination
+- [ ] Modify Astro config to import combined themes CSS
+- [ ] Remove SITE environment variable from scripts
+
+#### 📝 TODO: Phase 3 - Runtime Theme Detection
+- [ ] Update `src/sites/codersinflow.com/layout.astro` with theme detection
+- [ ] Update `src/sites/darkflows.com/layout.astro` with theme detection
+- [ ] Update `src/sites/prestongarrison.com/layout.astro` with theme detection
+- [ ] Create shared theme detection utility function
+
+#### 📝 TODO: Phase 4 - Testing & Cleanup
+- [ ] Test codersinflow.localhost:4321 shows blue theme
+- [ ] Test darkflows.localhost:4321 shows red theme
+- [ ] Test prestongarrison.localhost:4321 shows gray theme
+- [ ] Remove old SITE-based configuration files
+- [ ] Update documentation
+
+### OLD Implementation Steps (DEPRECATED - For Reference Only)
 
 #### Step 1: Move Tailwind configs into site folders
 ```bash
