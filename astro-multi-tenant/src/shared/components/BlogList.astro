@@ -51,7 +51,7 @@ const categories = catResponse.ok ? await catResponse.json() : [];
     {posts.map((post: any) => (
       <a href={`/blog/${post.slug}`} class="block">
         <article class="blog-card rounded-lg p-6 transition h-full">
-          <h2 class="text-xl font-bold mb-2">{post.title}</h2>
+          <h2 class="blog-card-title text-xl font-bold mb-2">{post.title}</h2>
           <p class="blog-excerpt mb-4">{post.excerpt || ''}</p>
           <div class="blog-date text-sm">
             {new Date(post.createdAt).toLocaleDateString()}
