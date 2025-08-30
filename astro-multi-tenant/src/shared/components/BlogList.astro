@@ -33,13 +33,13 @@ const categories = catResponse.ok ? await catResponse.json() : [];
 <div>
   <!-- Category Filter -->
   <div class="flex gap-2 flex-wrap mb-8">
-    <a href="/blog" class={`px-4 py-2 rounded-full transition ${!category ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
+    <a href="/blog" class={`blog-category-btn px-4 py-2 rounded-full transition ${!category ? 'blog-category-active' : ''}`}>
       All
     </a>
     {categories.map((cat: any) => (
       <a 
         href={`/blog?category=${cat.slug}`} 
-        class={`px-4 py-2 rounded-full transition ${category === cat.slug ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+        class={`blog-category-btn px-4 py-2 rounded-full transition ${category === cat.slug ? 'blog-category-active' : ''}`}
       >
         {cat.name}
       </a>
@@ -50,10 +50,10 @@ const categories = catResponse.ok ? await catResponse.json() : [];
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {posts.map((post: any) => (
       <a href={`/blog/${post.slug}`} class="block">
-        <article class="bg-gray-900 rounded-lg p-6 hover:bg-gray-800 transition h-full">
+        <article class="blog-card rounded-lg p-6 transition h-full">
           <h2 class="text-xl font-bold mb-2">{post.title}</h2>
-          <p class="text-gray-400 mb-4">{post.excerpt || ''}</p>
-          <div class="text-sm text-gray-500">
+          <p class="blog-excerpt mb-4">{post.excerpt || ''}</p>
+          <div class="blog-date text-sm">
             {new Date(post.createdAt).toLocaleDateString()}
           </div>
         </article>
