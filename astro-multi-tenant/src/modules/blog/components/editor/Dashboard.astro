@@ -1,8 +1,22 @@
 ---
 export const prerender = false;
 
-// Get database from props (passed from BlogApp)
-const { database, tenant } = Astro.props;
+// Get database and theme from props (passed from BlogApp)
+const { database, tenant, theme } = Astro.props;
+
+// Extract theme classes with fallbacks
+const pageBg = theme?.pageBg || 'bg-gray-50';
+const contentBg = theme?.contentBg || 'bg-white';
+const textPrimary = theme?.textPrimary || 'text-gray-900';
+const textSecondary = theme?.textSecondary || 'text-gray-600';
+const textMuted = theme?.textMuted || 'text-gray-500';
+const card = theme?.card || 'bg-white border-gray-200';
+const cardHover = theme?.cardHover || 'hover:bg-gray-50';
+const link = theme?.link || 'text-gray-700 hover:text-gray-900';
+const linkDanger = theme?.linkDanger || 'text-red-600 hover:text-red-800';
+const navBg = theme?.navBg || 'bg-white border-gray-200';
+const navActive = theme?.navActive || 'border-gray-700 text-gray-900';
+const navInactive = theme?.navInactive || 'text-gray-600 hover:text-gray-900';
 
 // Check authentication (handled by middleware)
 const token = Astro.cookies.get('auth-token');
@@ -52,21 +66,21 @@ try {
 }
 ---
 
-<div class="blog-page">
+<div class={`min-h-screen ${pageBg}`}>
   <!-- Editor Header -->
-  <header class="blog-header">
+  <header class={`${contentBg} border-b ${navBg}`}>
     <div class="container mx-auto px-4 py-4">
       <div class="flex justify-between items-center">
-        <h1 class="text-xl font-bold blog-title">Content Editor - {tenant.name}</h1>
+        <h1 class={`text-xl font-bold ${textPrimary}`}>Content Editor - {tenant?.name || 'Blog'}</h1>
         <div class="flex items-center gap-4">
-          <span class="blog-text-muted">Welcome, {user.name}</span>
-          <a href={`/blog/editor/users/edit/${user.id || user._id}`} class="blog-link">
+          <span class={textMuted}>Welcome, {user.name}</span>
+          <a href={`/blog/editor/users/edit/${user.id || user._id}`} class={`${link} transition-colors`}>
             Settings
           </a>
-          <a href="/blog/editor/change-password" class="blog-link">
+          <a href="/blog/editor/change-password" class={`${link} transition-colors`}>
             Change Password
           </a>
-          <button id="logoutBtn" class="blog-link-danger">
+          <button id="logoutBtn" class={`${linkDanger} transition-colors`}>
             Logout
           </button>
         </div>

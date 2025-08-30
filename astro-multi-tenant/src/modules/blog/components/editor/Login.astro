@@ -5,17 +5,19 @@ const { database, tenant, theme } = Astro.props;
 const databaseName = database || 'codersinflow';
 
 // Use theme colors or fallback to defaults
+const pageBg = theme?.pageBg || 'bg-gray-50';
 const btnPrimary = theme?.btnPrimary || 'bg-blue-600 hover:bg-blue-700 text-white';
 const linkClass = theme?.link || 'text-blue-600 hover:text-blue-800';
 const cardClass = theme?.card || 'bg-white border-gray-200';
 const textPrimary = theme?.textPrimary || 'text-gray-900';
+const textSecondary = theme?.textSecondary || 'text-gray-600';
 const inputClass = theme?.input || 'border-gray-300 focus:ring-blue-500';
 
 // Get tenant name with fallback
 const tenantName = tenant?.name || 'Blog';
 ---
 
-<div class="min-h-screen flex items-center justify-center bg-gray-50">
+<div class={`min-h-screen flex items-center justify-center ${pageBg}`}>
   <div class={`p-8 w-full max-w-md rounded-lg shadow-sm ${cardClass}`}>
     <h1 class={`text-2xl font-bold mb-6 text-center ${textPrimary}`}>
       Login to {tenantName} Editor
