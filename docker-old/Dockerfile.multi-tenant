@@ -9,8 +9,10 @@ COPY package.json /build/
 
 # Build all frontend sites
 RUN for dir in /build/frontends/*/; do \
-      echo "Building $(basename $dir)..."; \
-      cd "$dir" && npm ci && npm run build; \
+      if [ -f "$dir/package.json" ]; then \
+        echo "Building $(basename $dir)..."; \
+        cd "$dir" && npm install && npm run build; \
+      fi; \
     done
 
 # Backend builder
@@ -46,15 +48,19 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy built frontends
-COPY --from=frontend-builder /build/frontends/*/dist /app/sites/
+# Copy built frontends (both client and server for SSR)
+COPY --from=frontend-builder /build/frontends/codersinflow.com/dist/client /app/sites/codersinflow.com/client/
+COPY --from=frontend-builder /build/frontends/codersinflow.com/dist/server /app/sites/codersinflow.com/server/
+COPY --from=frontend-builder /build/frontends/darkflows.com/dist/client /app/sites/darkflows.com/client/
+COPY --from=frontend-builder /build/frontends/darkflows.com/dist/server /app/sites/darkflows.com/server/
 
 # Copy backend
 COPY --from=backend-builder /build/server /app/backend/server
 
 # Copy configuration and server files
 COPY docker/supervisord-multi.conf /etc/supervisor/conf.d/supervisord.conf
-COPY docker/server.js /app/server.js
+COPY docker/proxy-server.js /app/proxy-server.js
+COPY docker/astro-server.js /app/astro-server.js
 COPY sites-config.json /app/sites-config.json
 
 # Install Node dependencies for the server

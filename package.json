@@ -21,7 +21,10 @@
     "dev:multi": "./scripts/dev-multi-sites.sh",
     "multi-tenant:build": "./scripts/build-multi-tenant.sh",
     "multi-tenant:dev": "node scripts/dev-multi-tenant.cjs",
-    "nginx:generate": "./scripts/generate-nginx-configs.sh"
+    "nginx:generate": "./scripts/generate-nginx-configs.sh",
+    "deploy:docker": "./scripts/deploy-docker.sh",
+    "docker:build": "docker build -f Dockerfile.multi-tenant -t multi-tenant:latest .",
+    "docker:push": "./scripts/deploy-docker.sh"
   },
   "dependencies": {
     "@astrojs/node": "^9.3.2",

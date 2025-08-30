@@ -1,0 +1,17 @@
+{
+  "id": "darkflows",
+  "name": "DarkFlows",
+  "database": "darkflows_db",
+  "theme": {
+    "primaryColor": "#DC2626",
+    "secondaryColor": "#EA580C"
+  },
+  "features": ["blog", "products"],
+  "navigation": [
+    { "label": "Home", "href": "/" },
+    { "label": "Products", "href": "/products" },
+    { "label": "Solutions", "href": "/solutions" },
+    { "label": "Blog", "href": "/blog" },
+    { "label": "Documentation", "href": "/docs" }
+  ]
+}

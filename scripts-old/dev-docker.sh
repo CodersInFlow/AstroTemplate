@@ -107,19 +107,25 @@ services:
       - PORT=8000
       - API_PORT=3001
     volumes:
-      # Mount source directories for hot reload
+      # External data directories (persisted between runs)
+      - ./data/mongodb:/data/db
+      - ./data/uploads:/app/uploads
+      - ./logs:/app/logs
+      
+      # Mount source for development (read-only to prevent container changes)
       - ./frontends:/app/frontends:ro
       - ./backend:/app/backend:ro
       - ./sites-config.json:/app/sites-config.json:ro
-      - ./uploads:/app/uploads
-      # Mount for logs
-      - ./logs:/app/logs
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
     command: >
       sh -c "
-        echo 'Starting development mode with file watching...' &&
+        echo 'Starting development mode...' &&
+        echo 'Data directories:' &&
+        echo '  MongoDB: ./data/mongodb' &&
+        echo '  Uploads: ./data/uploads' &&
+        echo '  Logs:    ./logs' &&
         supervisord -c /etc/supervisor/conf.d/supervisord.conf
       "
 

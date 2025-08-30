@@ -1,0 +1,59 @@
+---
+export interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+import config from './config.json';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="AI-Powered Pair Programming with Coders In Flow" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} - CodersInFlow</title>
+    <style>
+      body {
+        background: linear-gradient(135deg, #0a0a1f 0%, #1a1a3f 100%);
+        color: #ffffff;
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+      }
+      .nav-gradient {
+        background: rgba(10, 10, 31, 0.95);
+        backdrop-filter: blur(10px);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav-gradient border-b border-blue-800/30 sticky top-0 z-50">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-8">
+            <a href="/" class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+              CodersInFlow
+            </a>
+            <div class="flex gap-6">
+              <a href="/" class="hover:text-blue-400 transition">Home</a>
+              <a href="/features" class="hover:text-blue-400 transition">Features</a>
+              <a href="/enterprise" class="hover:text-blue-400 transition">Enterprise</a>
+              <a href="/blog" class="hover:text-blue-400 transition">Blog</a>
+              <a href="/docs" class="hover:text-blue-400 transition">Docs</a>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <a href="/download" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+              Install
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <slot />
+  </body>
+</html>

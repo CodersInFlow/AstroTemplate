@@ -1,0 +1,59 @@
+---
+export interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+import config from './config.json';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="DarkFlows - Enterprise Routing Solutions" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} - DarkFlows</title>
+    <style>
+      body {
+        background: linear-gradient(135deg, #1a0000 0%, #3a0a0a 100%);
+        color: #ffffff;
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+      }
+      .nav-dark {
+        background: rgba(26, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav-dark border-b border-red-900/30 sticky top-0 z-50">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-8">
+            <a href="/" class="text-xl font-bold bg-gradient-to-r from-red-500 to-orange-600 bg-clip-text text-transparent">
+              DarkFlows
+            </a>
+            <div class="flex gap-6">
+              <a href="/" class="hover:text-red-400 transition">Home</a>
+              <a href="/products" class="hover:text-red-400 transition">Products</a>
+              <a href="/solutions" class="hover:text-red-400 transition">Solutions</a>
+              <a href="/blog" class="hover:text-red-400 transition">Blog</a>
+              <a href="/docs" class="hover:text-red-400 transition">Documentation</a>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <a href="/contact" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
+              Contact
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <slot />
+  </body>
+</html>

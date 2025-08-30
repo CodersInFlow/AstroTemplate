@@ -1,0 +1,29 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "ports": {
+      "frontend": 4321,
+      "backend": 3001,
+      "mongodb": 27017
+    }
+  },
+  "urls": {
+    "api": "http://127.0.0.1:3001",
+    "frontend": "http://127.0.0.1:4321",
+    "mongodb": "mongodb://127.0.0.1:27017/codersblog"
+  },
+  "development": {
+    "hmrPort": 24678,
+    "useLocalhost": false,
+    "autoOpenBrowser": false
+  },
+  "production": {
+    "ports": {
+      "frontend": 80,
+      "backend": 3001
+    },
+    "urls": {
+      "api": "http://api:3001"
+    }
+  }
+}

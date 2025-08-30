@@ -1,448 +1,131 @@
-# Multi-Tenant SaaS Blog Platform
+# Multi-Tenant SSR Blog Platform
 
-A production-ready multi-tenant architecture for hosting multiple websites/blogs from a single Docker container with domain-based routing, CORS support, and comprehensive site management.
-
-## 🎯 Architecture Overview
-
-This is the **multi-tenant branch** - a complete SaaS platform for hosting multiple websites with different domains from a single deployment.
-
-> **Note**: For single-site deployment, use the `main` branch which has the traditional single-site setup.
-
-```
-Multi-Tenant Architecture:
-Internet → Cloudflare → Nginx (80/443) → Docker Container (8000)
-                              ↓
-                    Reads Host header & routes to:
-                    - codersinflow.com → codersinflow frontend
-                    - darkflows.com → darkflows frontend  
-                    - yourdomain.com → your frontend
-```
+A single codebase that serves multiple websites with different domains, databases, and themes.
 
 ## 🚀 Quick Start
 
-### Fastest Way - Docker Development
+### Development
 ```bash
-# Start complete development environment (recommended)
-npm run dev
-
-# This starts:
-# - MongoDB database
-# - Builds all sites
-# - Runs multi-tenant container
-# - Available at http://localhost:8000
-
-# With auto-rebuild on changes
-npm run dev:watch
+./scripts/dev.sh
 ```
 
-### Interactive Site Management
+**Access sites:**
+- Default (CodersInFlow): http://127.0.0.1:4321
+- Blog: http://127.0.0.1:4321/blog
+
+**To test different sites (multi-tenancy):**
+
+Just use `.localhost` domains (no setup needed!):
+- CodersInFlow: http://codersinflow.localhost:4321 (blue theme)
+- DarkFlows: http://darkflows.localhost:4321 (red/dark theme)
+
+💡 **Note**: `.localhost` domains work automatically in modern browsers without any /etc/hosts changes!
+
+The system automatically detects which site to serve based on the domain.
+
+### Production (Docker)
 ```bash
-# Launch interactive site manager
-npm run site:manage
-
-# Add a new site
-npm run site:add example.com mysite mysite_db
-
-# List all sites
-npm run site:list
-
-# Remove a site (with backup)
-npm run site:remove example.com
-
-# Reset to clean state (removes ALL sites)
-npm run site:reset
+./scripts/build.sh      # Build Docker image
+./scripts/run-docker.sh  # Run with docker-compose
 ```
+Access at: http://localhost
 
-### Local Development Options
-
-#### Option 1: Full Docker Environment (Recommended)
-```bash
-# Start everything in Docker
-npm run dev
-
-# With watch mode for auto-rebuild
-npm run dev:watch
-
-# Visit http://localhost:8000
-# Or with domains in /etc/hosts:
-# http://codersinflow.local:8000
-```
-
-#### Option 2: Develop Specific Site
-```bash
-# Work on one site with hot reload
-npm run dev:site codersinflow.com       # Port 4321
-npm run dev:site darkflows.com 4322     # Custom port
-```
-
-#### Option 3: Multi-Tenant Testing
-```bash
-# Test routing without Docker
-npm run dev:multi
-
-# Add to /etc/hosts:
-127.0.0.1 codersinflow.local darkflows.local
-
-# Visit:
-http://codersinflow.local:8000
-http://darkflows.local:8000
-```
-
-#### Production Deployment
-```bash
-# Generate nginx configs for all sites
-./scripts/generate-nginx-configs.sh
-
-# Deploy to production
-./scripts/deploy-multi-tenant.sh production
-```
-
-## 🔧 Local Development Guide
-
-### Developing a Single Site
-
-To work on a specific site locally:
-
-```bash
-# Start development for codersinflow.com
-npm run dev:site codersinflow.com
-
-# Start on a custom port
-npm run dev:site darkflows.com 4322
-```
-
-This will:
-1. Start MongoDB (if not running)
-2. Start the backend API on port 3001
-3. Start the site's frontend on the specified port
-4. Show instructions for testing with domain names
-
-### Testing Multi-Tenant Locally
-
-To test the full multi-tenant setup:
-
-```bash
-# Run the multi-tenant proxy
-npm run dev:multi
-```
-
-Then configure your hosts file:
-```bash
-# Add to /etc/hosts (Mac/Linux) or C:\Windows\System32\drivers\etc\hosts (Windows)
-127.0.0.1 codersinflow.local
-127.0.0.1 darkflows.local
-127.0.0.1 example.local
-```
-
-Visit your sites:
-- http://codersinflow.local:8000
-- http://darkflows.local:8000
-- http://example.local:8000
-
-The proxy server will route to the correct site based on the domain!
-
-### Frontend-Only Development
-
-If you just want to work on the frontend:
-
-```bash
-cd frontends/codersinflow.com
-npm install
-npm run dev
-```
-
-### Backend API Testing
-
-Test the API directly:
-```bash
-cd backend
-go run cmd/server/main.go
-
-# API will be available at http://localhost:3001/api
-```
-
-## ✨ New Features (Latest Update)
-
-### Production-Ready Multi-Tenant System
-- **Dynamic CORS Support** - Automatically handles multiple domains
-- **Nginx Template System** - Generate configs for all sites automatically
-- **Custom Routes Per Domain** - Each site can have unique nginx routes
-- **Site Management CLI** - Interactive tool to add/remove/list sites
-- **Per-Tenant Isolation** - Separate databases, uploads, JWT secrets
-- **SSL Automation** - Automatic certificate setup for new domains
-- **Health Monitoring** - Per-tenant health checks and metrics
-- **Zero-Downtime Deployment** - Automated deployment with rollback
-
-### Site Management Features
-- `manage-sites.sh` - Interactive site manager with menu
-- Add/remove sites with single commands
-- Reset to clean state (remove all sites)
-- Automatic backups when removing sites
-- List all sites with status checks
-- View detailed information per site
-
-### Security Enhancements
-- Per-tenant database isolation
-- File upload isolation (`/uploads/{tenant-id}/`)
-- Per-tenant JWT secrets
-- CORS protection with allowed domains list
-- Cloudflare integration for DDoS protection
-
-## 📁 Project Structure
+## 📁 Structure
 
 ```
-.
-├── frontends/                    # Multi-tenant frontend directories
-│   ├── codersinflow.com/        # Each site is self-contained
-│   │   ├── src/                 # Site-specific components
-│   │   ├── tailwind.config.js   # Site-specific theme
-│   │   └── package.json         # Site dependencies
-│   ├── darkflows.com/           # Another site with different theme
-│   └── default/                 # Default landing page
-│
-├── backend/                      # Shared Go backend
-│   ├── cmd/server/              # Server entry point
-│   └── internal/
-│       ├── middleware/tenant.go # Multi-tenant routing
-│       └── database/tenant.go   # Per-tenant databases
-│
-├── docker/                       # Docker configurations
-│   ├── server.js                # Smart routing server
-│   └── supervisord-multi.conf   # Process management
-│
-├── sites-config.json            # Multi-tenant configuration
-└── site.config.json             # Single-site configuration
+├── astro-multi-tenant/       # Frontend SSR app
+│   └── src/
+│       ├── shared/           # Shared components & utilities
+│       │   ├── components/   # BlogList, BlogPost, etc.
+│       │   └── lib/          # tenant.ts, tiptap.ts, etc.
+│       ├── sites/            # Site-specific configurations
+│       │   ├── codersinflow.com/
+│       │   │   ├── config.json
+│       │   │   └── layout.astro
+│       │   └── darkflows.com/
+│       │       ├── config.json
+│       │       └── layout.astro
+│       └── pages/
+│           └── [...slug].astro  # Main router
+├── backend/                  # Go API server  
+├── sites-config.json         # Site configurations
+├── docker-compose.yml        # Production setup
+└── scripts/                  # Helper scripts
 ```
 
-## 🛠️ Development Scripts
+## ➕ Add New Site
 
-| Script | Description |
-|--------|-------------|
-| `./dev-multi-tenant.sh test` | Start test server with domain simulation |
-| `./dev-multi-tenant.sh build [site]` | Build specific site or all sites |
-| `./dev-multi-tenant.sh add-site <name>` | Create new site from template |
-| `./dev-multi-tenant.sh list` | List all configured sites |
-| `./dev-multi-tenant.sh docker-build` | Build Docker container |
-| `./dev-multi-tenant.sh docker-up` | Run Docker container |
-| `./build-docker-multi-tenant.sh` | Build multi-tenant Docker image |
+1. Create site directory: `astro-multi-tenant/src/sites/yourdomain.com/`
+2. Add `config.json` with site configuration
+3. Add `layout.astro` with site theme/layout
+4. Update `sites-config.json` with site entry
+5. Restart server
 
-## 🎨 Adding a New Site
+## 🔧 Configuration
 
-### 1. Create Site Directory
-
-```bash
-./dev-multi-tenant.sh add-site clientabc.com
-```
-
-### 2. Configure Site in `sites-config.json`
+Edit `sites-config.json`:
 
 ```json
 {
-  "clientabc.com": {
-    "id": "clientabc",
-    "directory": "clientabc.com",
-    "database": "clientabc_db",
-    "theme": "custom"
-  }
-}
-```
-
-### 3. Customize Theme
-
-Edit `frontends/clientabc.com/tailwind.config.js`:
-```javascript
-colors: {
-  primary: '#your-color',
-  // ... custom theme colors
-}
-```
-
-Edit `frontends/clientabc.com/src/styles/global.css`:
-```css
-:root {
-  --primary: 123 45 67; /* RGB values */
-  --background: 0 0 0;
-  /* ... custom CSS variables */
-}
-```
-
-### 4. Build and Test
-
-```bash
-# Build the site
-./dev-multi-tenant.sh build clientabc.com
-
-# Test locally
-./dev-multi-tenant.sh test
-# Visit: http://localhost:3000/?site=clientabc
-```
-
-## 🐳 Docker Deployment
-
-```bash
-# Build multi-tenant container
-./build-docker-multi-tenant.sh
-
-# Run with docker-compose
-docker-compose -f docker-compose.multi-tenant.yml up -d
-
-# Or run directly
-docker run -p 80:80 -p 443:443 multi-site-app:latest
-```
-
-## 🔧 Configuration Files
-
-### Multi-Tenant: `sites-config.json`
-
-Defines all sites and their routing:
-```json
-{
-  "codersinflow.com": {
-    "id": "codersinflow",
-    "directory": "codersinflow.com",
-    "database": "codersinflow_db",
-    "theme": "dark-blue"
-  },
-  "darkflows.com": {
-    "id": "darkflows",
-    "directory": "darkflows.com",
-    "database": "darkflows_db",
-    "theme": "dark-red"
-  }
-}
-```
-
-
-## 🌐 Production Setup
-
-### Domain Configuration
-
-1. **Add to Nginx (Host Level)**:
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name codersinflow.com darkflows.com;
-    
-    location / {
-        proxy_pass http://127.0.0.1:80;
-        proxy_set_header Host $host;
+  "yourdomain.com": {
+    "id": "yoursite",
+    "directory": "yourdomain.com",
+    "database": "yoursite_db",
+    "theme": "default",
+    "features": ["blog"],
+    "adminUser": {
+      "email": "admin@yourdomain.com",
+      "password": "secure_password",
+      "name": "Admin"
     }
+  }
 }
 ```
 
-2. **SSL Certificates**:
-```bash
-certbot certonly --webroot -w /var/www/certbot \
-  -d codersinflow.com -d www.codersinflow.com \
-  -d darkflows.com -d www.darkflows.com
-```
+## 📜 Scripts
 
-## 📊 Multi-Tenant Features
+- `./scripts/dev.sh` - Start development environment
+- `./scripts/build.sh` - Build Docker image
+- `./scripts/run-docker.sh` - Run production Docker
+- `./scripts/deploy.sh` - Deploy to server
+- `./scripts/add-site.sh` - Add new site
 
-| Feature | Status |
-|---------|--------|
-| Blog System | ✅ |
-| Rich Text Editor | ✅ |
-| Image Uploads | ✅ |
-| Authentication | ✅ |
-| Multiple Themes | ✅ |
-| Separate Databases | ✅ |
-| Domain Routing | ✅ |
-| Client Isolation | ✅ |
-| Single Container | ✅ |
+## 🌐 How It Works
 
-## 🔒 Site Isolation
+1. Request comes in with Host header (e.g., `codersinflow.com`)
+2. System detects tenant from `sites-config.json`
+3. Loads tenant-specific layout and database
+4. Renders SSR response with tenant's theme
 
-Each site in multi-tenant mode is completely isolated:
-- ✅ Own Tailwind configuration
-- ✅ Own CSS variables and styles
-- ✅ Own React/Astro components
-- ✅ Own MongoDB database
-- ✅ Own build process
-- ✅ Can be given to clients without exposing other sites
+### Multi-Tenant Detection
 
-## 🧪 Testing Multi-Tenant Locally
+The system uses the domain name to determine which site to serve:
 
-### Option 1: Query Parameters (Easiest)
-```bash
-./dev-multi-tenant.sh test
-# Visit: http://localhost:3000/?site=codersinflow
-```
+- `http://127.0.0.1:4321` → Serves default site (codersinflow)
+- `http://codersinflow.localhost:4321` → Serves CodersInFlow site
+- `http://darkflows.localhost:4321` → Serves DarkFlows site
+- `http://yourdomain.localhost:4321` → Serves your custom site
 
-### Option 2: Edit /etc/hosts
-```bash
-# Add to /etc/hosts:
-127.0.0.1  codersinflow.local darkflows.local
-
-# Visit:
-http://codersinflow.local:3000
-http://darkflows.local:3000
-```
+Each site gets:
+- Its own database (isolated data)
+- Custom layout/theme (from `/astro-multi-tenant/src/sites/[domain]/`)
+- Separate admin accounts
+- Individual configuration
+- Shared components from `/astro-multi-tenant/src/shared/`
 
 ## 📝 Environment Variables
 
-- `NODE_ENV` - production/development
-- `JWT_SECRET` - Secret for JWT tokens
-- `MONGODB_URI` - MongoDB connection (uses local by default)
-- `SITES_CONFIG_PATH` - Path to sites-config.json
+- `PORT` - Frontend port (default: 4321)
+- `API_PORT` - Backend port (default: 3001)  
+- `MONGODB_URI` - MongoDB connection
+- `PUBLIC_API_URL` - Backend URL for frontend
 
-## 🚧 Troubleshooting
+## 🐳 Docker
 
-### Site Not Loading?
-```bash
-# Check if site is configured
-cat sites-config.json | grep "yoursite"
+Everything runs in containers:
+- MongoDB for data
+- Single app container with both frontend SSR and backend API
 
-# Check if site is built
-ls frontends/yoursite.com/dist/
+## 📚 Full Documentation
 
-# Check Docker logs
-docker-compose -f docker-compose.multi-tenant.yml logs
-```
-
-### MongoDB Connection Issues?
-```bash
-# Check MongoDB status in container
-docker exec -it multi-site-app supervisorctl status mongodb
-
-# View MongoDB logs
-docker exec -it multi-site-app tail -f /var/log/supervisor/mongodb.log
-```
-
-### Build Errors?
-```bash
-# Clean and rebuild
-./dev-multi-tenant.sh clean
-./dev-multi-tenant.sh build
-```
-
-## 📚 Documentation
-
-- [Multi-Tenant Setup Guide](MULTI_TENANT_README.md)
-- [Docker Integration](DOCKER_MULTI_SITE_INTEGRATION.md)
-- [Component System](MODULAR_COMPONENT_SYSTEM.md)
-- [Site Access Control](SITE_ACCESS_CONTROL.md)
-- [Architecture Overview](MODULAR_MULTI_TENANT_ARCHITECTURE.md)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is proprietary software. All rights reserved.
-
-## 🆘 Support
-
-For issues or questions:
-- Check the [troubleshooting section](#-troubleshooting)
-- Review the [documentation](#-documentation)
-- Open an issue on GitHub
-
----
-
-Built with ❤️ using Astro, Go, MongoDB, and Docker
+See [README-UNIFIED-SSR.md](README-UNIFIED-SSR.md) for detailed documentation.
