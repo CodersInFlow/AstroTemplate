@@ -27,12 +27,33 @@
     "theme": "dark-red",
     "features": ["blog", "docs"]
   },
+  "prestongarrison.com": {
+    "id": "prestongarrison",
+    "directory": "prestongarrison.com",
+    "database": "prestongarrison_db",
+    "theme": "light",
+    "features": ["blog", "docs"]
+  },
+  "www.prestongarrison.com": {
+    "id": "prestongarrison",
+    "directory": "prestongarrison.com",
+    "database": "prestongarrison_db",
+    "theme": "light",
+    "features": ["blog", "docs"]
+  },
   "localhost": {
-    "id": "codersinflow",
-    "directory": "codersinflow.com",
-    "database": "codersinflow_db",
-    "theme": "dark-blue",
-    "features": ["blog", "auth", "payments"]
+    "id": "prestongarrison",
+    "directory": "prestongarrison.com",
+    "database": "prestongarrison_db",
+    "theme": "light",
+    "features": ["blog", "docs"]
+  },
+  "127.0.0.1": {
+    "id": "prestongarrison",
+    "directory": "prestongarrison.com",
+    "database": "prestongarrison_db",
+    "theme": "light",
+    "features": ["blog", "docs"]
   },
   "default": {
     "id": "default",

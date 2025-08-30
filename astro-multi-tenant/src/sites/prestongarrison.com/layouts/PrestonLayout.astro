@@ -1,0 +1,38 @@
+---
+import Layout from './Layout.astro';
+import Menu from '../components/preston/Menu.jsx';
+import MainTitleHeader from '../components/preston/MainTitleHeader.jsx';
+
+export interface Props {
+  title: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+  url?: string;
+  author?: string;
+  showHeader?: boolean;
+}
+
+const { 
+  title, 
+  description,
+  keywords,
+  image,
+  url,
+  author,
+  showHeader = true
+} = Astro.props;
+---
+
+<Layout 
+  title={title}
+  description={description}
+  keywords={keywords}
+  image={image}
+  url={url}
+  author={author}
+>
+  <Menu client:load data={{}} />
+  {showHeader && <MainTitleHeader data={{ title: "Preston Garrison" }} client:load />}
+  <slot />
+</Layout>

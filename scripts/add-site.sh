@@ -73,6 +73,17 @@ EOF
 echo ""
 echo "✅ Site structure created!"
 echo "========================="
+
+# Run setup-hosts.sh to update local DNS info
+echo ""
+echo "🌐 Updating local development domains..."
+if [ -f "scripts/setup-hosts.sh" ]; then
+    ./scripts/setup-hosts.sh
+else
+    echo "⚠️  setup-hosts.sh not found. You may need to run it manually."
+fi
+
+echo ""
 echo "Next steps:"
 echo "1. Add the above config to sites-config.json"
 echo "2. Customize the layout in astro-multi-tenant/src/layouts/$DOMAIN/"

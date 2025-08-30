@@ -1,0 +1,30 @@
+---
+import Layout from '../layout.astro';
+import Hero from '../../../shared/components/preston/Hero.jsx';
+import Projects from '../../../shared/components/preston/Projects.jsx';
+import Experiences from '../../../shared/components/preston/Experiences.jsx';
+import Qualifications from '../../../shared/components/preston/Qualifications.jsx';
+import Contact from '../../../shared/components/preston/Contact.jsx';
+
+// Import data
+import heroData from '../data/hero.json';
+import projectsData from '../data/projects.json';
+import experiencesData from '../data/experiences.json';
+import skillsData from '../data/skills.json';
+---
+
+<Layout title="Preston Garrison - Developer">
+  <main>
+    <Hero client:load data={heroData} />
+    <Projects client:load projectItems={projectsData.items} header={projectsData.header} />
+    <div id="qualifications">
+      <Qualifications client:load skillsData={skillsData} />
+    </div>
+    <div id="experiences">
+      <Experiences client:load experienceItems={experiencesData.items} header={experiencesData.header} />
+    </div>
+    <div id="contact">
+      <Contact client:load />
+    </div>
+  </main>
+</Layout>

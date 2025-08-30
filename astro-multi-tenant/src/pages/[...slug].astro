@@ -38,7 +38,7 @@ let pageProps = {};
 try {
   // Try to load a custom page for this route
   const pagePath = `../sites/${tenantDir}/pages/${route}.astro`;
-  PageComponent = (await import(pagePath)).default;
+  PageComponent = (await import(/* @vite-ignore */ pagePath)).default;
 } catch (e) {
   // No custom page exists, use default content
 }

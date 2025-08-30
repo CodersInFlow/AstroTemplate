@@ -1,0 +1,85 @@
+{
+  "programming_languages": [
+    { "id": "0", "title": "Embedded C/C++", "percentage": 98 },
+    { "id": "1", "title": "HTML", "percentage": 80 },
+    { "id": "2", "title": "JavaScript", "percentage": 70 },
+    { "id": "3", "title": "Pascal", "percentage": 98 },
+    { "id": "4", "title": "C#", "percentage": 75 },
+    { "id": "5", "title": "Python", "percentage": 90 },
+    { "id": "6", "title": "Assembly", "percentage": 60 },
+    { "id": "7", "title": "Delphi", "percentage": 95 },
+    { "id": "8", "title": "C/C++", "percentage": 98 },
+    { "id": "9", "title": "CSS (Cascading Style Sheets)", "percentage": 90 },
+    { "id": "10", "title": "Swift", "percentage": 70 },
+    { "id": "11", "title": "Java", "percentage": 60 },
+    { "id": "12", "title": "PHP", "percentage": 95 },
+    { "id": "13", "title": "Bash", "percentage": 75 }
+  ],
+  "web_frameworks": [
+    { "id": "0", "title": "DJango", "percentage": 75 },
+    { "id": "1", "title": "Next.JS", "percentage": 75 },
+    { "id": "2", "title": "React", "percentage": 85 },
+    { "id": "3", "title": "TailWindCSS", "percentage": 95 },
+    { "id": "4", "title": "Flask", "percentage": 80 },
+    { "id": "5", "title": "Laravel", "percentage": 85 },
+    { "id": "6", "title": "Angular", "percentage": 75 },
+    { "id": "7", "title": "Electron", "percentage": 90 }
+  ],
+  "operating_systems": [
+    { "id": "0", "title": "Linux (Ubuntu, Debian, CentOS, RedHat)", "percentage": 98 },
+    { "id": "1", "title": "OpenBSD", "percentage": 90 },
+    { "id": "2", "title": "Windows/Windows Server", "percentage": 95 },
+    { "id": "3", "title": "Amazon Web Services", "percentage": 80 },
+    { "id": "4", "title": "FreeBSD", "percentage": 98 },
+    { "id": "5", "title": "MacOS", "percentage": 98 },
+    { "id": "6", "title": "ProxMox", "percentage": 90 },
+    { "id": "7", "title": "Microsoft Azure", "percentage": 75 }
+  ],
+  "networking": [
+    { "id": "0", "title": "Juniper", "percentage": 85 },
+    { "id": "1", "title": "VMWare", "percentage": 85 },
+    { "id": "2", "title": "Ubiquiti", "percentage": 85 },
+    { "id": "3", "title": "OPNSense", "percentage": 90 },
+    { "id": "4", "title": "Nagios", "percentage": 75 },
+    { "id": "5", "title": "Generic Networking", "percentage": 90 },
+    { "id": "6", "title": "pfSense", "percentage": 85 },
+    { "id": "7", "title": "Cisco", "percentage": 80 },
+    { "id": "8", "title": "Extreme Networks", "percentage": 80 },
+    { "id": "9", "title": "SNMP", "percentage": 80 },
+    { "id": "10", "title": "Firewall", "percentage": 85 },
+    { "id": "11", "title": "OpenVPN", "percentage": 95 }
+  ],
+  "embedded_technology": [
+    { "id": "0", "title": "STM32", "percentage": 95 },
+    { "id": "1", "title": "Arduino", "percentage": 80 },
+    { "id": "2", "title": "RP2040", "percentage": 90 },
+    { "id": "3", "title": "NXP", "percentage": 75 },
+    { "id": "4", "title": "ESP32", "percentage": 90 },
+    { "id": "5", "title": "Raspberry Pi", "percentage": 90 },
+    { "id": "6", "title": "FreeRTOS", "percentage": 70 },
+    { "id": "7", "title": "Other Processors", "percentage": 80 }
+  ],
+  "hardware_debugging": [
+    { "id": "0", "title": "OpenOCD", "percentage": 90 },
+    { "id": "1", "title": "J-Link", "percentage": 90 },
+    { "id": "2", "title": "St-Link", "percentage": 90 },
+    { "id": "3", "title": "Oscilliscope", "percentage": 75 },
+    { "id": "4", "title": "Eagle", "percentage": 70 },
+    { "id": "5", "title": "DipTrace", "percentage": 60 },
+    { "id": "6", "title": "Segger", "percentage": 90 },
+    { "id": "7", "title": "Keil", "percentage": 70 },
+    { "id": "8", "title": "Logic Analyzer", "percentage": 90 },
+    { "id": "9", "title": "KiCad", "percentage": 95 },
+    { "id": "10", "title": "Altium", "percentage": 75 }
+  ],
+  "videography_and_photography": [
+    { "id": "0", "title": "Final Cut Pro", "percentage": 98 },
+    { "id": "1", "title": "Photoshop", "percentage": 90 },
+    { "id": "2", "title": "Lightroom", "percentage": 90 },
+    { "id": "3", "title": "Lighting Design", "percentage": 75 },
+    { "id": "4", "title": "General Photography & Videography", "percentage": 90 },
+    { "id": "5", "title": "Premiere", "percentage": 80 },
+    { "id": "6", "title": "Social Media Interfacing", "percentage": 90 },
+    { "id": "7", "title": "Sound Editing", "percentage": 80 }
+  ]
+}
