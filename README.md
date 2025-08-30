@@ -31,10 +31,17 @@ Access at: http://localhost
 ```
 ├── astro-multi-tenant/       # Frontend SSR app
 │   └── src/
-│       ├── shared/           # Shared components & utilities
-│       │   ├── components/   # BlogList, BlogPost, preston/, coders/, sections/
+│       ├── pages/
+│       │   └── [...slug].astro  # Main router with module support
+│       ├── modules/          # Self-contained feature modules
+│       │   └── blog/         # Blog module (works on ALL sites)
+│       │       ├── routes.ts     # Route definitions
+│       │       ├── components/   # BlogList, BlogPost
+│       │       └── pages/        # Blog pages, editor, etc.
+│       ├── shared/           # Shared utilities
+│       │   ├── components/   # Site-specific components
 │       │   ├── data/         # Shared JSON data files
-│       │   └── lib/          # tenant.ts, tiptap.ts, etc.
+│       │   └── lib/          # tenant.ts, module-loader.ts, tiptap.ts
 │       ├── sites/            # Site-specific configurations
 │       │   ├── default/      # Site directory (blue gradient)
 │       │   │   ├── config.json
@@ -43,11 +50,11 @@ Access at: http://localhost
 │       │   │       └── index.astro
 │       │   ├── codersinflow.com/
 │       │   │   ├── config.json
-│       │   │   ├── layout.astro
-│       │   │   └── pages/       # Site-specific pages
+│       │   │   ├── layout.astro  # Dark theme with gradients
+│       │   │   └── pages/       # ONLY site-specific pages
 │       │   │       ├── index.astro
 │       │   │       ├── features.astro
-│       │   │       ├── enterprise.astro
+│       │   │       └── enterprise.astro
 │       │   │       └── download.astro
 │       │   ├── darkflows.com/
 │       │   │   ├── config.json
@@ -121,10 +128,27 @@ Edit `sites-config.json`:
 
 ## 🌐 How It Works
 
-1. Request comes in with Host header (e.g., `codersinflow.com`)
-2. System detects tenant from `sites-config.json`
-3. Loads tenant-specific layout, pages, and database
-4. Renders SSR response with tenant's theme and content
+### Request Flow
+
+1. Request arrives with Host header (e.g., `codersinflow.com`)
+2. Router (`[...slug].astro`) detects tenant from hostname
+3. Router checks module routes first (e.g., `/blog`, `/docs`)
+4. If no module match, checks site-specific pages
+5. Wraps content in site's layout with proper theming
+6. Returns SSR response
+
+### Module System
+
+**Modules are self-contained features that work on ALL sites automatically!**
+
+The blog module provides these routes to every site:
+- `/blog` - Blog listing
+- `/blog/[slug]` - Individual blog posts  
+- `/blog/editor` - Blog editor interface
+- `/docs` - Documentation listing
+- `/docs/[slug]` - Individual documentation pages
+
+Each site gets these features with their own styling - no duplication!
 
 ### Multi-Tenant Detection
 
@@ -138,12 +162,12 @@ The system uses the domain name to determine which site to serve:
 
 Each site gets:
 - Its own database (isolated data)
-- Custom layout/theme (from `/astro-multi-tenant/src/sites/[domain]/layout.astro`)
-- Site-specific pages (from `/astro-multi-tenant/src/sites/[domain]/pages/`)
-- Optional site-specific components
+- Custom layout/theme (from `/sites/[domain]/layout.astro`)
+- Site-specific pages (from `/sites/[domain]/pages/`) - ONLY unique pages!
+- Automatic access to ALL module features (blog, docs, editor, etc.)
 - Separate admin accounts
 - Individual configuration
-- Access to shared components from `/astro-multi-tenant/src/shared/`
+- Theming via CSS classes in layout
 
 ### Site Directory
 
@@ -153,6 +177,38 @@ The default site at `localhost:4321` provides:
 - Links that open in new tabs
 - Blue gradient background
 - Responsive design
+
+## ➕ Adding New Modules
+
+1. Create module directory: `/src/modules/your-module/`
+2. Add `routes.ts` with route definitions:
+```typescript
+export default {
+  name: 'your-module',
+  routes: [
+    { pattern: 'your-path', component: './pages/index.astro' },
+    { pattern: 'your-path/:id', component: './pages/[id].astro' }
+  ]
+};
+```
+3. Create your components and pages
+4. Register in `/src/shared/lib/module-loader.ts`
+5. Module automatically works on ALL sites!
+
+## 🎨 Theming Modules
+
+Modules use CSS classes that sites define:
+```astro
+<!-- In module -->
+<h1 class="page-heading">Title</h1>
+<div class="blog-card">Content</div>
+
+<!-- In site layout.astro -->
+<style>
+  .page-heading { color: #yourcolor; }
+  .blog-card { background: #yourcolor; }
+</style>
+```
 
 ## 📝 Environment Variables
 

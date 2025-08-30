@@ -1,0 +1,46 @@
+---
+// This page handles all blog routes and delegates to the BlogApp component
+export const prerender = false;
+
+import Layout from '../../layout.astro';
+import BlogApp from '../../../../modules/blog/BlogApp.astro';
+
+// Import blog theme styles
+import '../../../../modules/blog/styles/blog-theme.css';
+
+// Preston Garrison's blog theme configuration - using gray color scheme
+const blogTheme = {
+  // Primary button colors
+  btnPrimary: 'bg-gray-800 hover:bg-gray-900 text-white',
+  btnSecondary: 'bg-gray-200 hover:bg-gray-300 text-gray-900',
+  
+  // Links
+  link: 'text-gray-700 hover:text-gray-900',
+  
+  // Cards
+  card: 'bg-white hover:bg-gray-50 border-gray-200',
+  
+  // Text colors
+  textPrimary: 'text-gray-900',
+  textSecondary: 'text-gray-600',
+  textMuted: 'text-gray-500',
+  
+  // Form elements
+  input: 'border-gray-300 focus:ring-gray-500',
+  
+  // Navigation
+  navActive: 'border-gray-700 text-gray-900',
+  navInactive: 'text-gray-600 hover:text-gray-900',
+  
+  // Badges
+  badge: 'bg-gray-100 text-gray-800',
+  
+  // Accent color for categories
+  categoryBg: 'bg-gray-700 hover:bg-gray-800',
+  categoryText: 'text-white'
+};
+---
+
+<Layout title="Blog">
+  <BlogApp theme={blogTheme} />
+</Layout>

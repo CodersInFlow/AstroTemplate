@@ -1,0 +1,210 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import HeaderSimple from './components/HeaderSimple.astro';
+
+// Get category filter from URL
+const currentCategory = Astro.url.searchParams.get('category');
+
+// Fetch posts from API
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
+const postsUrl = currentCategory 
+  ? `${API_URL}/api/posts?type=blog&category=${currentCategory}`
+  : `${API_URL}/api/posts?type=blog`;
+const response = await fetch(postsUrl);
+const allPosts = response.ok ? await response.json() : [];
+
+// Fetch categories
+const categoryResponse = await fetch(`${API_URL}/api/categories?type=blog`);
+const categories = categoryResponse.ok ? await categoryResponse.json() : [];
+
+// Separate featured and regular posts
+// You can determine featured posts by category name or add a featured field
+const featuredPosts = allPosts.filter((post: any) => 
+  post.category_data?.name === 'Featured' && !currentCategory
+);
+const regularPosts = allPosts.filter((post: any) => 
+  post.category_data?.name !== 'Featured'
+);
+---
+
+<Layout title="Blog - Coders Website">
+  <HeaderSimple />
+  
+  <main class="container mx-auto px-4 py-8 max-w-7xl pt-20">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-6">Blog</h1>
+      
+      <!-- Category Filter -->
+      <div class="flex gap-2 flex-wrap">
+        <a 
+          href="/blog" 
+          class={`px-4 py-2 rounded-full transition ${
+            !currentCategory 
+              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+          }`}
+        >
+          All
+        </a>
+        {categories.map((category: any) => (
+          <a 
+            href={`/blog?category=${category.slug}`} 
+            class={`px-4 py-2 rounded-full transition ${
+              currentCategory === category.slug
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            {category.name}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Featured Posts (only show on main page) -->
+    {featuredPosts.length > 0 && !currentCategory && (
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold mb-6 text-gray-200">Featured</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {featuredPosts.slice(0, 2).map((post: any) => (
+            <article class="group bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-gray-700">
+              {post.coverImage && (
+                <div class="relative h-64 overflow-hidden">
+                  <img 
+                    src={post.coverImage} 
+                    alt={post.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
+                </div>
+              )}
+              <div class="p-8">
+                <div class="flex items-center gap-2 text-sm text-gray-400 mb-3">
+                  <span class="text-blue-400">{post.category_data?.name || 'Uncategorized'}</span>
+                  <span>•</span>
+                  <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                  <span>•</span>
+                  <span>{post.readingTime} min read</span>
+                </div>
+                
+                <h3 class="text-2xl font-bold mb-3 group-hover:text-blue-400 transition-colors">
+                  <a href={`/blog/${post.slug}`} class="hover:underline">
+                    {post.title}
+                  </a>
+                </h3>
+                
+                <p class="text-gray-300 mb-6 line-clamp-3">
+                  {post.description}
+                </p>
+                
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-medium">
+                      {post.author_data?.name?.[0]?.toUpperCase() || 'A'}
+                    </div>
+                    <div>
+                      <div class="font-medium">{post.author_data?.name || 'Anonymous'}</div>
+                      <div class="text-sm text-gray-400">{post.author_data?.email || ''}</div>
+                    </div>
+                  </div>
+                  <a 
+                    href={`/blog/${post.slug}`} 
+                    class="text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1 group/link"
+                  >
+                    Read more 
+                    <span class="group-hover/link:translate-x-1 transition-transform">→</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Regular Posts -->
+    <section>
+      {!currentCategory && featuredPosts.length > 0 && (
+        <h2 class="text-2xl font-bold mb-6 text-gray-200">Recent Posts</h2>
+      )}
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {regularPosts.map((post: any) => (
+          <article class="group bg-gray-900 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-800 hover:border-gray-700">
+            {post.coverImage && (
+              <div class="relative h-48 overflow-hidden">
+                <img 
+                  src={post.coverImage} 
+                  alt={post.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            )}
+            <div class="p-6">
+              <div class="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                <span class="text-blue-400">{post.category_data?.name || 'Uncategorized'}</span>
+                <span>•</span>
+                <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+              </div>
+              
+              <h3 class="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+                <a href={`/blog/${post.slug}`}>
+                  {post.title}
+                </a>
+              </h3>
+              
+              <p class="text-gray-400 mb-4 line-clamp-2">
+                {post.description}
+              </p>
+              
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm">
+                    {post.author_data?.name?.[0]?.toUpperCase() || 'A'}
+                  </div>
+                  <div class="text-sm">
+                    <div class="text-gray-300">{post.author_data?.name || 'Anonymous'}</div>
+                    <div class="text-gray-500">{post.readingTime} min read</div>
+                  </div>
+                </div>
+                <a 
+                  href={`/blog/${post.slug}`} 
+                  class="text-gray-400 hover:text-blue-400 text-sm font-medium"
+                >
+                  Read →
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {allPosts.length === 0 && (
+      <div class="text-center py-12 text-gray-400">
+        <p class="text-xl mb-2">No blog posts found{currentCategory && ` in "${currentCategory}" category`}.</p>
+        <p>Check back soon for new content!</p>
+      </div>
+    )}
+  </main>
+</Layout>
+
+<style>
+  main {
+    min-height: calc(100vh - 64px);
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

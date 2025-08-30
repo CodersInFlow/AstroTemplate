@@ -1,0 +1,54 @@
+---
+// Blog listing component
+const { database, tenant, type = 'blog' } = Astro.props;
+
+const API_URL = 'http://127.0.0.1:3001';
+
+// Fetch posts
+let posts = [];
+try {
+  const response = await fetch(`${API_URL}/api/posts?type=${type}&published=true`, {
+    headers: {
+      'X-Site-Database': database
+    }
+  });
+  if (response.ok) {
+    posts = await response.json();
+  }
+} catch (error) {
+  console.error('Failed to fetch posts:', error);
+}
+
+const pageTitle = type === 'docs' ? 'Documentation' : 'Blog';
+---
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold blog-title mb-8">{pageTitle}</h1>
+  
+  {posts.length > 0 ? (
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post: any) => (
+        <article class="blog-card p-6">
+          <h2 class="text-xl font-bold blog-title mb-2">
+            <a href={`/blog/${post.slug}`} class="hover:underline">
+              {post.title}
+            </a>
+          </h2>
+          <p class="blog-text mb-4">{post.description}</p>
+          <div class="flex justify-between items-center">
+            <time class="blog-text-muted text-sm">
+              {new Date(post.createdAt).toLocaleDateString()}
+            </time>
+            <a href={`/blog/${post.slug}`} class="blog-link text-sm">
+              Read more →
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  ) : (
+    <div class="blog-card p-8 text-center">
+      <p class="blog-text-muted">No posts published yet.</p>
+    </div>
+  )}
+</div>

@@ -1,0 +1,139 @@
+---
+// Main Blog Application Component
+// This component handles URL parsing and renders the appropriate blog page
+import { getTenantFromHost } from '../../shared/lib/tenant';
+
+// Accept theme configuration from parent
+const { theme } = Astro.props;
+
+// Get the URL segments
+const pathname = Astro.url.pathname;
+const segments = pathname.split('/').filter(Boolean);
+
+// Get tenant info for database
+const hostname = Astro.request.headers.get('host') || '127.0.0.1:4321';
+const tenant = getTenantFromHost(hostname);
+const database = tenant.database || tenant.id;
+
+
+// Store database in a way child components can access
+Astro.locals.database = database;
+Astro.locals.tenant = tenant;
+Astro.locals.theme = theme;
+
+// Parse the URL to determine which component to render
+let componentToRender = 'listing'; // default
+let props: any = { database, tenant, theme };
+
+// URL patterns:
+// /blog -> listing
+// /blog/editor -> dashboard
+// /blog/editor/login -> login
+// /blog/editor/posts -> posts list
+// /blog/editor/posts/new -> new post
+// /blog/editor/posts/edit/123 -> edit post
+// /blog/editor/categories -> categories
+// /blog/editor/users -> users
+// /blog/editor/change-password -> change password
+// /blog/post-slug -> blog post
+
+if (segments.length === 1) {
+  // /blog
+  componentToRender = 'listing';
+  props.type = 'blog';
+} else if (segments[1] === 'editor') {
+  // Editor routes
+  if (segments.length === 2) {
+    componentToRender = 'dashboard';
+  } else if (segments[2] === 'login') {
+    componentToRender = 'login';
+  } else if (segments[2] === 'posts') {
+    if (segments.length === 3) {
+      componentToRender = 'posts-list';
+    } else if (segments[3] === 'new') {
+      componentToRender = 'posts-new';
+    } else if (segments[3] === 'edit' && segments[4]) {
+      componentToRender = 'posts-edit';
+      props.id = segments[4];
+    }
+  } else if (segments[2] === 'categories') {
+    componentToRender = 'categories';
+  } else if (segments[2] === 'users') {
+    if (segments.length === 3) {
+      componentToRender = 'users-list';
+    } else if (segments[3] === 'edit' && segments[4]) {
+      componentToRender = 'users-edit';
+      props.id = segments[4];
+    } else if (segments[3] === 'new') {
+      componentToRender = 'users-new';
+    }
+  } else if (segments[2] === 'change-password') {
+    componentToRender = 'change-password';
+  } else if (segments[2] === 'register') {
+    componentToRender = 'register';
+  }
+} else if (segments[1] === 'docs') {
+  // Documentation routes
+  if (segments.length === 2) {
+    componentToRender = 'listing';
+    props.type = 'docs';
+  } else {
+    componentToRender = 'post';
+    props.slug = segments[2];
+    props.type = 'docs';
+  }
+} else {
+  // Blog post
+  componentToRender = 'post';
+  props.slug = segments[1];
+  props.type = 'blog';
+}
+
+// Import the appropriate component
+let Component;
+switch (componentToRender) {
+  case 'listing':
+    Component = (await import('./components/BlogListing.astro')).default;
+    break;
+  case 'post':
+    Component = (await import('./components/BlogPost.astro')).default;
+    break;
+  case 'dashboard':
+    Component = (await import('./components/editor/Dashboard.astro')).default;
+    break;
+  case 'login':
+    Component = (await import('./components/editor/Login.astro')).default;
+    break;
+  case 'register':
+    Component = (await import('./components/editor/Register.astro')).default;
+    break;
+  case 'posts-list':
+    Component = (await import('./components/editor/PostsList.astro')).default;
+    break;
+  case 'posts-new':
+    Component = (await import('./components/editor/PostsNew.astro')).default;
+    break;
+  case 'posts-edit':
+    Component = (await import('./components/editor/PostsEdit.astro')).default;
+    break;
+  case 'categories':
+    Component = (await import('./components/editor/Categories.astro')).default;
+    break;
+  case 'users-list':
+    Component = (await import('./components/editor/UsersList.astro')).default;
+    break;
+  case 'users-edit':
+    Component = (await import('./components/editor/UsersEdit.astro')).default;
+    break;
+  case 'users-new':
+    Component = (await import('./components/editor/UsersNew.astro')).default;
+    break;
+  case 'change-password':
+    Component = (await import('./components/editor/ChangePassword.astro')).default;
+    break;
+  default:
+    Component = (await import('./components/BlogListing.astro')).default;
+}
+---
+
+<Component {...props} />

@@ -23,8 +23,16 @@ else
 fi
 
 # Start MongoDB if not running
-if ! docker ps | grep -q mongodb-dev; then
-    echo "📦 Starting MongoDB on port $MONGODB_PORT..."
+if docker ps -a | grep -q mongodb-dev; then
+    if ! docker ps | grep -q mongodb-dev; then
+        echo "📦 Starting existing MongoDB container on port $MONGODB_PORT..."
+        docker start mongodb-dev
+        sleep 2
+    else
+        echo "✓ MongoDB already running on port $MONGODB_PORT"
+    fi
+else
+    echo "📦 Creating and starting MongoDB on port $MONGODB_PORT..."
     docker run -d --name mongodb-dev -p $MONGODB_PORT:$MONGODB_PORT mongo:7.0
     sleep 2
 fi

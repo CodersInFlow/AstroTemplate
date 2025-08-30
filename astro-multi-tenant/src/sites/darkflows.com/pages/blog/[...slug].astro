@@ -1,0 +1,46 @@
+---
+// This page handles all blog routes and delegates to the BlogApp component
+export const prerender = false;
+
+import Layout from '../../layout.astro';
+import BlogApp from '../../../../modules/blog/BlogApp.astro';
+
+// Import blog theme styles
+import '../../../../modules/blog/styles/blog-theme.css';
+
+// Dark Flows blog theme configuration - using purple/dark color scheme
+const blogTheme = {
+  // Primary button colors
+  btnPrimary: 'bg-purple-600 hover:bg-purple-700 text-white',
+  btnSecondary: 'bg-purple-100 hover:bg-purple-200 text-purple-900',
+  
+  // Links
+  link: 'text-purple-600 hover:text-purple-800',
+  
+  // Cards
+  card: 'bg-white hover:bg-purple-50 border-purple-200',
+  
+  // Text colors
+  textPrimary: 'text-gray-900',
+  textSecondary: 'text-gray-600',
+  textMuted: 'text-gray-500',
+  
+  // Form elements
+  input: 'border-purple-300 focus:ring-purple-500',
+  
+  // Navigation
+  navActive: 'border-purple-600 text-purple-600',
+  navInactive: 'text-gray-600 hover:text-purple-600',
+  
+  // Badges
+  badge: 'bg-purple-100 text-purple-800',
+  
+  // Accent color for categories
+  categoryBg: 'bg-purple-600 hover:bg-purple-700',
+  categoryText: 'text-white'
+};
+---
+
+<Layout title="Blog">
+  <BlogApp theme={blogTheme} />
+</Layout>
