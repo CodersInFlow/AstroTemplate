@@ -1,6 +1,6 @@
-# Multi-Tenant SSR Blog Platform
+# Multi-Tenant SSR Platform
 
-A single codebase that serves multiple websites with different domains, databases, and themes.
+A single codebase that serves multiple websites with different domains, databases, themes, and content.
 
 ## 🚀 Quick Start
 
@@ -10,18 +10,14 @@ A single codebase that serves multiple websites with different domains, database
 ```
 
 **Access sites:**
-- Default (CodersInFlow): http://127.0.0.1:4321
-- Blog: http://127.0.0.1:4321/blog
-
-**To test different sites (multi-tenancy):**
-
-Just use `.localhost` domains (no setup needed!):
-- CodersInFlow: http://codersinflow.localhost:4321 (blue theme)
-- DarkFlows: http://darkflows.localhost:4321 (red/dark theme)
+- Site Directory: http://localhost:4321 (shows all available sites)
+- CodersInFlow: http://codersinflow.localhost:4321 (AI pair programming platform)
+- DarkFlows: http://darkflows.localhost:4321 (Router OS & networking solutions)
+- Preston Garrison: http://prestongarrison.localhost:4321 (Developer portfolio)
 
 💡 **Note**: `.localhost` domains work automatically in modern browsers without any /etc/hosts changes!
 
-The system automatically detects which site to serve based on the domain.
+The system automatically detects which site to serve based on the domain. The default site at `localhost:4321` shows a beautiful directory of all available sites with descriptions and links that open in new tabs.
 
 ### Production (Docker)
 ```bash
@@ -36,15 +32,35 @@ Access at: http://localhost
 ├── astro-multi-tenant/       # Frontend SSR app
 │   └── src/
 │       ├── shared/           # Shared components & utilities
-│       │   ├── components/   # BlogList, BlogPost, etc.
+│       │   ├── components/   # BlogList, BlogPost, preston/, coders/, sections/
+│       │   ├── data/         # Shared JSON data files
 │       │   └── lib/          # tenant.ts, tiptap.ts, etc.
 │       ├── sites/            # Site-specific configurations
+│       │   ├── default/      # Site directory (blue gradient)
+│       │   │   ├── config.json
+│       │   │   ├── layout.astro
+│       │   │   └── pages/
+│       │   │       └── index.astro
 │       │   ├── codersinflow.com/
 │       │   │   ├── config.json
-│       │   │   └── layout.astro
-│       │   └── darkflows.com/
+│       │   │   ├── layout.astro
+│       │   │   └── pages/       # Site-specific pages
+│       │   │       ├── index.astro
+│       │   │       ├── features.astro
+│       │   │       ├── enterprise.astro
+│       │   │       └── download.astro
+│       │   ├── darkflows.com/
+│       │   │   ├── config.json
+│       │   │   ├── layout.astro
+│       │   │   ├── components/  # Site-specific components
+│       │   │   └── pages/
+│       │   │       ├── index.astro
+│       │   │       └── blog.astro
+│       │   └── prestongarrison.com/
 │       │       ├── config.json
-│       │       └── layout.astro
+│       │       ├── layout.astro
+│       │       └── pages/
+│       │           └── index.astro
 │       └── pages/
 │           └── [...slug].astro  # Main router
 ├── backend/                  # Go API server  
@@ -58,8 +74,21 @@ Access at: http://localhost
 1. Create site directory: `astro-multi-tenant/src/sites/yourdomain.com/`
 2. Add `config.json` with site configuration
 3. Add `layout.astro` with site theme/layout
-4. Update `sites-config.json` with site entry
-5. Restart server
+4. Create `pages/` directory with at least `index.astro`
+5. Update `sites-config.json` with site entry
+6. (Optional) Run `./scripts/add-site.sh` to add local domain
+7. Restart server
+
+**Site Structure Example:**
+```
+astro-multi-tenant/src/sites/yourdomain.com/
+├── config.json           # Site metadata
+├── layout.astro          # Site layout/theme
+├── pages/                # Site pages
+│   ├── index.astro       # Homepage
+│   └── about.astro       # Additional pages
+└── components/           # Optional site-specific components
+```
 
 ## 🔧 Configuration
 
@@ -94,24 +123,36 @@ Edit `sites-config.json`:
 
 1. Request comes in with Host header (e.g., `codersinflow.com`)
 2. System detects tenant from `sites-config.json`
-3. Loads tenant-specific layout and database
-4. Renders SSR response with tenant's theme
+3. Loads tenant-specific layout, pages, and database
+4. Renders SSR response with tenant's theme and content
 
 ### Multi-Tenant Detection
 
 The system uses the domain name to determine which site to serve:
 
-- `http://127.0.0.1:4321` → Serves default site (codersinflow)
+- `http://localhost:4321` → Shows site directory (list of all sites)
 - `http://codersinflow.localhost:4321` → Serves CodersInFlow site
 - `http://darkflows.localhost:4321` → Serves DarkFlows site
+- `http://prestongarrison.localhost:4321` → Serves Preston Garrison site
 - `http://yourdomain.localhost:4321` → Serves your custom site
 
 Each site gets:
 - Its own database (isolated data)
-- Custom layout/theme (from `/astro-multi-tenant/src/sites/[domain]/`)
+- Custom layout/theme (from `/astro-multi-tenant/src/sites/[domain]/layout.astro`)
+- Site-specific pages (from `/astro-multi-tenant/src/sites/[domain]/pages/`)
+- Optional site-specific components
 - Separate admin accounts
 - Individual configuration
-- Shared components from `/astro-multi-tenant/src/shared/`
+- Access to shared components from `/astro-multi-tenant/src/shared/`
+
+### Site Directory
+
+The default site at `localhost:4321` provides:
+- Beautiful grid layout of all available sites
+- Site descriptions and features
+- Links that open in new tabs
+- Blue gradient background
+- Responsive design
 
 ## 📝 Environment Variables
 
