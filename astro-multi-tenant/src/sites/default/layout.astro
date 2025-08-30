@@ -17,23 +17,23 @@ const { title = 'Site Directory' } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
-  <body>
+  <body class="default-site-body">
     <slot />
   </body>
 </html>
 
-<style>
-  /* Scoped styles for default site only */
-  body {
+<style is:global>
+  /* Global styles for default site */
+  .default-site-body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%) !important;
     min-height: 100vh;
-    color: white;
+    color: white !important;
     margin: 0;
     padding: 0;
   }
   
-  :global(*) {
+  * {
     box-sizing: border-box;
   }
 </style>

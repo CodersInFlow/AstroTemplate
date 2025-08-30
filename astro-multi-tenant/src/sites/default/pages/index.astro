@@ -33,6 +33,8 @@ const uniqueSites = displaySites.reduce((acc, [domain, config]) => {
       {Object.entries(uniqueSites).map(([domain, config]) => (
         <a 
           href={`http://${domain.replace('.com', '.localhost')}:4321`}
+          target="_blank"
+          rel="noopener noreferrer"
           class="group relative overflow-hidden rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 p-8 transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:shadow-2xl"
         >
           <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
