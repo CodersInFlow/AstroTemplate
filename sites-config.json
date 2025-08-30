@@ -42,18 +42,18 @@
     "features": ["blog", "docs"]
   },
   "localhost": {
-    "id": "prestongarrison",
-    "directory": "prestongarrison.com",
-    "database": "prestongarrison_db",
-    "theme": "light",
-    "features": ["blog", "docs"]
+    "id": "default",
+    "directory": "default",
+    "database": "default_db",
+    "theme": "dark",
+    "features": []
   },
   "127.0.0.1": {
-    "id": "prestongarrison",
-    "directory": "prestongarrison.com",
-    "database": "prestongarrison_db",
-    "theme": "light",
-    "features": ["blog", "docs"]
+    "id": "default",
+    "directory": "default",
+    "database": "default_db",
+    "theme": "dark",
+    "features": []
   },
   "default": {
     "id": "default",
