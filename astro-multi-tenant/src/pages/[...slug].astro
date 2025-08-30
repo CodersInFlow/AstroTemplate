@@ -31,37 +31,53 @@ if (route.startsWith('blog/')) {
   blogSlug = route.replace('blog/', '');
 }
 
-// Default page content
-const title = route === 'index' ? 'Home' : 
+// Try to load custom page component for this tenant/route
+let PageComponent = null;
+let pageProps = {};
+
+try {
+  // Try to load a custom page for this route
+  const pagePath = `../sites/${tenantDir}/pages/${route}.astro`;
+  PageComponent = (await import(pagePath)).default;
+} catch (e) {
+  // No custom page exists, use default content
+}
+
+// Default page content if no custom page
+const title = route === 'index' ? config.name : 
              route === 'blog' ? 'Blog' :
              route.startsWith('blog/') ? 'Blog Post' :
              route.charAt(0).toUpperCase() + route.slice(1);
 ---
 
-<Layout title={title}>
-  <main class="container mx-auto px-4 py-8">
-    {route === 'index' ? (
-      <div>
-        <h1 class="text-5xl font-bold mb-4">Welcome to {config.name}</h1>
-        <p class="text-xl mb-8">This is the {tenantDir} site.</p>
-        <div class="mt-8">
-          <a href="/blog" class="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block hover:bg-blue-700">
-            Visit Blog
-          </a>
+{PageComponent ? (
+  <PageComponent {...pageProps} />
+) : (
+  <Layout title={title}>
+    <main class="container mx-auto px-4 py-8">
+      {route === 'index' ? (
+        <div>
+          <h1 class="text-5xl font-bold mb-4">Welcome to {config.name}</h1>
+          <p class="text-xl mb-8">This is the {tenantDir} site.</p>
+          <div class="mt-8">
+            <a href="/blog" class="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block hover:bg-blue-700">
+              Visit Blog
+            </a>
+          </div>
         </div>
-      </div>
-    ) : route === 'blog' ? (
-      <div>
-        <h1 class="text-4xl font-bold mb-8">Blog</h1>
-        <BlogList database={tenant.database} category={category} />
-      </div>
-    ) : route.startsWith('blog/') ? (
-      <BlogPost slug={blogSlug} database={tenant.database} />
-    ) : (
-      <div>
-        <h1 class="text-4xl font-bold mb-4">{title}</h1>
-        <p class="text-gray-400">This is the {route} page for {config.name}.</p>
-      </div>
-    )}
-  </main>
-</Layout>
+      ) : route === 'blog' ? (
+        <div>
+          <h1 class="text-4xl font-bold mb-8">Blog</h1>
+          <BlogList database={tenant.database} category={category} />
+        </div>
+      ) : route.startsWith('blog/') ? (
+        <BlogPost slug={blogSlug} database={tenant.database} />
+      ) : (
+        <div>
+          <h1 class="text-4xl font-bold mb-4">{title}</h1>
+          <p class="text-gray-400">This is the {route} page for {config.name}.</p>
+        </div>
+      )}
+    </main>
+  </Layout>
+)}

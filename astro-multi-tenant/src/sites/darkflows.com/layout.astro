@@ -1,9 +1,10 @@
 ---
 export interface Props {
-  title: string;
+  title?: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const { title = 'DarkFlows Router OS', description = 'High Performance Routing and Firewalling Reimagined' } = Astro.props;
 import config from './config.json';
 ---
 
@@ -11,49 +12,59 @@ import config from './config.json';
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="DarkFlows - Enterprise Routing Solutions" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title} - DarkFlows</title>
-    <style>
-      body {
-        background: linear-gradient(135deg, #1a0000 0%, #3a0a0a 100%);
-        color: #ffffff;
-        margin: 0;
-        font-family: system-ui, -apple-system, sans-serif;
-        min-height: 100vh;
-      }
-      .nav-dark {
-        background: rgba(26, 0, 0, 0.95);
-        backdrop-filter: blur(10px);
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
-  <body>
-    <nav class="nav-dark border-b border-red-900/30 sticky top-0 z-50">
-      <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center gap-8">
-            <a href="/" class="text-xl font-bold bg-gradient-to-r from-red-500 to-orange-600 bg-clip-text text-transparent">
-              DarkFlows
-            </a>
-            <div class="flex gap-6">
-              <a href="/" class="hover:text-red-400 transition">Home</a>
-              <a href="/products" class="hover:text-red-400 transition">Products</a>
-              <a href="/solutions" class="hover:text-red-400 transition">Solutions</a>
-              <a href="/blog" class="hover:text-red-400 transition">Blog</a>
-              <a href="/docs" class="hover:text-red-400 transition">Documentation</a>
-            </div>
-          </div>
-          <div class="flex gap-4">
-            <a href="/contact" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
-              Contact
-            </a>
-          </div>
-        </div>
-      </div>
-    </nav>
+  <body class="bg-black text-white">
     <slot />
   </body>
 </html>
+
+<style is:global>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    backface-visibility: hidden;
+  }
+
+  .bg-transparent {
+    background-color: transparent !important;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .syntax-highlight {
+    background-color: #0d1117 !important;
+    color: #e1e4e8 !important;
+  }
+
+  .syntax-highlight .comment { color: #8b949e !important; }
+  .syntax-highlight .keyword { color: #ff7b72 !important; }
+  .syntax-highlight .string { color: #a5d6ff !important; }
+  .syntax-highlight .number { color: #79c0ff !important; }
+  .syntax-highlight .title.function_ { color: #d2a8ff !important; }
+  .syntax-highlight .operator { color: #ff7b72 !important; }
+  .syntax-highlight .punctuation { color: #e1e4e8 !important; }
+</style>

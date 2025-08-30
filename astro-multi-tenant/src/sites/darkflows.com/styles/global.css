@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
+}
+
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.syntax-highlight {
+  background-color: #0d1117 !important;
+  color: #e1e4e8 !important;
+}
+
+.syntax-highlight .comment { color: #8b949e !important; }
+.syntax-highlight .keyword { color: #ff7b72 !important; }
+.syntax-highlight .string { color: #a5d6ff !important; }
+.syntax-highlight .number { color: #79c0ff !important; }
+.syntax-highlight .title.function_ { color: #d2a8ff !important; }
+.syntax-highlight .operator { color: #ff7b72 !important; }
+.syntax-highlight .punctuation { color: #e1e4e8 !important; }

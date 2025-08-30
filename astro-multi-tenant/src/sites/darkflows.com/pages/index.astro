@@ -1,0 +1,36 @@
+---
+import Layout from '../layout.astro';
+import SwirlingParticles from '../components/SwirlingParticles.astro';
+import TopNavBar from '../components/TopNavBar.astro';
+import FeaturedPost from '../components/FeaturedPost.astro';
+import ScrollReveal from '../components/ScrollReveal.astro';
+import DataConnectSection from '../components/DataConnectSection.astro';
+import FeatureCarousel from '../components/FeatureCarousel.astro';
+import FAQ from '../components/FAQ.astro';
+import Footer from '../components/Footer.astro';
+import siteContent from '../site-content.json';
+
+const { dataConnectSections } = siteContent;
+---
+
+<Layout>
+  <main class="min-h-screen bg-black relative">
+    <SwirlingParticles />
+    <div class="relative z-20">
+      <TopNavBar />
+      <FeaturedPost />
+      <ScrollReveal />
+      <div class="space-y-2">
+        {dataConnectSections.map((section, index) => (
+          <DataConnectSection
+            data={section}
+            imageOnRight={index % 2 === 0}
+          />
+        ))}
+      </div>
+      <FeatureCarousel />
+      <FAQ />
+      <Footer />
+    </div>
+  </main>
+</Layout>
