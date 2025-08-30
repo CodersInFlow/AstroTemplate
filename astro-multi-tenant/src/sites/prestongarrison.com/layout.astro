@@ -118,7 +118,8 @@ const imageURL = new URL(image, url);
 </html>
 
 <style is:global>
-  @import url('/styles/global.css');
+  @import './styles/global.css';
+  @import './styles/preston.css';
   
   /* Additional global styles if needed */
   html {
@@ -128,9 +129,7 @@ const imageURL = new URL(image, url);
   body {
     margin: 0;
     padding: 0;
-    background: #fff;
+    background-color: #FFFFFF;
+    color: #111827;
   }
-  
-  /* Preston Garrison site uses gray color scheme for blog components */
-  /* We'll pass theme context to blog components instead of overriding CSS */
 </style>

@@ -3,9 +3,6 @@
 // This component handles URL parsing and renders the appropriate blog page
 import { getTenantFromHost } from '../../shared/lib/tenant';
 
-// Accept theme configuration from parent
-const { theme } = Astro.props;
-
 // Get the URL segments
 const pathname = Astro.url.pathname;
 const segments = pathname.split('/').filter(Boolean);
@@ -19,11 +16,10 @@ const database = tenant.database || tenant.id;
 // Store database in a way child components can access
 Astro.locals.database = database;
 Astro.locals.tenant = tenant;
-Astro.locals.theme = theme;
 
 // Parse the URL to determine which component to render
 let componentToRender = 'listing'; // default
-let props: any = { database, tenant, theme };
+let props: any = { database, tenant };
 
 // URL patterns:
 // /blog -> listing

@@ -3,13 +3,13 @@ const pathname = Astro.url.pathname;
 const isInBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog';
 ---
 
-<nav class="fixed top-0 w-full bg-[#111111]/95 backdrop-blur supports-[backdrop-filter]:bg-[#111111]/60 z-50">
+<nav class="fixed top-0 w-full bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60 z-50">
   <div class="relative flex h-12 items-center px-4">
     <!-- Left - Conditional Logo/Home Button -->
     {isInBlogPost ? (
       <a 
         href="/blog"
-        class="flex items-center gap-2 text-gray-200 hover:text-white transition-colors"
+        class="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -30,7 +30,7 @@ const isInBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog';
 
     <!-- Center - Description (hidden on mobile) -->
     <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:block">
-      <p class="text-sm text-gray-400 whitespace-nowrap">
+      <p class="text-sm text-text-muted whitespace-nowrap">
         Have your CAKE and eat it too... DarkFlows RouterOS
       </p>
     </div>
@@ -66,7 +66,7 @@ const isInBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog';
         href="https://www.reddit.com/r/DarkFlows/"
         target="_blank"
         rel="noopener noreferrer"
-        class="hidden md:block px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium transition-colors"
+        class="hidden md:block px-4 py-1.5 bg-primary hover:bg-primary/80 text-text-primary rounded-md text-sm font-medium transition-colors"
       >
         Support
       </a>
@@ -74,7 +74,7 @@ const isInBlogPost = pathname.startsWith('/blog/') && pathname !== '/blog';
       <!-- Download Button -->
       <a 
         href="/downloadpage"
-        class="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition-colors"
+        class="px-4 py-1.5 bg-secondary hover:bg-secondary/80 text-text-primary rounded-md text-sm font-medium transition-colors"
       >
         Download
       </a>

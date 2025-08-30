@@ -5,63 +5,8 @@ export const prerender = false;
 import Layout from '../../layout.astro';
 import BlogApp from '../../../../modules/blog/BlogApp.astro';
 import config from '../../config.json';
-
-// Import blog theme styles
-import '../../../../modules/blog/styles/blog-theme.css';
-
-// DarkFlows blog theme - dark theme with red/coral accents
-const blogTheme = {
-  mode: 'dark',
-  primaryColor: config.theme.primaryColor, // #ff7b72 (coral/red)
-  backgroundColor: config.theme.backgroundColor, // #0a0a0a
-  
-  // Dark theme with near-black backgrounds
-  pageBg: 'bg-black',
-  contentBg: 'bg-gray-900',
-  
-  // Using red/coral color palette to match DarkFlows
-  btnPrimary: 'bg-red-500 hover:bg-red-600 text-white',
-  btnSecondary: 'bg-gray-800 hover:bg-gray-700 text-gray-100',
-  btnDanger: 'bg-red-700 hover:bg-red-800 text-white',
-  
-  // Text colors for dark theme
-  textPrimary: 'text-gray-100',
-  textSecondary: 'text-gray-300',
-  textMuted: 'text-gray-500',
-  
-  // Links using red accent
-  link: 'text-red-400 hover:text-red-300',
-  linkDanger: 'text-red-500 hover:text-red-400',
-  
-  // Cards and containers
-  card: 'bg-gray-900 border-gray-800',
-  cardHover: 'hover:bg-gray-800',
-  
-  // Form elements
-  input: 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-red-500 focus:ring-red-500',
-  select: 'bg-gray-800 border-gray-700 text-white focus:border-red-500 focus:ring-red-500',
-  checkbox: 'bg-gray-800 border-gray-700 text-red-500 focus:ring-red-500',
-  
-  // Navigation
-  navBg: 'bg-gray-900 border-gray-800',
-  navActive: 'border-red-500 text-red-400',
-  navInactive: 'text-gray-400 hover:text-gray-200 border-transparent',
-  
-  // Badges and labels
-  badge: 'bg-red-900 text-red-200',
-  badgeSecondary: 'bg-gray-800 text-gray-300',
-  
-  // Categories
-  categoryBg: 'bg-red-500 hover:bg-red-600',
-  categoryText: 'text-white',
-  
-  // Alerts
-  alertSuccess: 'bg-green-900 text-green-200 border-green-700',
-  alertError: 'bg-red-900 text-red-200 border-red-700',
-  alertInfo: 'bg-blue-900 text-blue-200 border-blue-700'
-};
 ---
 
 <Layout title="Blog">
-  <BlogApp theme={blogTheme} config={config} />
+  <BlogApp config={config} />
 </Layout>

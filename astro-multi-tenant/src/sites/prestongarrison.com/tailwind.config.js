@@ -1,0 +1,52 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
+    './src/sites/prestongarrison.com/**/*.{astro,tsx}',
+    './src/modules/blog/**/*.{astro,tsx}'
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Semantic colors for light theme
+        'primary': '#111827',        // gray-900 - main brand color
+        'secondary': '#4B5563',       // gray-600
+        'accent': '#6B7280',          // gray-500
+        'background': '#FFFFFF',      // white - page background
+        'surface': '#FFFFFF',         // white - card backgrounds
+        'surface-hover': '#F9FAFB',   // gray-50 - hover state
+        'border': '#E5E7EB',          // gray-200 - borders
+        
+        // Text colors
+        'text-primary': '#111827',    // gray-900 - main text
+        'text-secondary': '#4B5563',  // gray-600 - secondary text
+        'text-muted': '#9CA3AF',      // gray-400 - muted text
+        'text-inverse': '#FFFFFF',    // white - text on dark backgrounds
+        
+        // Interactive elements
+        'link': '#374151',            // gray-700
+        'link-hover': '#000000',      // black
+        
+        // Status colors
+        'success': '#10B981',         // green-500
+        'warning': '#F59E0B',         // yellow-500
+        'error': '#EF4444',           // red-500
+        'info': '#3B82F6',            // blue-500
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+        poppins: ['Poppins', 'sans-serif'],
+        nunito: ['Nunito', 'sans-serif'],
+      },
+      fontSize: {
+        'budgetpt': ['2.5rem', { lineHeight: '1.2' }],  // 40px
+        'pospt': ['1.125rem', { lineHeight: '1.5' }],    // 18px
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+  ],
+}

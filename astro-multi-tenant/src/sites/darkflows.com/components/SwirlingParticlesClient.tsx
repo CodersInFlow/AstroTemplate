@@ -83,7 +83,7 @@ const SwirlingParticles = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 w-full h-full min-h-screen overflow-hidden bg-black">
+    <div className="fixed inset-0 w-full h-full min-h-screen overflow-hidden bg-background">
       {particles.map((particle, index) => (
         <div
           key={index}

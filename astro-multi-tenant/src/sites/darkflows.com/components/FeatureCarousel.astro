@@ -55,7 +55,7 @@ const items = [
 
 <div 
   id="feature-carousel" 
-  class="w-full bg-black py-8 select-none transition-opacity duration-1000 opacity-0"
+  class="w-full bg-background py-8 select-none transition-opacity duration-1000 opacity-0"
 >
   <div class="max-w-[95vw] mx-auto">
     <div class="relative">
@@ -90,10 +90,10 @@ const items = [
                   />
                 </div>
                 <div class="text-center">
-                  <h3 class="text-lg font-semibold text-white">
+                  <h3 class="text-lg font-semibold text-text-primary">
                     {item.title}
                   </h3>
-                  <p class="text-sm text-gray-400">
+                  <p class="text-sm text-text-muted">
                     {item.description}
                   </p>
                 </div>
@@ -105,7 +105,7 @@ const items = [
 
       <button
         id="carousel-prev"
-        class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 bg-gray-800 p-2 rounded-full text-white hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+        class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 bg-surface p-2 rounded-full text-text-primary hover:bg-surface/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
         disabled
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@ const items = [
 
       <button
         id="carousel-next"
-        class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 bg-gray-800 p-2 rounded-full text-white hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+        class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 bg-surface p-2 rounded-full text-text-primary hover:bg-surface/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -127,7 +127,7 @@ const items = [
           <button
             data-dot={index}
             class={`carousel-dot w-2 h-2 rounded-full transition-colors ${
-              index === 0 ? 'bg-white' : 'bg-gray-600'
+              index === 0 ? 'bg-text-primary' : 'bg-text-muted'
             }`}
           />
         ))}
@@ -139,12 +139,12 @@ const items = [
 <!-- Modal/Popup -->
 <div 
   id="image-modal"
-  class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-8 hidden"
+  class="fixed inset-0 bg-background/90 z-50 flex items-center justify-center p-8 hidden"
 >
   <div class="relative w-full max-w-[90vw] h-full max-h-[85vh] flex flex-col">
     <button
       id="modal-close"
-      class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+      class="absolute -top-12 right-0 text-text-primary hover:text-text-secondary transition-colors"
     >
       <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -160,8 +160,8 @@ const items = [
         class="max-w-full max-h-[90vh] object-contain"
       />
       <div class="text-center w-full pb-4">
-        <h2 id="modal-title" class="text-xl font-semibold text-white mb-2"></h2>
-        <p id="modal-description" class="text-gray-200"></p>
+        <h2 id="modal-title" class="text-xl font-semibold text-text-primary mb-2"></h2>
+        <p id="modal-description" class="text-text-secondary"></p>
       </div>
     </div>
   </div>
@@ -209,8 +209,8 @@ const items = [
 
     // Update dots
     dots.forEach((dot, index) => {
-      dot.classList.toggle('bg-white', index === currentIndex);
-      dot.classList.toggle('bg-gray-600', index !== currentIndex);
+      dot.classList.toggle('bg-text-primary', index === currentIndex);
+      dot.classList.toggle('bg-text-muted', index !== currentIndex);
     });
 
     // Update scale effect

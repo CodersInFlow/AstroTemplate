@@ -2,14 +2,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap');
 
 @layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
+  h1 {
+    @apply text-4xl font-bold;
+  }
+  h2 {
+    @apply text-3xl font-semibold;
+  }
+  h3 {
+    @apply text-2xl font-semibold;
+  }
+  h4 {
+    @apply text-xl font-medium;
+  }
+  h5 {
+    @apply text-lg font-medium;
+  }
   h6 {
-    font-size: auto;
-    font-weight: auto;
+    @apply text-base font-medium;
   }
 }
 

@@ -12,19 +12,19 @@ const socialIcons = {
 };
 ---
 
-<footer class="bg-black text-gray-300 border-t border-gray-800">
+<footer class="bg-background text-text-secondary border-t border-border">
   <div class="py-4 flex justify-center">
     <div class="w-full max-w-[1024px] px-4">
       <div class="flex flex-wrap justify-between">
         {footer.sections.map((section) => (
           <div class="flex flex-col shrink-0 basis-auto pr-8 last:pr-0">
-            <h3 class="text-white font-medium text-base">{section.title}</h3>
+            <h3 class="text-text-primary font-medium text-base">{section.title}</h3>
             <ul class="-mt-1">
               {section.links.map((link) => (
                 <li class="leading-tight">
                   <a 
                     href={link.href}
-                    class="text-sm text-gray-400 hover:text-white transition-colors duration-200 block py-0.5"
+                    class="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 block py-0.5"
                   >
                     {link.text}
                   </a>
@@ -36,12 +36,12 @@ const socialIcons = {
       </div>
       
       <div class="mt-4 flex flex-wrap justify-between items-center gap-2">
-        <p class="text-gray-400 text-sm">{footer.tagline}</p>
+        <p class="text-text-muted text-sm">{footer.tagline}</p>
         <div class="flex items-center gap-3">
           {footer.socials.map((social) => (
             <a
               href={social.href}
-              class="text-gray-400 hover:text-white transition-colors duration-200"
+              class="text-text-muted hover:text-text-primary transition-colors duration-200"
               target="_blank"
               rel="noopener noreferrer"
             >

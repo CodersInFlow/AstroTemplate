@@ -5,8 +5,6 @@ export const prerender = false;
 import { getTenantFromHost } from '../../shared/lib/tenant';
 import BlogApp from '../../modules/blog/BlogApp.astro';
 
-// Import blog theme styles
-import '../../modules/blog/styles/blog-theme.css';
 
 // Get the current tenant to determine which layout to use
 const hostname = Astro.request.headers.get('host') || '127.0.0.1:4321';
@@ -90,5 +88,5 @@ try {
 ---
 
 <Layout title="Blog">
-  <BlogApp theme={blogTheme} />
+  <BlogApp />
 </Layout>

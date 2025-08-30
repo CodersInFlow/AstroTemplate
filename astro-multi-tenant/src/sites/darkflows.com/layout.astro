@@ -21,7 +21,7 @@ import config from './config.json';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
-  <body class="bg-black text-white">
+  <body class="bg-background text-text-primary">
     <slot />
   </body>
 </html>
@@ -31,14 +31,7 @@ import config from './config.json';
   @tailwind components;
   @tailwind utilities;
 
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-
   body {
-    color: var(--foreground);
-    background: var(--background);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
@@ -47,112 +40,7 @@ import config from './config.json';
     backface-visibility: hidden;
   }
 
-  .bg-transparent {
-    background-color: transparent !important;
-  }
-
   html {
     scroll-behavior: smooth;
-  }
-
-  .syntax-highlight {
-    background-color: #0d1117 !important;
-    color: #e1e4e8 !important;
-  }
-
-  .syntax-highlight .comment { color: #8b949e !important; }
-  .syntax-highlight .keyword { color: #ff7b72 !important; }
-  .syntax-highlight .string { color: #a5d6ff !important; }
-  .syntax-highlight .number { color: #79c0ff !important; }
-  .syntax-highlight .title.function_ { color: #d2a8ff !important; }
-  .syntax-highlight .operator { color: #ff7b72 !important; }
-  .syntax-highlight .punctuation { color: #e1e4e8 !important; }
-  
-  /* Blog component theme for DarkFlows */
-  .blog-category-btn {
-    background-color: rgba(139, 0, 0, 0.2);
-    color: #ff6b6b;
-    border: 1px solid rgba(139, 0, 0, 0.3);
-  }
-  
-  .blog-category-btn:hover {
-    background-color: rgba(139, 0, 0, 0.3);
-    border-color: rgba(139, 0, 0, 0.5);
-  }
-  
-  .blog-category-active {
-    background-color: #8b0000 !important;
-    color: white !important;
-    border-color: #8b0000 !important;
-  }
-  
-  .blog-card {
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(139, 0, 0, 0.2);
-  }
-  
-  .blog-card:hover {
-    background-color: rgba(0, 0, 0, 0.7);
-    border-color: rgba(139, 0, 0, 0.4);
-  }
-  
-  .blog-excerpt {
-    color: #cccccc;
-  }
-  
-  .blog-date {
-    color: #999999;
-  }
-  
-  /* Blog post styles */
-  .blog-post-wrapper {
-    background: #0a0a0a;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-  
-  .blog-post-title {
-    color: #ffffff;
-  }
-  
-  .blog-post-meta {
-    color: #999999;
-  }
-  
-  .blog-post-content {
-    color: #cccccc;
-  }
-  
-  .blog-post-content h1,
-  .blog-post-content h2,
-  .blog-post-content h3,
-  .blog-post-content h4,
-  .blog-post-content h5,
-  .blog-post-content h6 {
-    color: #ffffff;
-  }
-  
-  .blog-post-content p {
-    color: #cccccc;
-  }
-  
-  .blog-post-content a {
-    color: #ff6b6b;
-  }
-  
-  .blog-post-content a:hover {
-    color: #ff8888;
-  }
-  
-  .blog-post-content code {
-    background-color: rgba(139, 0, 0, 0.2);
-    color: #ff6b6b;
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-  }
-  
-  .blog-post-content pre {
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(139, 0, 0, 0.3);
   }
 </style>

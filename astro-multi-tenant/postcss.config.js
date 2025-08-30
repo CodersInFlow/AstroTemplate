@@ -1,8 +1,9 @@
+const site = process.env.SITE || 'codersinflow.com';
+
 module.exports = {
   plugins: {
     tailwindcss: {
-      // Dynamic config loading based on site
-      config: process.env.SITE_CONFIG || './tailwind.config.cjs'
+      config: `./src/sites/${site}/tailwind.config.js`
     },
     autoprefixer: {},
   },

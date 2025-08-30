@@ -4,7 +4,13 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
+    "dev:codersinflow": "SITE=codersinflow.com astro dev",
+    "dev:darkflows": "SITE=darkflows.com astro dev",
+    "dev:prestongarrison": "SITE=prestongarrison.com astro dev",
     "build": "astro build",
+    "build:codersinflow": "SITE=codersinflow.com astro build",
+    "build:darkflows": "SITE=darkflows.com astro build",
+    "build:prestongarrison": "SITE=prestongarrison.com astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -12,6 +18,8 @@
     "@astrojs/node": "^9.3.2",
     "@astrojs/react": "^3.6.3",
     "@astrojs/tailwind": "^5.1.4",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
     "@tiptap/core": "^2.0.0",
     "@tiptap/extension-code-block-lowlight": "^2.0.0",
     "@tiptap/extension-image": "^2.0.0",

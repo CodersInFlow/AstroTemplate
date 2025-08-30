@@ -87,7 +87,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-400 hover:text-blue-300 underline',
+          class: 'text-link hover:text-link-hover underline',
           rel: 'noopener noreferrer',
           target: '_blank'
         },
@@ -356,7 +356,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
 
   if (!isMounted || !editor) {
     return (
-      <div className="border border-gray-700 rounded-lg bg-gray-800 min-h-[400px] p-4 text-gray-400">
+      <div className="border border-border rounded-lg bg-surface min-h-[400px] p-4 text-text-muted">
         Loading editor...
       </div>
     );
@@ -364,14 +364,14 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
 
   return (
     <div className="space-y-4">
-      <div className="border border-gray-700 rounded-lg bg-gray-800 overflow-hidden">
+      <div className="border border-border rounded-lg bg-surface overflow-hidden">
         {/* Toolbar */}
-        <div className="border-b border-gray-700 bg-gray-900 p-2">
+        <div className="border-b border-border bg-background p-2">
           <div className="flex flex-wrap items-center gap-1">
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
-              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('bold') ? 'bg-gray-700 text-white' : ''}`}
+              className={`p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('bold') ? 'bg-surface text-text-primary' : ''}`}
               title="Bold"
             >
               <Bold size={16} />
@@ -379,18 +379,18 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('italic') ? 'bg-gray-700 text-white' : ''}`}
+              className={`p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('italic') ? 'bg-surface text-text-primary' : ''}`}
               title="Italic"
             >
               <Italic size={16} />
             </button>
             
-            <div className="w-px h-6 bg-gray-700 mx-1" />
+            <div className="w-px h-6 bg-border mx-1" />
             
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-              className={`px-2 py-1 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-700 text-white' : ''}`}
+              className={`px-2 py-1 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('heading', { level: 1 }) ? 'bg-surface text-text-primary' : ''}`}
               title="Heading 1"
             >
               H1
@@ -398,7 +398,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              className={`px-2 py-1 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-700 text-white' : ''}`}
+              className={`px-2 py-1 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('heading', { level: 2 }) ? 'bg-surface text-text-primary' : ''}`}
               title="Heading 2"
             >
               H2
@@ -406,18 +406,18 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-              className={`px-2 py-1 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('heading', { level: 3 }) ? 'bg-gray-700 text-white' : ''}`}
+              className={`px-2 py-1 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('heading', { level: 3 }) ? 'bg-surface text-text-primary' : ''}`}
               title="Heading 3"
             >
               H3
             </button>
             
-            <div className="w-px h-6 bg-gray-700 mx-1" />
+            <div className="w-px h-6 bg-border mx-1" />
             
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('bulletList') ? 'bg-gray-700 text-white' : ''}`}
+              className={`p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('bulletList') ? 'bg-surface text-text-primary' : ''}`}
               title="Bullet List"
             >
               <List size={16} />
@@ -425,18 +425,18 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('orderedList') ? 'bg-gray-700 text-white' : ''}`}
+              className={`p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('orderedList') ? 'bg-surface text-text-primary' : ''}`}
               title="Ordered List"
             >
               <ListOrdered size={16} />
             </button>
             
-            <div className="w-px h-6 bg-gray-700 mx-1" />
+            <div className="w-px h-6 bg-border mx-1" />
             
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('codeBlock') ? 'bg-gray-700 text-white' : ''}`}
+              className={`p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('codeBlock') ? 'bg-surface text-text-primary' : ''}`}
               title="Code Block"
             >
               <Code size={16} />
@@ -445,13 +445,13 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
-              className={`p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white ${editor.isActive('blockquote') ? 'bg-gray-700 text-white' : ''}`}
+              className={`p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary ${editor.isActive('blockquote') ? 'bg-surface text-text-primary' : ''}`}
               title="Quote"
             >
               <Quote size={16} />
             </button>
             
-            <div className="w-px h-6 bg-gray-700 mx-1" />
+            <div className="w-px h-6 bg-border mx-1" />
             
             <button
               type="button"
@@ -459,10 +459,10 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
               disabled={!hasTextSelection()}
               className={`p-2 rounded ${
                 editor?.isActive('link') 
-                  ? 'bg-gray-700 text-white' 
+                  ? 'bg-surface text-text-primary' 
                   : hasTextSelection() 
-                    ? 'hover:bg-gray-700 text-gray-300 hover:text-white' 
-                    : 'opacity-50 cursor-not-allowed text-gray-500'
+                    ? 'hover:bg-surface text-text-secondary hover:text-text-primary' 
+                    : 'opacity-50 cursor-not-allowed text-text-muted'
               }`}
               title={hasTextSelection() ? 'Add Link' : 'Select text to add link'}
             >
@@ -471,13 +471,13 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
             <button
               type="button"
               onClick={addImage}
-              className="p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white relative"
+              className="p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary relative"
               title="Add Image"
               disabled={uploading}
             >
               <ImageIcon size={16} className={uploading ? 'opacity-50' : ''} />
               {uploading && (
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 px-2 py-1 rounded text-xs whitespace-nowrap">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-surface px-2 py-1 rounded text-xs whitespace-nowrap">
                   Uploading...
                 </div>
               )}
@@ -490,7 +490,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
                   editor.chain().focus().setYoutubeVideo({ src: url }).run();
                 }
               }}
-              className="p-2 rounded hover:bg-gray-700 text-gray-300 hover:text-white"
+              className="p-2 rounded hover:bg-surface text-text-secondary hover:text-text-primary"
               title="Embed YouTube Video"
             >
               <YoutubeIcon size={16} />
@@ -505,33 +505,33 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
         {showPasteDialog && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setShowPasteDialog(false)}>
             <div 
-              className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 border border-gray-700"
+              className="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-semibold text-white mb-4">Add Image</h3>
+              <h3 className="text-lg font-semibold text-text-primary mb-4">Add Image</h3>
               
               <div className="space-y-4">
                 {/* Paste option */}
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
                   <div className="mb-2">
-                    <ImageIcon size={32} className="mx-auto text-gray-400" />
+                    <ImageIcon size={32} className="mx-auto text-text-muted" />
                   </div>
-                  <p className="text-gray-300 mb-2">Paste an image from clipboard</p>
-                  <p className="text-sm text-gray-500">Copy an image and press Ctrl+V / Cmd+V</p>
+                  <p className="text-text-secondary mb-2">Paste an image from clipboard</p>
+                  <p className="text-sm text-text-muted">Copy an image and press Ctrl+V / Cmd+V</p>
                 </div>
                 
                 {/* Divider */}
                 <div className="flex items-center gap-4">
-                  <div className="flex-1 h-px bg-gray-700"></div>
-                  <span className="text-gray-500 text-sm">OR</span>
-                  <div className="flex-1 h-px bg-gray-700"></div>
+                  <div className="flex-1 h-px bg-surface"></div>
+                  <span className="text-text-muted text-sm">OR</span>
+                  <div className="flex-1 h-px bg-surface"></div>
                 </div>
                 
                 {/* File upload option */}
                 <button
                   type="button"
                   onClick={selectFile}
-                  className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
+                  className="w-full px-4 py-3 bg-surface hover:bg-surface-hover rounded-lg text-text-primary transition-colors"
                 >
                   Select File from Computer
                 </button>
@@ -540,14 +540,14 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
                 <button
                   type="button"
                   onClick={() => setShowPasteDialog(false)}
-                  className="w-full px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                  className="w-full px-4 py-2 text-text-muted hover:text-text-primary transition-colors"
                 >
                   Cancel
                 </button>
               </div>
               
               {/* Instructions */}
-              <div className="mt-4 p-3 bg-gray-900 rounded text-xs text-gray-400">
+              <div className="mt-4 p-3 bg-background rounded text-xs text-text-muted">
                 <p className="mb-1">💡 Pro tip: You can also paste images directly in the editor!</p>
                 <p>Just copy any image and paste it while typing.</p>
               </div>
