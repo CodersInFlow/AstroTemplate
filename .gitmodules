@@ -1,6 +1,0 @@
-[submodule "src/components"]
-	path = src/components
-	url = ssh://git@pve:1022/preston/react_components.git
-[submodule "src/pages/blog"]
-	path = src/pages/blog
-	url = ssh://git@pve:1022/preston/blog_component.git
