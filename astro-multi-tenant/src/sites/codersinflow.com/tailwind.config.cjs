@@ -44,6 +44,34 @@ module.exports = {
       },
     },
   },
+  safelist: [
+    // Background colors
+    'bg-background',
+    'bg-surface',
+    'bg-surface-hover',
+    'bg-primary',
+    'bg-secondary',
+    'bg-accent',
+    
+    // Text colors
+    'text-text-primary',
+    'text-text-secondary',
+    'text-text-muted',
+    'text-text-inverse',
+    'text-link',
+    'text-link-hover',
+    
+    // Border colors
+    'border-border',
+    'border-primary',
+    
+    // Hover states
+    'hover:bg-primary/90',
+    'hover:bg-surface-hover',
+    'hover:text-link-hover',
+    'hover:text-text-primary',
+    'hover:text-text-secondary',
+  ],
   plugins: [
     require('@tailwindcss/typography'),
     require('@tailwindcss/forms'),

@@ -1,5 +1,6 @@
 ---
-import './styles/main.css';  // Import this site's CSS directly
+// Import the generated CSS directly without path conflicts
+import darkflowsStyles from './styles/main.css?raw';
 
 export interface Props {
   title?: string;
@@ -24,6 +25,7 @@ import config from './config.json';
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body class="bg-background text-text-primary">
+    <style set:html={darkflowsStyles}></style>
     <slot />
   </body>
 </html>

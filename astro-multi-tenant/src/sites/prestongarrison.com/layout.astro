@@ -1,7 +1,8 @@
 ---
+// Import the generated CSS directly without path conflicts
+import prestonStyles from './styles/main.css?raw';
 import Menu from '../../shared/components/preston/Menu.jsx';
 import MainTitleHeader from '../../shared/components/preston/MainTitleHeader.jsx';
-import './styles/main.css';  // Import this site's CSS directly
 
 export interface Props {
   title?: string;
@@ -112,6 +113,7 @@ const imageURL = new URL(image, url);
     })} />
   </head>
   <body class="bg-background text-text-primary">
+    <style set:html={prestonStyles}></style>
     <Menu client:load data={{}} />
     {showHeader && <MainTitleHeader data={{ title: "Preston Garrison" }} client:load />}
     <slot />
