@@ -6,20 +6,26 @@ set -e
 echo "🚀 Starting Multi-Tenant Development Environment"
 echo "================================================"
 
-# Read config
+# Load configuration from .env if it exists
+if [ -f ".env" ]; then
+    echo "Loading configuration from .env..."
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
+# Use environment variables or defaults
+BACKEND_PORT="${API_PORT:-3001}"
+FRONTEND_PORT="${PORT:-4321}"
+MONGODB_PORT="${MONGODB_PORT:-27017}"
+API_URL="${PUBLIC_API_URL:-http://127.0.0.1:3001}"
+MONGODB_URI="${MONGODB_URI:-mongodb://127.0.0.1:27017/codersblog}"
+
+# Try app-config.json as fallback for backward compatibility
 if [ -f "app-config.json" ]; then
-    BACKEND_PORT=$(jq -r '.server.ports.backend' app-config.json)
-    FRONTEND_PORT=$(jq -r '.server.ports.frontend' app-config.json)
-    MONGODB_PORT=$(jq -r '.server.ports.mongodb' app-config.json)
-    API_URL=$(jq -r '.urls.api' app-config.json)
-    MONGODB_URI=$(jq -r '.urls.mongodb' app-config.json)
-else
-    # Fallback values
-    BACKEND_PORT=3001
-    FRONTEND_PORT=4321
-    MONGODB_PORT=27017
-    API_URL="http://127.0.0.1:3001"
-    MONGODB_URI="mongodb://127.0.0.1:27017/codersblog"
+    BACKEND_PORT=${BACKEND_PORT:-$(jq -r '.server.ports.backend' app-config.json)}
+    FRONTEND_PORT=${FRONTEND_PORT:-$(jq -r '.server.ports.frontend' app-config.json)}
+    MONGODB_PORT=${MONGODB_PORT:-$(jq -r '.server.ports.mongodb' app-config.json)}
+    API_URL=${API_URL:-$(jq -r '.urls.api' app-config.json)}
+    MONGODB_URI=${MONGODB_URI:-$(jq -r '.urls.mongodb' app-config.json)}
 fi
 
 # Start MongoDB if not running

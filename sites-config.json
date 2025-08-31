@@ -1,6 +1,8 @@
 {
   "codersinflow.com": {
     "id": "codersinflow",
+    "name": "CodersInFlow",
+    "description": "AI-Powered Pair Programming Platform",
     "directory": "codersinflow.com",
     "database": "codersinflow_db",
     "theme": "dark-blue",
@@ -8,6 +10,8 @@
   },
   "www.codersinflow.com": {
     "id": "codersinflow",
+    "name": "CodersInFlow",
+    "description": "AI-Powered Pair Programming Platform",
     "directory": "codersinflow.com",
     "database": "codersinflow_db",
     "theme": "dark-blue",
@@ -15,6 +19,8 @@
   },
   "darkflows.com": {
     "id": "darkflows",
+    "name": "DarkFlows",
+    "description": "Advanced Router OS & Network Solutions",
     "directory": "darkflows.com",
     "database": "darkflows_db",
     "theme": "dark-red",
@@ -22,6 +28,8 @@
   },
   "www.darkflows.com": {
     "id": "darkflows",
+    "name": "DarkFlows",
+    "description": "Advanced Router OS & Network Solutions",
     "directory": "darkflows.com",
     "database": "darkflows_db",
     "theme": "dark-red",
@@ -29,6 +37,8 @@
   },
   "prestongarrison.com": {
     "id": "prestongarrison",
+    "name": "Preston Garrison",
+    "description": "Full Stack Developer Portfolio",
     "directory": "prestongarrison.com",
     "database": "prestongarrison_db",
     "theme": "light",
@@ -36,8 +46,33 @@
   },
   "www.prestongarrison.com": {
     "id": "prestongarrison",
+    "name": "Preston Garrison",
+    "description": "Full Stack Developer Portfolio",
     "directory": "prestongarrison.com",
     "database": "prestongarrison_db",
+    "theme": "light",
+    "features": ["blog", "docs"]
+  },
+  "magicvideodownloader.com": {
+    "id": "magicvideodownloader",
+    "name": "Magic Video Downloader",
+    "description": "Download videos from anywhere",
+    "directory": "magicvideodownloader.com",
+    "database": "magicvideodownloader_db",
+    "theme": "light",
+    "features": ["blog", "docs"],
+    "adminUser": {
+      "email": "admin@magicvideodownloader.com",
+      "password": "changeme123!",
+      "name": "magicvideodownloader Admin"
+    }
+  },
+  "www.magicvideodownloader.com": {
+    "id": "magicvideodownloader",
+    "name": "Magic Video Downloader",
+    "description": "Download videos from anywhere",
+    "directory": "magicvideodownloader.com",
+    "database": "magicvideodownloader_db",
     "theme": "light",
     "features": ["blog", "docs"]
   },

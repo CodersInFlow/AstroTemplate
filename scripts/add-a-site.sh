@@ -14,6 +14,8 @@ fi
 # Extract site name from domain (remove .com, .org, etc.)
 SITE_NAME="${DOMAIN%%.*}"
 SITE_ID="${SITE_NAME}"
+# Create a display name from the domain (capitalize words)
+DISPLAY_NAME=$(echo "$SITE_NAME" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
 
 echo "➕ Adding new site: $DOMAIN"
 echo "   Site ID: $SITE_ID"
@@ -320,6 +322,8 @@ cat << EOF
 
   "$DOMAIN": {
     "id": "$SITE_ID",
+    "name": "$DISPLAY_NAME",
+    "description": "Welcome to $DISPLAY_NAME",
     "directory": "$DOMAIN",
     "database": "${SITE_ID}_db",
     "theme": "light",
@@ -332,6 +336,8 @@ cat << EOF
   },
   "www.$DOMAIN": {
     "id": "$SITE_ID",
+    "name": "$DISPLAY_NAME",
+    "description": "Welcome to $DISPLAY_NAME",
     "directory": "$DOMAIN",
     "database": "${SITE_ID}_db",
     "theme": "light",

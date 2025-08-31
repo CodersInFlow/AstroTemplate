@@ -5,6 +5,14 @@ A single codebase that serves multiple websites with different domains, database
 ## 🚀 Quick Start
 
 ### Development
+
+1. **Setup configuration:**
+```bash
+cp .env.example .env
+# Edit .env with your settings
+```
+
+2. **Start development:**
 ```bash
 ./scripts/dev.sh
 ```
@@ -25,11 +33,44 @@ The Go backend automatically creates a default admin user for each site:
 The system automatically detects which site to serve based on the domain. The default site at `localhost:4321` shows a beautiful directory of all available sites with descriptions and links that open in new tabs.
 
 ### Production (Docker)
+
+#### Local Testing
 ```bash
 ./scripts/build.sh      # Build Docker image
 ./scripts/run-docker.sh  # Run with docker-compose
 ```
 Access at: http://localhost
+
+#### Full Production Deployment
+
+1. **Configure settings:**
+```bash
+# If not already done
+cp .env.example .env
+# Edit .env with your production settings (server, ports, etc.)
+```
+
+2. **Generate nginx configs for all sites:**
+```bash
+./scripts/generate-nginx-configs.sh
+# This creates nginx configs and custom include files
+```
+
+3. **Deploy to server:**
+```bash
+# Uses settings from .env
+./scripts/deploy-full.sh
+
+# Or override specific variables
+DEPLOY_SERVER=other-server.com ./scripts/deploy-full.sh
+```
+
+The deployment script will:
+- Build and push Docker image
+- Upload configs to `/var/www/docker/`
+- Install nginx configurations
+- Setup SSL certificates via Let's Encrypt
+- Start Docker containers
 
 ## 📁 Structure
 
@@ -83,12 +124,18 @@ Access at: http://localhost
 
 ## ➕ Add New Site
 
-**Quick Start:**
+**Quick Start (with nginx config):**
+```bash
+# Creates site structure AND nginx config
+./scripts/add-site-with-nginx.sh yourdomain.com
+```
+
+**Site only (no nginx):**
 ```bash
 ./scripts/add-a-site.sh yourdomain.com
 ```
 
-Or manually:
+**Manual process:**
 1. Create site directory: `astro-multi-tenant/src/sites/yourdomain.com/`
 2. Add `tailwind.config.cjs` with semantic color mappings
 3. Add `config.json` with site configuration
@@ -137,11 +184,17 @@ Edit `sites-config.json`:
 
 ## 📜 Scripts
 
+### Development
 - `./scripts/dev.sh` - Start development environment
+- `./scripts/add-a-site.sh` - Add new site (structure only)
+- `./scripts/add-site-with-nginx.sh` - Add site with nginx config
+
+### Production
 - `./scripts/build.sh` - Build Docker image
-- `./scripts/run-docker.sh` - Run production Docker
-- `./scripts/deploy.sh` - Deploy to server
-- `./scripts/add-site.sh` - Add new site
+- `./scripts/run-docker.sh` - Run Docker locally
+- `./scripts/generate-nginx-configs.sh` - Generate nginx configs for all sites
+- `./scripts/deploy-full.sh` - Full deployment to production server
+- `./scripts/setup-docker-dirs.sh` - Setup directories on server
 
 ## 🌐 How It Works
 
@@ -399,16 +452,61 @@ Each site uses semantic Tailwind classes that map to different colors:
 
 ## 📝 Environment Variables
 
-- `PORT` - Frontend port (default: 4321)
-- `API_PORT` - Backend port (default: 3001)  
-- `MONGODB_URI` - MongoDB connection
+All configuration is handled through a single `.env` file. Copy `.env.example` to `.env` and configure:
+
+### Core Settings
+- `PORT` - Frontend SSR port (default: 4321)
+- `API_PORT` - Backend API port (default: 3001)  
+- `MONGODB_URI` - MongoDB connection string
 - `PUBLIC_API_URL` - Backend URL for frontend
+- `JWT_SECRET` - Secret key for authentication
 
-## 🐳 Docker
+### Deployment Settings
+- `DEPLOY_SERVER` - Target server hostname/IP
+- `DEPLOY_USER` - SSH user
+- `DEPLOY_PORT` - SSH port (default: 22)
+- `DOCKER_REGISTRY` - Docker registry or "local"
+- `FRONTEND_PORT` - External nginx port for frontend
+- `BACKEND_PORT` - External nginx port for API
 
-Everything runs in containers:
-- MongoDB for data
-- Single app container with both frontend SSR and backend API
+See `.env.example` for all available options
+
+## 🐳 Docker & Deployment
+
+### Architecture
+- **MongoDB**: Data persistence in `/var/www/docker/mongodb-data`
+- **App Container**: Astro SSR (port 4321) + Go API (port 3001)
+- **Nginx**: Reverse proxy on host, handles SSL and routing
+- **Uploads**: Stored in `/var/www/docker/uploads`
+
+### Volume Mappings
+All Docker volumes are mapped to `/var/www/docker/`:
+- `mongodb-data/` - MongoDB database files
+- `uploads/` - User uploaded files (tenant-isolated)
+- `logs/` - Application logs
+- `sites-config.json` - Site configuration
+
+### Deployment Configuration
+
+All deployment settings are in the main `.env` file (no separate deployment config needed).
+
+The deployment script reads from `.env` for:
+- Server connection (`DEPLOY_SERVER`, `DEPLOY_USER`, `DEPLOY_PORT`)
+- Docker settings (`DOCKER_REGISTRY`, `DOCKER_TAG`)
+- Port mappings (`FRONTEND_PORT`, `BACKEND_PORT`)
+- Remote paths (`REMOTE_BASE_DIR`, `NGINX_CONFIG_DIR`)
+
+You can override any setting with environment variables:
+```bash
+DEPLOY_SERVER=staging.server.com ./scripts/deploy-full.sh
+```
+
+### Adding a New Site Workflow
+1. Add site locally: `./scripts/add-site-with-nginx.sh example.com`
+2. Update `sites-config.json` with the generated config
+3. Regenerate all nginx configs: `./scripts/generate-nginx-configs.sh`
+4. Build Docker image: `./scripts/build.sh`
+5. Deploy to server: `./scripts/deploy-full.sh`
 
 ## 📚 Full Documentation
 

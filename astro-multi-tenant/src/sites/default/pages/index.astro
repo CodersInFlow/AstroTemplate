@@ -2,7 +2,22 @@
 import Layout from '../layout.astro';
 import { getSitesConfig } from '../../../shared/lib/tenant';
 
-const sites = getSitesConfig();
+interface SiteConfig {
+  id: string;
+  name?: string;
+  description?: string;
+  directory: string;
+  database: string;
+  theme: string;
+  features: string[];
+  adminUser?: {
+    email: string;
+    password: string;
+    name: string;
+  };
+}
+
+const sites = getSitesConfig() as Record<string, SiteConfig>;
 
 // Filter out localhost, 127.0.0.1, and default entries
 const displaySites = Object.entries(sites).filter(([domain, config]) => {
@@ -13,7 +28,7 @@ const displaySites = Object.entries(sites).filter(([domain, config]) => {
 });
 
 // Group sites by removing www prefix
-const uniqueSites = displaySites.reduce((acc, [domain, config]) => {
+const uniqueSites = displaySites.reduce<Record<string, SiteConfig>>((acc, [domain, config]) => {
   const cleanDomain = domain.replace('www.', '');
   if (!acc[cleanDomain]) {
     acc[cleanDomain] = config;
@@ -42,9 +57,7 @@ const uniqueSites = displaySites.reduce((acc, [domain, config]) => {
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-2xl font-bold">
-                {config.directory === 'codersinflow.com' && 'CodersInFlow'}
-                {config.directory === 'darkflows.com' && 'DarkFlows'}
-                {config.directory === 'prestongarrison.com' && 'Preston Garrison'}
+                {config.name || domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1)}
               </h2>
               <svg class="w-6 h-6 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -52,9 +65,7 @@ const uniqueSites = displaySites.reduce((acc, [domain, config]) => {
             </div>
             
             <p class="text-sm opacity-75 mb-4">
-              {config.directory === 'codersinflow.com' && 'AI-Powered Pair Programming Platform'}
-              {config.directory === 'darkflows.com' && 'Advanced Router OS & Network Solutions'}
-              {config.directory === 'prestongarrison.com' && 'Full Stack Developer Portfolio'}
+              {config.description || `Welcome to ${config.name || domain}`}
             </p>
             
             <div class="flex items-center gap-2 text-xs">

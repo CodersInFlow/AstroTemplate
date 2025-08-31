@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: prodpassword123
       MONGO_INITDB_DATABASE: codersblog
     volumes:
-      - mongodb_data:/data/db
+      - /var/www/docker/mongodb-data:/data/db
     networks:
       - app-network
     ports:
@@ -33,16 +33,14 @@ services:
       PUBLIC_API_URL: http://127.0.0.1:3001
       HOST: 0.0.0.0
     volumes:
-      - ./sites-config.json:/app/sites-config.json:ro
-      - ./uploads:/app/uploads
+      - /var/www/docker/sites-config.json:/app/sites-config.json:ro
+      - /var/www/docker/uploads:/app/uploads
+      - /var/www/docker/logs:/app/logs
     ports:
       - "80:4321"    # Frontend SSR
       - "3001:3001"  # Backend API
     networks:
       - app-network
-
-volumes:
-  mongodb_data:
 
 networks:
   app-network:

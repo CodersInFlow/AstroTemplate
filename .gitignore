@@ -32,3 +32,6 @@ __pycache__
 .next
 .github
 **/*dist/**
+
+# Deployment configuration
+.env.deploy

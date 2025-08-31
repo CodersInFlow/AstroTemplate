@@ -1,0 +1,11 @@
+{
+  "name": "magicvideodownloader",
+  "description": "Welcome to magicvideodownloader",
+  "features": ["blog", "docs"],
+  "logo": "/logo.svg",
+  "favicon": "/favicon.ico",
+  "social": {
+    "twitter": "",
+    "github": ""
+  }
+}
