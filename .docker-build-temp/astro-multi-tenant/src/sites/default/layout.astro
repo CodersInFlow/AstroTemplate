@@ -1,0 +1,44 @@
+---
+// Import the generated CSS as raw text for isolation
+import defaultStyles from './styles/main.css?raw';
+
+export interface Props {
+  title?: string;
+}
+
+const { title = 'Site Directory' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="default-site-body">
+    <!-- Inject Tailwind CSS for the directory page -->
+    <style set:html={defaultStyles}></style>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  /* Global styles for default site */
+  .default-site-body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%) !important;
+    min-height: 100vh;
+    color: white !important;
+    margin: 0;
+    padding: 0;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+</style>

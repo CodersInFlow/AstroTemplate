@@ -1,0 +1,34 @@
+---
+// Simple blog route wrapper - wraps BlogApp with the appropriate site's layout
+export const prerender = false;
+
+import { getTenantFromHost } from '../../shared/lib/tenant';
+import BlogApp from '../../modules/blog/BlogApp.astro';
+
+// Get the current tenant to determine which layout to use
+const hostname = Astro.request.headers.get('host') || '127.0.0.1:4321';
+const tenant = getTenantFromHost(hostname);
+
+// Check if BlogApp needs to redirect (auth checks for editor routes)
+const blogAppModule = await import('../../modules/blog/BlogApp.astro');
+const redirectUrl = await blogAppModule.checkRedirect?.(Astro);
+
+if (redirectUrl) {
+  return Astro.redirect(redirectUrl);
+}
+
+// Dynamically import the correct site's layout
+let Layout;
+try {
+  const layoutPath = `../../sites/${tenant.directory || tenant.id + '.com'}/layout.astro`;
+  Layout = (await import(layoutPath)).default;
+} catch (error) {
+  // Fallback to default layout if site-specific layout not found
+  console.warn(`Layout not found for ${tenant.id}, using default`);
+  Layout = (await import('../../sites/default/layout.astro')).default;
+}
+---
+
+<Layout title="Blog">
+  <BlogApp />
+</Layout>

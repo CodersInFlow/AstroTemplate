@@ -1,0 +1,67 @@
+---
+// Clean multi-tenant router
+import { getTenantFromHost } from '../shared/lib/tenant';
+import BlogList from '../shared/components/BlogList.astro';
+import BlogPost from '../shared/components/BlogPost.astro';
+
+// Get tenant from host header
+const hostname = Astro.request.headers.get('host') || '127.0.0.1:4321';
+const tenant = getTenantFromHost(hostname);
+const tenantDir = tenant.directory || tenant.id;
+
+// Get route
+const { slug } = Astro.params;
+const route = slug || 'index';
+
+// Load site layout and config
+const Layout = (await import(`../sites/${tenantDir}/layout.astro`)).default;
+const config = (await import(`../sites/${tenantDir}/config.json`)).default;
+
+// Handle blog routes
+let blogSlug = null;
+let category = null;
+
+if (route === 'blog') {
+  // Blog listing
+  category = Astro.url.searchParams.get('category');
+}
+
+if (route.startsWith('blog/')) {
+  // Individual blog post
+  blogSlug = route.replace('blog/', '');
+}
+
+// Try to load custom page component for this tenant/route
+let PageComponent = null;
+let pageProps = {};
+
+// First try exact match
+try {
+  const pagePath = `../sites/${tenantDir}/pages/${route}.astro`;
+  PageComponent = (await import(/* @vite-ignore */ pagePath)).default;
+  console.log(`Loaded exact page component for ${tenantDir}/${route}`);
+} catch (e) {
+  // Try to find a dynamic route handler for blog posts
+  if (route.startsWith('blog/')) {
+    try {
+      const dynamicPath = `../sites/${tenantDir}/pages/blog/[slug].astro`;
+      PageComponent = (await import(/* @vite-ignore */ dynamicPath)).default;
+      pageProps = { slug: blogSlug };
+      console.log(`Loaded dynamic blog page for ${tenantDir}`);
+    } catch (e2) {
+      console.log(`No dynamic blog page for ${tenantDir}:`, e2.message);
+    }
+  }
+  
+  if (!PageComponent) {
+    console.log(`No custom page for ${tenantDir}/${route}:`, e.message);
+  }
+}
+
+// If no custom page exists, show 404
+if (!PageComponent) {
+  return new Response('Page not found', { status: 404 });
+}
+---
+
+<PageComponent {...pageProps} />
