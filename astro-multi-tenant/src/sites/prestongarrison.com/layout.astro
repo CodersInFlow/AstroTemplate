@@ -1,7 +1,7 @@
 ---
 import Menu from '../../shared/components/preston/Menu.jsx';
 import MainTitleHeader from '../../shared/components/preston/MainTitleHeader.jsx';
-import '../../styles/themes.css';
+import './styles/main.css';  // Import this site's CSS directly
 
 export interface Props {
   title?: string;
@@ -25,20 +25,10 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, url);
 const imageURL = new URL(image, url);
-
-// Detect theme based on hostname
-const hostname = Astro.request.headers.get('host') || '';
-let theme = 'prestongarrison'; // default for this site
-
-if (hostname.includes('codersinflow')) {
-  theme = 'codersinflow';
-} else if (hostname.includes('darkflows')) {
-  theme = 'darkflows';
-}
 ---
 
 <!doctype html>
-<html lang="en" data-theme={theme}>
+<html lang="en">
   <head>
     <!-- Basic Meta Tags -->
     <meta charset="UTF-8" />

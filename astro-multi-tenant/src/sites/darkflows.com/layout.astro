@@ -1,5 +1,5 @@
 ---
-import '../../styles/themes.css';
+import './styles/main.css';  // Import this site's CSS directly
 
 export interface Props {
   title?: string;
@@ -8,20 +8,10 @@ export interface Props {
 
 const { title = 'DarkFlows Router OS', description = 'High Performance Routing and Firewalling Reimagined' } = Astro.props;
 import config from './config.json';
-
-// Detect theme based on hostname
-const hostname = Astro.request.headers.get('host') || '';
-let theme = 'darkflows'; // default for this site
-
-if (hostname.includes('codersinflow')) {
-  theme = 'codersinflow';
-} else if (hostname.includes('prestongarrison')) {
-  theme = 'prestongarrison';
-}
 ---
 
 <!DOCTYPE html>
-<html lang="en" data-theme={theme}>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

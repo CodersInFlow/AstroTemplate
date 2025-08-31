@@ -10,9 +10,6 @@ INPUT_CSS="@tailwind base; @tailwind components; @tailwind utilities;"
 # Create temp input file
 echo "$INPUT_CSS" > /tmp/tailwind-input.css
 
-# Create styles directory if it doesn't exist
-mkdir -p src/styles/sites
-
 # Find all sites that have a tailwind.config.cjs file
 SITE_COUNT=0
 for SITE_PATH in "$SITES_DIR"/*; do
@@ -27,14 +24,17 @@ for SITE_PATH in "$SITES_DIR"/*; do
     
     echo "  → Generating CSS for $SITE_NAME..."
     
-    # Generate CSS using site's Tailwind config
+    # Create styles directory in the site itself
+    mkdir -p "$SITE_PATH/styles"
+    
+    # Generate CSS using site's Tailwind config and output to site's own styles directory
     npx tailwindcss \
       -c "$SITE_PATH/tailwind.config.cjs" \
       -i /tmp/tailwind-input.css \
-      -o "src/styles/sites/$SITE_NAME.css" \
+      -o "$SITE_PATH/styles/main.css" \
       --minify
       
-    echo "  ✓ Generated src/styles/sites/$SITE_NAME.css"
+    echo "  ✓ Generated $SITE_PATH/styles/main.css"
     ((SITE_COUNT++))
   fi
 done

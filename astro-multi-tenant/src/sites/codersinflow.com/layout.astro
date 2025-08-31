@@ -1,5 +1,6 @@
 ---
 import HeaderSimple from '../../shared/components/coders/HeaderSimple.astro';
+import './styles/main.css';  // Import this site's CSS directly
 
 export interface Props {
   title: string;
@@ -7,27 +8,6 @@ export interface Props {
 
 const { title } = Astro.props;
 import config from './config.json';
-
-// Detect which CSS to use based on hostname
-const hostname = Astro.request.headers.get('host') || '';
-let siteName = 'codersinflow'; // default
-
-if (hostname.includes('darkflows')) {
-  siteName = 'darkflows';
-} else if (hostname.includes('prestongarrison')) {
-  siteName = 'prestongarrison';
-}
-
-// Dynamically import the CSS based on site
-let cssImport = '';
-if (siteName === 'darkflows') {
-  cssImport = await import('../../styles/sites/darkflows.css?raw');
-} else if (siteName === 'prestongarrison') {
-  cssImport = await import('../../styles/sites/prestongarrison.css?raw');
-} else {
-  cssImport = await import('../../styles/sites/codersinflow.css?raw');
-}
-const siteCSS = cssImport.default || '';
 ---
 
 <!DOCTYPE html>
@@ -39,7 +19,6 @@ const siteCSS = cssImport.default || '';
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title} - CodersInFlow</title>
-    <style is:global set:html={siteCSS}></style>
   </head>
   <body class="bg-background text-text-primary min-h-screen">
     <HeaderSimple />
