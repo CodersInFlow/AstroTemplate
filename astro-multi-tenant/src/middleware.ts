@@ -1,5 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 import { getTenantFromHost } from './shared/lib/tenant';
+import { API_URL } from './shared/lib/api-config';
 
 // Define public routes that don't require authentication
 const PUBLIC_ROUTES = [
@@ -46,7 +47,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const tenant = getTenantFromHost(hostname);
     const database = tenant.database || tenant.id;
     
-    const response = await fetch('http://127.0.0.1:3001/api/auth/me', {
+    const response = await fetch(`${API_URL}/api/auth/me`, {
       headers: {
         'Cookie': `auth-token=${token.value}`,
         'X-Site-Database': database

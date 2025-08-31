@@ -3,6 +3,7 @@ export const prerender = false;
 
 import AstroRichTextEditor from './AstroRichTextEditor';
 import './editor-styles.css';
+import { API_URL } from '../../../../shared/lib/api-config';
 
 const { database, tenant, theme } = Astro.props;
 
@@ -13,7 +14,6 @@ const token = Astro.cookies.get('auth-token');
 const postType = Astro.url.searchParams.get('type') || 'blog';
 
 // Fetch categories
-const API_URL = 'http://127.0.0.1:3001';
 let categories = [];
 try {
   const categoriesResponse = await fetch(`${API_URL}/api/categories?type=${postType}`, {
@@ -144,7 +144,7 @@ try {
   </main>
 </div>
 
-<script define:vars={{ database }}>
+<script define:vars={{ API_URL, database }}>
   const form = document.getElementById('postForm');
   const errorDiv = document.getElementById('error');
   const successDiv = document.getElementById('success');
@@ -193,7 +193,7 @@ try {
       successDiv.textContent = 'Creating post...';
       successDiv.classList.remove('hidden');
       
-      const response = await fetch('http://127.0.0.1:3001/api/posts', {
+      const response = await fetch(`${API_URL}/api/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

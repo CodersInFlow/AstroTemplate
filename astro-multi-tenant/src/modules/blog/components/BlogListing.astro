@@ -1,8 +1,8 @@
 ---
+import { API_URL } from '../../../shared/lib/api-config';
+
 // Blog listing component
 const { database, tenant, type = 'blog' } = Astro.props;
-
-const API_URL = 'http://127.0.0.1:3001';
 
 // Fetch posts
 let posts = [];

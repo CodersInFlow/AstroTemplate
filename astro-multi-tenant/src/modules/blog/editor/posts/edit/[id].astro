@@ -1,9 +1,12 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../../../layouts/Layout.astro';
 import AstroRichTextEditor from '../../../components/editor/AstroRichTextEditor';
 import SocialPublishModal from '../../../components/editor/SocialPublishModal';
+import { API_URL } from '../../../../../shared/lib/api-config';
+
+// Get database from props
+const { database, tenant } = Astro.props;
 
 // Check authentication
 const token = Astro.cookies.get('auth-token');
@@ -17,13 +20,13 @@ const { id } = Astro.params;
 console.log('Edit page - Post ID from URL:', id);
 
 // Fetch the post
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const fetchUrl = `${API_URL}/api/posts/id/${id}`;
 console.log('Edit page - Fetching URL:', fetchUrl);
 
 const postResponse = await fetch(fetchUrl, {
   headers: {
-    'Cookie': `auth-token=${token.value}`
+    'Cookie': `auth-token=${token.value}`,
+    'X-Site-Database': database
   }
 });
 
@@ -41,7 +44,8 @@ const post = await postResponse.json();
 // Fetch categories
 const categoriesResponse = await fetch(`${API_URL}/api/categories?type=${post.type}`, {
   headers: {
-    'Cookie': `auth-token=${token.value}`
+    'Cookie': `auth-token=${token.value}`,
+    'X-Site-Database': database
   }
 });
 const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
@@ -50,8 +54,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
 const saved = Astro.url.searchParams.get('saved') === 'true';
 ---
 
-<Layout title={`Edit: ${post.title} - Editor`}>
-  <div class="min-h-screen bg-background">
+<div class="min-h-screen bg-background">
     <!-- Editor Header -->
     <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
@@ -254,9 +257,8 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
     postSlug={post.slug}
     coverImage={post.coverImage}
   />
-</Layout>
 
-<script>
+<script define:vars={{ API_URL, post, database }}>
   import '../../../components/editor/editor-styles.css';
   const form = document.getElementById('postForm') as HTMLFormElement;
   const errorDiv = document.getElementById('error') as HTMLDivElement;
@@ -489,10 +491,11 @@ const saved = Astro.url.searchParams.get('saved') === 'true';
     };
     
     try {
-      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/posts/${postId}`, {
+      const response = await fetch(`${API_URL}/api/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'X-Site-Database': database
         },
         credentials: 'include',
         body: JSON.stringify(data)

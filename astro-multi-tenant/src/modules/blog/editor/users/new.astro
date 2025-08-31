@@ -1,7 +1,10 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../../layouts/Layout.astro';
+import { API_URL } from '../../../../shared/lib/api-config';
+
+// Get database from props
+const { database, tenant } = Astro.props;
 
 // Check authentication
 const token = Astro.cookies.get('auth-token');
@@ -10,10 +13,10 @@ if (!token) {
 }
 
 // Check if user is admin
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const userResponse = await fetch(`${API_URL}/api/auth/me`, {
   headers: {
-    'Cookie': `auth-token=${token.value}`
+    'Cookie': `auth-token=${token.value}`,
+    'X-Site-Database': database
   }
 });
 
@@ -27,8 +30,7 @@ if (currentUser.role !== 'admin') {
 }
 ---
 
-<Layout title="Create User - Editor">
-  <div class="min-h-screen bg-background">
+<div class="min-h-screen bg-background">
     <!-- Editor Header -->
     <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
@@ -113,9 +115,8 @@ if (currentUser.role !== 'admin') {
       </div>
     </main>
   </div>
-</Layout>
 
-<script>
+<script define:vars={{ API_URL, database }}>
   const form = document.getElementById('createUserForm') as HTMLFormElement;
   const errorMessage = document.getElementById('errorMessage');
   const successMessage = document.getElementById('successMessage');
@@ -135,10 +136,11 @@ if (currentUser.role !== 'admin') {
     const role = formData.get('role') as string;
 
     try {
-      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/admin/users`, {
+      const response = await fetch(`${API_URL}/api/admin/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Site-Database': database
         },
         credentials: 'include',
         body: JSON.stringify({

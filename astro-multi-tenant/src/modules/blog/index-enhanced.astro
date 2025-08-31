@@ -1,12 +1,12 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import HeaderSimple from './components/HeaderSimple.astro';
+import { API_URL } from '../../shared/lib/api-config';
 
 // Get category filter from URL
 const currentCategory = Astro.url.searchParams.get('category');
 
 // Fetch posts from API
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const postsUrl = currentCategory 
   ? `${API_URL}/api/posts?type=blog&category=${currentCategory}`
   : `${API_URL}/api/posts?type=blog`;

@@ -1,30 +1,209 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../../layouts/Layout.astro';
 import AstroRichTextEditor from '../../components/editor/AstroRichTextEditor';
+import { API_URL } from '../../../../shared/lib/api-config';
 
-// Check authentication
+// Get database from props
+const { database, tenant } = Astro.props;
+
+// Get authentication token (already verified by BlogApp.astro)
 const token = Astro.cookies.get('auth-token');
-if (!token) {
-  return Astro.redirect('/blog/editor/login');
-}
 
 // Get post type from query params
 const postType = Astro.url.searchParams.get('type') || 'blog';
 
-// Fetch categories
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
-const categoriesResponse = await fetch(`${API_URL}/api/categories?type=${postType}`, {
-  headers: {
-    'Cookie': `auth-token=${token.value}`
+// Handle form submission
+let submissionResult = {
+  success: false,
+  post: null,
+  errors: {},
+  generalError: null
+};
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    
+    // Validate required fields
+    const errors: Record<string, string> = {};
+    
+    if (!formData.get('title')) {
+      errors.title = 'Title is required';
+    }
+    
+    if (!formData.get('description')) {
+      errors.description = 'Description is required';
+    }
+    
+    if (!formData.get('category')) {
+      errors.category = 'Please select a category';
+    }
+    
+    const content = formData.get('content');
+    if (!content || content.toString().trim() === '') {
+      errors.content = 'Content is required';
+    }
+    
+    // If there are validation errors, set them and don't proceed
+    if (Object.keys(errors).length > 0) {
+      submissionResult.errors = errors;
+    } else {
+      // Build the post data
+      const postData = {
+        title: formData.get('title'),
+        slug: formData.get('slug') || undefined,
+        description: formData.get('description'),
+        content: formData.get('content'),
+        type: postType,
+        category: formData.get('category'),
+        coverImage: formData.get('coverImage') || undefined,
+        published: formData.get('published') === 'on'
+      };
+      
+      // Submit to API
+      const response = await fetch(`${API_URL}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': `auth-token=${token.value}`,
+          'X-Site-Database': database
+        },
+        body: JSON.stringify(postData)
+      });
+      
+      if (response.ok) {
+        const post = await response.json();
+        submissionResult.success = true;
+        submissionResult.post = post;
+      } else {
+        const errorText = await response.text();
+        submissionResult.generalError = errorText || 'Failed to create post';
+      }
+    }
+  } catch (error) {
+    submissionResult.generalError = 'An unexpected error occurred. Please try again.';
+    console.error('Form submission error:', error);
   }
-});
-const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
+}
+
+// Fetch categories (only if not showing success page)
+let categories = [];
+if (!submissionResult.success) {
+  const categoriesResponse = await fetch(`${API_URL}/api/categories?type=${postType}`, {
+    headers: {
+      'Cookie': `auth-token=${token.value}`,
+      'X-Site-Database': database
+    }
+  });
+  categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
+}
+
+// Preserve form values on error (re-use the same formData from submission)
+let formValues: any = {};
+if (!submissionResult.success && Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  formValues = {
+    title: formData.get('title') || '',
+    slug: formData.get('slug') || '',
+    description: formData.get('description') || '',
+    category: formData.get('category') || '',
+    coverImage: formData.get('coverImage') || '',
+    content: formData.get('content') || '',
+    published: formData.get('published') === 'on'
+  };
+}
 ---
 
-<Layout title="New Post - Editor">
-  <div class="min-h-screen bg-background">
+<!-- No Layout wrapper needed, BlogApp handles the layout -->
+<div class="min-h-screen bg-background">
+  {submissionResult.success ? (
+    <!-- Success View -->
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <div class="max-w-2xl w-full">
+        <div class="bg-surface rounded-lg p-8 text-center space-y-6 border border-border">
+          <!-- Success Icon -->
+          <div class="flex justify-center">
+            <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center">
+              <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Success Message -->
+          <div>
+            <h2 class="text-2xl font-bold text-text-primary mb-2">
+              {postType === 'blog' ? 'Blog Post' : 'Documentation'} Created Successfully!
+            </h2>
+            <p class="text-text-secondary">
+              Your {postType === 'blog' ? 'post' : 'documentation'} "{submissionResult.post.title}" has been created.
+            </p>
+          </div>
+          
+          <!-- Post URL -->
+          <div class="bg-surface-hover rounded-lg p-4">
+            <p class="text-sm text-text-muted mb-2">Your {postType === 'blog' ? 'post' : 'documentation'} is available at:</p>
+            <a 
+              href={`/${submissionResult.post.type}/${submissionResult.post.slug}`}
+              target="_blank"
+              class="text-link hover:text-link-hover break-all font-mono text-sm"
+            >
+              {new URL(`/${submissionResult.post.type}/${submissionResult.post.slug}`, Astro.url).href}
+            </a>
+          </div>
+          
+          <!-- Status Badge -->
+          <div>
+            {submissionResult.post.published ? (
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-500/20 text-green-400">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-10.293a1 1 0 00-1.414-1.414L9 9.586 7.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                Published
+              </span>
+            ) : (
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-yellow-500/20 text-yellow-400">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                Draft
+              </span>
+            )}
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href={`/${submissionResult.post.type}/${submissionResult.post.slug}`}
+              target="_blank"
+              class="px-6 py-2 bg-primary hover:bg-primary/90 rounded-md font-medium text-white transition-colors"
+            >
+              View {postType === 'blog' ? 'Post' : 'Documentation'}
+            </a>
+            <a
+              href={`/blog/editor/posts/edit/${submissionResult.post.id}`}
+              class="px-6 py-2 bg-surface-hover hover:bg-surface rounded-md font-medium text-text-primary transition-colors"
+            >
+              Edit {postType === 'blog' ? 'Post' : 'Documentation'}
+            </a>
+            <a
+              href={`/blog/editor/posts/new?type=${postType}`}
+              class="px-6 py-2 bg-surface-hover hover:bg-surface rounded-md font-medium text-text-primary transition-colors"
+            >
+              Create Another
+            </a>
+            <a
+              href="/blog/editor"
+              class="px-6 py-2 bg-surface-hover hover:bg-surface rounded-md font-medium text-text-primary transition-colors"
+            >
+              Back to Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : (
     <!-- Editor Header -->
     <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
@@ -38,7 +217,14 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
     </header>
 
     <main class="container mx-auto px-4 py-8 max-w-4xl">
-      <form id="postForm" class="space-y-6">
+      <!-- Show general error if exists -->
+      {submissionResult.generalError && (
+        <div class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <p class="text-red-400">{submissionResult.generalError}</p>
+        </div>
+      )}
+      
+      <form id="postForm" method="POST" class="space-y-6">
         <input type="hidden" name="type" value={postType} />
         
         <!-- Title -->
@@ -49,9 +235,15 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
             id="title"
             name="title"
             required
-            class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            value={formValues.title || ''}
+            class={`w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+              submissionResult.errors.title ? 'border-2 border-red-500' : ''
+            }`}
             placeholder="Enter post title"
           />
+          {submissionResult.errors.title && (
+            <p class="mt-1 text-sm text-red-400">{submissionResult.errors.title}</p>
+          )}
         </div>
 
         <!-- Slug -->
@@ -64,6 +256,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
             type="text"
             id="slug"
             name="slug"
+            value={formValues.slug || ''}
             class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="post-url-slug"
           />
@@ -77,9 +270,14 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
             name="description"
             required
             rows="3"
-            class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            class={`w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+              submissionResult.errors.description ? 'border-2 border-red-500' : ''
+            }`}
             placeholder="Brief description for listing pages"
-          ></textarea>
+          >{formValues.description || ''}</textarea>
+          {submissionResult.errors.description && (
+            <p class="mt-1 text-sm text-red-400">{submissionResult.errors.description}</p>
+          )}
         </div>
 
         <!-- Category -->
@@ -89,59 +287,50 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
             id="category"
             name="category"
             required
-            class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            class={`w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+              submissionResult.errors.category ? 'border-2 border-red-500' : ''
+            }`}
           >
             <option value="">Select a category</option>
             {categories.map((cat: any) => (
-              <option value={cat.id}>{cat.name}</option>
+              <option value={cat.id} selected={formValues.category === cat.id}>
+                {cat.name}
+              </option>
             ))}
           </select>
+          {submissionResult.errors.category && (
+            <p class="mt-1 text-sm text-red-400">{submissionResult.errors.category}</p>
+          )}
         </div>
 
         <!-- Cover Image -->
         <div>
-          <label class="block text-sm font-medium mb-2 text-text-secondary">
-            Cover Image
-            <span class="text-text-muted text-xs ml-2">Optional</span>
-          </label>
-          <div class="flex items-center gap-4">
-            <!-- Hidden input to store the URL -->
-            <input
-              type="hidden"
-              id="coverImage"
-              name="coverImage"
-            />
-            
-            <!-- Image preview or placeholder -->
-            <div id="coverPreviewContainer" class="relative">
-              <div id="coverPlaceholder" class="w-32 h-32 bg-surface rounded-md border-2 border-dashed border-border flex items-center justify-center">
-                <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <label class="block text-sm font-medium mb-2 text-text-secondary">Cover Image</label>
+          <div class="relative">
+            <div id="coverPlaceholder" class="w-full h-48 bg-surface-hover rounded-lg flex items-center justify-center border-2 border-dashed border-border">
+              <div class="text-center">
+                <svg class="w-12 h-12 mx-auto text-text-muted mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
+                <p class="text-text-muted">No cover image</p>
               </div>
-              <img id="coverPreviewImg" class="w-32 h-32 object-cover rounded-md border border-border hidden" />
             </div>
-            
-            <!-- Upload/Change button -->
-            <div class="flex flex-col gap-2">
-              <button
-                type="button"
-                id="uploadCoverBtn"
-                class="px-4 py-2 bg-surface-hover hover:bg-surface-hover text-text-primary rounded-md transition-colors flex items-center gap-2"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                </svg>
-                <span id="uploadBtnText">Upload Image</span>
-              </button>
-              <button
-                type="button"
-                id="removeCoverBtn"
-                class="px-4 py-2 bg-error hover:bg-error text-text-primary rounded-md transition-colors hidden"
-              >
-                Remove
-              </button>
-            </div>
+            <img id="coverPreviewImg" class="w-full h-48 object-cover rounded-lg hidden" alt="Cover preview" />
+            <button
+              type="button"
+              id="uploadCoverBtn"
+              class="mt-2 px-4 py-2 bg-surface-hover hover:bg-surface rounded-md text-sm text-text-primary transition-colors"
+            >
+              <span id="uploadBtnText">Upload Image</span>
+            </button>
+            <button
+              type="button"
+              id="removeCoverBtn"
+              class="mt-2 ml-2 px-4 py-2 bg-error/20 hover:bg-error/30 rounded-md text-sm text-error transition-colors hidden"
+            >
+              Remove
+            </button>
+            <input type="hidden" id="coverImage" name="coverImage" value={formValues.coverImage || ''} />
           </div>
         </div>
 
@@ -150,11 +339,14 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
           <label class="block text-sm font-medium mb-2 text-text-secondary">Content</label>
           <AstroRichTextEditor 
             client:load
-            content=""
+            content={formValues.content || ''}
             placeholder="Start writing your content..."
             inputId="content"
           />
-          <input type="hidden" id="content" name="content" />
+          <input type="hidden" id="content" name="content" value={formValues.content || ''} />
+          {submissionResult.errors.content && (
+            <p class="mt-1 text-sm text-red-400">{submissionResult.errors.content}</p>
+          )}
         </div>
 
         <!-- Publish Options -->
@@ -164,6 +356,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
               type="checkbox"
               name="published"
               id="published"
+              checked={formValues.published}
               class="rounded bg-surface-hover border-border"
             />
             <span class="text-text-secondary">Publish immediately</span>
@@ -186,21 +379,41 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
           </a>
         </div>
 
-        <div id="error" class="text-error hidden"></div>
       </form>
     </main>
-  </div>
+  )}
+</div>
 
-</Layout>
+<!-- End of component -->
 
-<script>
-  import '../../components/editor/editor-styles.css';
-  const form = document.getElementById('postForm') as HTMLFormElement;
-  const errorDiv = document.getElementById('error') as HTMLDivElement;
+<style>
+  @import '../../components/editor/editor-styles.css';
+</style>
+
+<script define:vars={{ database }}>
+  // Calculate API URL dynamically based on current domain
+  function getApiUrl() {
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    const currentPort = window.location.port;
+    
+    // Check if we're in development (port 4321)
+    if (currentPort === '4321') {
+      // Development: use same hostname but port 3001
+      return `${protocol}//${hostname}:3001`;
+    }
+    
+    // Production: use same origin (no port needed, nginx handles routing)
+    return window.location.origin;
+  }
+  
+  const API_URL = getApiUrl();
+  const form = document.getElementById('postForm');
+  const errorDiv = document.getElementById('error');
   
   // Auto-generate slug from title
-  const titleInput = document.getElementById('title') as HTMLInputElement;
-  const slugInput = document.getElementById('slug') as HTMLInputElement;
+  const titleInput = document.getElementById('title');
+  const slugInput = document.getElementById('slug');
   
   titleInput.addEventListener('input', () => {
     // Only auto-generate if user hasn't manually edited the slug
@@ -220,18 +433,18 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
   });
   
   // Cover image upload
-  const uploadBtn = document.getElementById('uploadCoverBtn') as HTMLButtonElement;
-  const coverImageInput = document.getElementById('coverImage') as HTMLInputElement;
-  const coverPlaceholder = document.getElementById('coverPlaceholder') as HTMLDivElement;
-  const coverPreviewImg = document.getElementById('coverPreviewImg') as HTMLImageElement;
-  const uploadBtnText = document.getElementById('uploadBtnText') as HTMLSpanElement;
-  const removeCoverBtn = document.getElementById('removeCoverBtn') as HTMLButtonElement;
+  const uploadBtn = document.getElementById('uploadCoverBtn');
+  const coverImageInput = document.getElementById('coverImage');
+  const coverPlaceholder = document.getElementById('coverPlaceholder');
+  const coverPreviewImg = document.getElementById('coverPreviewImg');
+  const uploadBtnText = document.getElementById('uploadBtnText');
+  const removeCoverBtn = document.getElementById('removeCoverBtn');
   
   // State for paste dialog
   let showPasteDialog = false;
   
   // Function to upload image (used by both file picker and paste)
-  async function uploadImage(file: File | Blob) {
+  async function uploadImage(file) {
     try {
       // Update button to show uploading state
       uploadBtn.disabled = true;
@@ -240,7 +453,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
       const formData = new FormData();
       
       // If it's a blob from paste, give it a proper filename
-      if (file instanceof Blob && !(file instanceof File)) {
+      if (file && file.constructor && file.constructor.name === 'Blob' && file.constructor.name !== 'File') {
         const extension = file.type.split('/')[1] || 'png';
         const filename = `pasted-image-${Date.now()}.${extension}`;
         file = new File([file], filename, { type: file.type });
@@ -248,14 +461,14 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
       
       formData.append('file', file);
         
-        // Use full API URL in development, relative in production (nginx will proxy)
-        const uploadUrl = import.meta.env.PUBLIC_API_URL 
-          ? `${import.meta.env.PUBLIC_API_URL}/api/upload`
-          : '/api/upload';
-        const response = await fetch(uploadUrl, {
+        // Use centralized API URL
+        const response = await fetch(`${API_URL}/api/upload`, {
           method: 'POST',
           body: formData,
           credentials: 'include',
+          headers: {
+            'X-Site-Database': database
+          }
         });
         
         if (!response.ok) {
@@ -274,9 +487,9 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
         
         const data = await response.json();
         if (data.url) {
-          // In development, prepend the API URL to the uploads path
-          const imageUrl = import.meta.env.PUBLIC_API_URL && data.url.startsWith('/uploads/')
-            ? `${import.meta.env.PUBLIC_API_URL}${data.url}`
+          // Prepend API URL to relative upload paths
+          const imageUrl = data.url.startsWith('/uploads/')
+            ? `${API_URL}${data.url}`
             : data.url;
           // Set the URL in the hidden input
           coverImageInput.value = imageUrl;
@@ -310,7 +523,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
     input.accept = 'image/*';
     
     input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
+      const file = e.target.files?.[0];
       if (!file) return;
       closePasteDialog();
       await uploadImage(file);
@@ -422,51 +635,13 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
     removeCoverBtn.classList.add('hidden');
   });
   
-  // Form submission
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(form);
-    
-    // Get content from window object or hidden input
-    let content = formData.get('content') || '';
-    if (!content && typeof window !== 'undefined' && (window as any).__editorContent) {
-      content = (window as any).__editorContent;
+  // Client-side form enhancement (optional - form works without JS)
+  form?.addEventListener('submit', async (e) => {
+    // Get content from editor if available
+    const contentInput = document.getElementById('content');
+    if (contentInput && typeof window !== 'undefined' && window.__editorContent) {
+      contentInput.value = window.__editorContent;
     }
-    
-    const data = {
-      title: formData.get('title'),
-      slug: formData.get('slug') || undefined,
-      description: formData.get('description'),
-      content: content,
-      type: formData.get('type'),
-      category: formData.get('category'),
-      coverImage: formData.get('coverImage') || undefined,
-      published: formData.get('published') === 'on'
-    };
-    
-    
-    try {
-      const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(data)
-      });
-      
-      if (response.ok) {
-        const post = await response.json();
-        window.location.href = `/blog/editor/posts/edit/${post.id}?saved=true`;
-      } else {
-        const text = await response.text();
-        errorDiv.textContent = text || 'Failed to create post';
-        errorDiv.classList.remove('hidden');
-      }
-    } catch (error) {
-      errorDiv.textContent = 'Network error. Please try again.';
-      errorDiv.classList.remove('hidden');
-    }
+    // Let the form submit normally for server-side processing
   });
 </script>

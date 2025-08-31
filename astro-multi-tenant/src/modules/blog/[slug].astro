@@ -1,9 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import BlogPostViewer from './components/BlogPostViewer';
+import { API_URL } from '../../shared/lib/api-config';
 
 const { slug } = Astro.params;
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const response = await fetch(`${API_URL}/api/posts/${slug}`);
 const post = response.ok ? await response.json() : null;
 

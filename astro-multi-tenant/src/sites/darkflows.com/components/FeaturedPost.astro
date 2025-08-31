@@ -1,10 +1,12 @@
 ---
+import { API_URL } from '../../../shared/lib/api-config';
+
 // Fetch featured posts at build time
 let featuredPosts = [];
 let loading = true;
 
 try {
-  const response = await fetch('http://127.0.0.1:3001/api/posts?category=Featured');
+  const response = await fetch(`${API_URL}/api/posts?category=Featured`);
   const data = await response.json();
   if (data.posts) {
     featuredPosts = data.posts.map((post) => ({

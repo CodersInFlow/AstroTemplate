@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../../../../shared/lib/api-config';
 
 interface Platform {
   id: string;
@@ -146,7 +147,7 @@ export default function SocialPublishModal({
     try {
       // Send publish request (removed EventSource for now as backend doesn't support it yet)
       const response = await fetch(
-      `${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/social/publish`,
+      `${API_URL}/api/social/publish`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

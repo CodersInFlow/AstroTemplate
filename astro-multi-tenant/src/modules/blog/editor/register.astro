@@ -1,7 +1,10 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../layouts/Layout.astro';
+import { API_URL } from '../../../shared/lib/api-config';
+
+// Get database from props
+const { database, tenant } = Astro.props;
 
 // If already logged in, redirect to editor
 const token = Astro.cookies.get('auth-token');
@@ -10,8 +13,7 @@ if (token) {
 }
 ---
 
-<Layout title="Register - Editor">
-  <main class="min-h-screen flex items-center justify-center bg-background">
+<main class="min-h-screen flex items-center justify-center bg-background">
     <div class="bg-surface p-8 rounded-lg shadow-xl w-full max-w-md">
       <h1 class="text-2xl font-bold text-center mb-6">Create Account</h1>
       
@@ -77,9 +79,8 @@ if (token) {
       </div>
     </div>
   </main>
-</Layout>
 
-<script>
+<script define:vars={{ API_URL, database }}>
   const form = document.getElementById('registerForm') as HTMLFormElement;
   const errorDiv = document.getElementById('error') as HTMLDivElement;
   const successDiv = document.getElementById('success') as HTMLDivElement;
@@ -98,11 +99,11 @@ if (token) {
     };
     
     try {
-      const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
-      const response = await fetch(`${apiUrl}/api/auth/register`, {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Site-Database': database
         },
         body: JSON.stringify(data)
       });
@@ -143,7 +144,7 @@ if (token) {
       let errorMessage = 'Connection failed';
       
       if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-        errorMessage = `Cannot connect to API server at ${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}. Please ensure the backend is running.`;
+        errorMessage = `Cannot connect to API server at ${API_URL}. Please ensure the backend is running.`;
       } else if (error.name === 'NetworkError') {
         errorMessage = 'Network error - please check your connection';
       } else if (error.message) {

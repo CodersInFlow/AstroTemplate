@@ -1,8 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { API_URL } from '../../shared/lib/api-config';
 
 // Fetch posts from API
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const currentCategory = Astro.url.searchParams.get('category');
 const postsUrl = currentCategory 
   ? `${API_URL}/api/posts?type=blog&category=${currentCategory}`

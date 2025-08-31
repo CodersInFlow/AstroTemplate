@@ -1,88 +1,30 @@
 ---
-// Main blog route handler - delegates to the appropriate site's BlogApp
+// Simple blog route wrapper - wraps BlogApp with the appropriate site's layout
 export const prerender = false;
 
 import { getTenantFromHost } from '../../shared/lib/tenant';
 import BlogApp from '../../modules/blog/BlogApp.astro';
 
-
 // Get the current tenant to determine which layout to use
 const hostname = Astro.request.headers.get('host') || '127.0.0.1:4321';
 const tenant = getTenantFromHost(hostname);
 
-// Theme configurations for each site
-const themes = {
-  codersinflow: {
-    // Blue theme for Coders in Flow
-    btnPrimary: 'bg-blue-600 hover:bg-blue-700 text-white',
-    btnSecondary: 'bg-blue-100 hover:bg-blue-200 text-blue-900',
-    link: 'text-blue-600 hover:text-blue-800',
-    card: 'bg-white hover:bg-blue-50 border-blue-200',
-    textPrimary: 'text-gray-900',
-    textSecondary: 'text-gray-600',
-    textMuted: 'text-gray-500',
-    input: 'border-blue-300 focus:ring-blue-500',
-    navActive: 'border-blue-600 text-blue-600',
-    navInactive: 'text-gray-600 hover:text-blue-600',
-    badge: 'bg-blue-100 text-blue-800',
-    categoryBg: 'bg-blue-600 hover:bg-blue-700',
-    categoryText: 'text-white'
-  },
-  darkflows: {
-    // Purple theme for Dark Flows
-    btnPrimary: 'bg-purple-600 hover:bg-purple-700 text-white',
-    btnSecondary: 'bg-purple-100 hover:bg-purple-200 text-purple-900',
-    link: 'text-purple-600 hover:text-purple-800',
-    card: 'bg-white hover:bg-purple-50 border-purple-200',
-    textPrimary: 'text-gray-900',
-    textSecondary: 'text-gray-600',
-    textMuted: 'text-gray-500',
-    input: 'border-purple-300 focus:ring-purple-500',
-    navActive: 'border-purple-600 text-purple-600',
-    navInactive: 'text-gray-600 hover:text-purple-600',
-    badge: 'bg-purple-100 text-purple-800',
-    categoryBg: 'bg-purple-600 hover:bg-purple-700',
-    categoryText: 'text-white'
-  },
-  prestongarrison: {
-    // Gray theme for Preston Garrison
-    btnPrimary: 'bg-gray-800 hover:bg-gray-900 text-white',
-    btnSecondary: 'bg-gray-200 hover:bg-gray-300 text-gray-900',
-    link: 'text-gray-700 hover:text-gray-900',
-    card: 'bg-white hover:bg-gray-50 border-gray-200',
-    textPrimary: 'text-gray-900',
-    textSecondary: 'text-gray-600',
-    textMuted: 'text-gray-500',
-    input: 'border-gray-300 focus:ring-gray-500',
-    navActive: 'border-gray-700 text-gray-900',
-    navInactive: 'text-gray-600 hover:text-gray-900',
-    badge: 'bg-gray-100 text-gray-800',
-    categoryBg: 'bg-gray-700 hover:bg-gray-800',
-    categoryText: 'text-white'
-  }
-};
+// Check if BlogApp needs to redirect (auth checks for editor routes)
+const blogAppModule = await import('../../modules/blog/BlogApp.astro');
+const redirectUrl = await blogAppModule.checkRedirect?.(Astro);
 
-// Get the theme for the current tenant
-const blogTheme = themes[tenant.id] || themes.codersinflow;
+if (redirectUrl) {
+  return Astro.redirect(redirectUrl);
+}
 
 // Dynamically import the correct site's layout
 let Layout;
 try {
-  switch(tenant.id) {
-    case 'codersinflow':
-      Layout = (await import('../../sites/codersinflow.com/layout.astro')).default;
-      break;
-    case 'darkflows':
-      Layout = (await import('../../sites/darkflows.com/layout.astro')).default;
-      break;
-    case 'prestongarrison':
-      Layout = (await import('../../sites/prestongarrison.com/layout.astro')).default;
-      break;
-    default:
-      Layout = (await import('../../sites/default/layout.astro')).default;
-  }
+  const layoutPath = `../../sites/${tenant.directory || tenant.id + '.com'}/layout.astro`;
+  Layout = (await import(layoutPath)).default;
 } catch (error) {
-  // Fallback to a basic layout if site layout not found
+  // Fallback to default layout if site-specific layout not found
+  console.warn(`Layout not found for ${tenant.id}, using default`);
   Layout = (await import('../../sites/default/layout.astro')).default;
 }
 ---

@@ -1,10 +1,9 @@
 ---
 export const prerender = false;
+import { API_URL } from '../../../../shared/lib/api-config';
 
 const { database, tenant } = Astro.props;
 const token = Astro.cookies.get('auth-token');
-
-const API_URL = 'http://127.0.0.1:3001';
 
 // Fetch posts
 let posts = [];
@@ -110,7 +109,7 @@ try {
   </main>
 </div>
 
-<script define:vars={{ database }}>
+<script define:vars={{ API_URL, database }}>
   // Delete functionality
   document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
@@ -119,7 +118,7 @@ try {
       const postId = e.target.dataset.postId;
       
       try {
-        const response = await fetch(`http://127.0.0.1:3001/api/posts/${postId}`, {
+        const response = await fetch(`${API_URL}/api/posts/${postId}`, {
           method: 'DELETE',
           headers: {
             'X-Site-Database': database

@@ -1,10 +1,12 @@
+import { API_URL } from '../../../shared/lib/api-config';
+
 export const prerender = false;
 
 export async function POST({ request }: { request: Request }) {
   const database = request.headers.get('X-Site-Database') || 'codersinflow';
   const body = await request.json();
   
-  const response = await fetch('http://127.0.0.1:3001/api/auth/create-admin', {
+  const response = await fetch(`${API_URL}/api/auth/create-admin`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

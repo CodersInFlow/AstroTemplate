@@ -1,7 +1,10 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../../layouts/Layout.astro';
+import { API_URL } from '../../../../shared/lib/api-config';
+
+// Get database from props
+const { database, tenant } = Astro.props;
 
 // Check authentication
 const token = Astro.cookies.get('auth-token');
@@ -10,10 +13,10 @@ if (!token) {
 }
 
 // Check if user is admin
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752';
 const userResponse = await fetch(`${API_URL}/api/auth/me`, {
   headers: {
-    'Cookie': `auth-token=${token.value}`
+    'Cookie': `auth-token=${token.value}`,
+    'X-Site-Database': database
   }
 });
 
@@ -29,7 +32,8 @@ if (currentUser.role !== 'admin') {
 // Fetch all users
 const usersResponse = await fetch(`${API_URL}/api/admin/users`, {
   headers: {
-    'Cookie': `auth-token=${token.value}`
+    'Cookie': `auth-token=${token.value}`,
+    'X-Site-Database': database
   }
 });
 const users = usersResponse.ok ? await usersResponse.json() : [];
@@ -39,8 +43,7 @@ const approvedUsers = users.filter((u: any) => u.approved);
 const pendingUsers = users.filter((u: any) => !u.approved);
 ---
 
-<Layout title="User Management - Editor">
-  <div class="min-h-screen bg-background">
+<div class="min-h-screen bg-background">
     <!-- Editor Header -->
     <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
@@ -180,9 +183,8 @@ const pendingUsers = users.filter((u: any) => !u.approved);
       )}
     </main>
   </div>
-</Layout>
 
-<script>
+<script define:vars={{ API_URL, database }}>
   // Handle approve buttons
   document.querySelectorAll('.approve-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
@@ -194,8 +196,11 @@ const pendingUsers = users.filter((u: any) => !u.approved);
       
       if (confirm(`Approve ${userName}?`)) {
         try {
-          const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/admin/users/${userId}/approve`, {
+          const response = await fetch(`${API_URL}/api/admin/users/${userId}/approve`, {
             method: 'PUT',
+            headers: {
+              'X-Site-Database': database
+            },
             credentials: 'include',
           });
           
@@ -225,8 +230,9 @@ const pendingUsers = users.filter((u: any) => !u.approved);
           const res = await fetch(`${API_URL}/api/admin/users/${userId}`, {
             method: 'DELETE',
             headers: {
-              'Authorization': `Bearer ${token}`
-            }
+              'X-Site-Database': database
+            },
+            credentials: 'include'
           });
 
           if (res.ok) {
@@ -255,10 +261,11 @@ const pendingUsers = users.filter((u: any) => !u.approved);
       
       if (confirm(`Change ${userName}'s role to ${newRole}?`)) {
         try {
-          const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://127.0.0.1:8752'}/api/admin/users/${userId}/role`, {
+          const response = await fetch(`${API_URL}/api/admin/users/${userId}/role`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'X-Site-Database': database
             },
             credentials: 'include',
             body: JSON.stringify({ role: newRole })

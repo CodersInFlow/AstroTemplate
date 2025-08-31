@@ -15,6 +15,11 @@ A single codebase that serves multiple websites with different domains, database
 - DarkFlows: http://darkflows.localhost:4321 (Router OS & networking solutions)
 - Preston Garrison: http://prestongarrison.localhost:4321 (Developer portfolio)
 
+**Default Admin Credentials:**
+The Go backend automatically creates a default admin user for each site:
+- **Email:** `admin@codersinflow.com`
+- **Password:** `c0dersinflow`
+
 💡 **Note**: `.localhost` domains work automatically in modern browsers without any /etc/hosts changes!
 
 The system automatically detects which site to serve based on the domain. The default site at `localhost:4321` shows a beautiful directory of all available sites with descriptions and links that open in new tabs.
@@ -147,7 +152,158 @@ Edit `sites-config.json`:
 3. Router checks module routes first (e.g., `/blog`, `/docs`)
 4. If no module match, checks site-specific pages
 5. Wraps content in site's layout with proper theming
+
+### ⚠️ Important: Astro Redirect and Layout Considerations
+
+#### The Response Already Sent Error
+When using Astro, you **cannot** use `Astro.redirect()` inside components that are wrapped by a Layout. Once a Layout component starts rendering, the response headers are sent to the browser, and any subsequent redirect attempts will fail with:
+
+```
+ResponseSentError: Unable to set response. 
+The response has already been sent to the browser and cannot be altered.
+```
+
+#### Why This Happens
+1. **Page renders Layout** → Response headers start sending
+2. **Layout renders child component** → Response is already in progress
+3. **Child component tries to redirect** → ❌ Too late! Error occurs
+
+#### Solutions Implemented
+
+**For Blog Post Creation:**
+Instead of redirecting after form submission, we show a success page on the same URL:
+- Form submits to itself (POST to same page)
+- Server processes the submission
+- On success: Shows beautiful success page with post URL and actions
+- On error: Shows form with validation errors and preserved values
+
+**Benefits:**
+- No redirect timing issues
+- Better UX with immediate feedback
+- Form values preserved on error
+- Multiple actions available after success
+
+#### Best Practices
+
+✅ **DO:**
+- Handle redirects at the page level (before Layout renders)
+- Use middleware for authentication redirects
+- Show success/error states on the same page
+- Use client-side navigation for post-action navigation
+
+❌ **DON'T:**
+- Use `Astro.redirect()` inside components wrapped by Layout
+- Try to modify response headers after rendering starts
+- Mix redirect logic between pages and components
+
+#### Example Pattern
+```astro
+---
+// ✅ Good: Check and redirect BEFORE Layout
+const needsAuth = checkAuth();
+if (needsAuth) {
+  return Astro.redirect('/login');
+}
+
+const Layout = await import('./layout.astro');
+---
+
+<Layout>
+  <!-- Component content here -->
+</Layout>
+```
+
+## 📝 Blog Module Architecture
+
+### IMPORTANT: How the Blog System Works
+
+The blog module is a **shared component** that gets wrapped by each site's layout. Understanding this architecture is critical:
+
+#### 1. **Entry Point**: Site's Blog Wrapper
+Each site has a `pages/blog/[...slug].astro` file that:
+```astro
+---
+import Layout from '../../layout.astro';
+import BlogApp from '../../../../modules/blog/BlogApp.astro';
+---
+
+<Layout title="Blog">
+  <BlogApp config={config} />
+</Layout>
+```
+
+This is the **ONLY** place where Layout should be used for blog pages.
+
+#### 2. **BlogApp Router**: `src/modules/blog/BlogApp.astro`
+- Receives database and tenant info from the site wrapper
+- Parses the URL to determine which blog component to render
+- Passes `database` and `tenant` props to all child components
+- **NEVER** uses its own Layout - it's already wrapped!
+
+#### 3. **Blog Components**: `src/modules/blog/editor/*.astro`
+- **MUST NOT** import or use Layout components
+- **MUST** receive `database` and `tenant` from props:
+  ```astro
+  const { database, tenant } = Astro.props;
+  ```
+- **MUST** include database header in all API calls:
+  ```javascript
+  headers: {
+    'X-Site-Database': database
+  }
+  ```
+
+#### Blog URL Routing
+- `/blog` → Blog listing
+- `/blog/editor` → Editor dashboard (requires auth)
+- `/blog/editor/login` → Login page
+- `/blog/editor/posts` → Posts management
+- `/blog/editor/posts/new` → Create new post
+- `/blog/editor/posts/edit/[id]` → Edit post
+- `/blog/[slug]` → View blog post
+
+#### Blog Authentication
+- The blog editor requires authentication to access
+- Default admin credentials are created automatically by the Go backend
+- Authentication uses httpOnly cookies for security
+- Each site has its own isolated user database
+
+#### Common Mistakes to Avoid
+❌ **NEVER** import Layout in blog module components
+❌ **NEVER** wrap blog components in `<Layout>` tags
+❌ **NEVER** hardcode API URLs or ports
+❌ **NEVER** forget the `X-Site-Database` header
+✅ **ALWAYS** use `API_URL` from the centralized config
+✅ **ALWAYS** pass database through props
+✅ **ALWAYS** let the site's wrapper handle the layout
 6. Returns SSR response
+
+### API Configuration
+
+The system uses a **dynamic API configuration** at `src/shared/lib/api-config.ts` that automatically handles dev/production differences:
+
+#### How It Works:
+- **Development** (port 4321): Uses same hostname with API port (e.g., `codersinflow.localhost:3001`)
+- **Production** (no port/80/443): Uses same origin without port (e.g., `codersinflow.com`)
+
+#### Configuration Variables:
+```javascript
+// Can be set via environment variables:
+PUBLIC_DEV_FRONTEND_PORT // Default: 4321
+PUBLIC_DEV_API_PORT      // Default: 3001
+PUBLIC_API_URL           // Override entire URL if needed
+```
+
+#### Why This Approach:
+- **Same-origin requests**: Cookies work with `SameSite=Lax` (no CORS issues)
+- **No hardcoded URLs**: Works identically across all domains
+- **Consistent dev/prod**: Same code path, different port handling
+
+#### IMPORTANT Rules:
+- **NEVER hardcode** `127.0.0.1` or `localhost` - use current domain
+- **NEVER hardcode** ports - use configuration variables
+- **ALWAYS import** `API_URL` from `src/shared/lib/api-config.ts`
+- **ALWAYS use** same domain for frontend and API (just different ports in dev)
 
 ### Module System
 

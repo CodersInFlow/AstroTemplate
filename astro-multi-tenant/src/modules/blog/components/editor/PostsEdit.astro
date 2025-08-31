@@ -1,10 +1,9 @@
 ---
 export const prerender = false;
+import { API_URL } from '../../../../shared/lib/api-config';
 
 const { database, tenant, id } = Astro.props;
 const token = Astro.cookies.get('auth-token');
-
-const API_URL = 'http://127.0.0.1:3001';
 
 // Fetch post
 let post = null;
@@ -139,7 +138,7 @@ if (!post) {
   </main>
 </div>
 
-<script define:vars={{ database, id }}>
+<script define:vars={{ API_URL, database, id }}>
   const form = document.getElementById('postForm');
   const errorDiv = document.getElementById('error');
   const successDiv = document.getElementById('success');
@@ -163,7 +162,7 @@ if (!post) {
       successDiv.textContent = 'Updating post...';
       successDiv.classList.remove('hidden');
       
-      const response = await fetch(`http://127.0.0.1:3001/api/posts/${id}`, {
+      const response = await fetch(`${API_URL}/api/posts/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
