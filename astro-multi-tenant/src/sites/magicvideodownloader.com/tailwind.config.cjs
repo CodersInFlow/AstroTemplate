@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const semanticPlugin = require('../../shared/tailwind-semantic-plugin')
+
 module.exports = {
   content: [
     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
@@ -42,32 +44,17 @@ module.exports = {
     },
   },
   safelist: [
-    // Background colors
+    // Keep only the classes that aren't defined by the plugin
     'bg-background',
-    'bg-surface',
-    'bg-surface-hover',
     'bg-primary',
     'bg-secondary',
     'bg-accent',
-    
-    // Text colors
-    'text-text-primary',
-    'text-text-secondary',
-    'text-text-muted',
     'text-text-inverse',
-    'text-link',
-    'text-link-hover',
-    
-    // Border colors
-    'border-border',
     'border-primary',
-    
-    // Hover states
     'hover:bg-primary/90',
-    'hover:bg-surface-hover',
-    'hover:text-link-hover',
   ],
   plugins: [
+    semanticPlugin,  // Add semantic utility classes
     require('@tailwindcss/typography'),
   ],
 }

@@ -52,6 +52,24 @@ if [ -f "blacklist.txt" ]; then
     echo ""
 fi
 
+# Check Docker Hub login if using registry
+if [ "$REGISTRY" != "local" ]; then
+    echo "🔑 Checking Docker registry login..."
+    # Try to pull a small test image to check if we're logged in
+    # This works better on macOS where docker info doesn't show Username
+    if ! docker pull hello-world:latest > /dev/null 2>&1; then
+        if [ ! -z "$DOCKER_USERNAME" ] && [ ! -z "$DOCKER_PASSWORD" ]; then
+            echo "🔑 Logging into Docker Hub..."
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        else
+            echo "⚠️  Unable to access Docker registry. Attempting to continue..."
+            echo "    If push fails, run: docker login"
+        fi
+    else
+        echo "✅ Docker registry access verified"
+    fi
+fi
+
 # Build image with blacklist support
 if [ -f "scripts/build-with-blacklist.sh" ] && [ -f "blacklist.txt" ]; then
     echo "📦 Building Docker image with blacklist..."
@@ -62,14 +80,22 @@ else
     docker build -f Dockerfile -t $IMAGE_NAME:$TAG .
 fi
 
-# Handle registry push (skip if local)
+# Handle Docker image deployment
 if [ "$REGISTRY" != "local" ]; then
-    echo "🏷️  Tagging image for registry..."
-    docker tag $IMAGE_NAME:$TAG $REGISTRY/$IMAGE_NAME:$TAG
+    # For Docker Hub, the image name already includes the username
+    if [ "$REGISTRY" = "docker.io" ]; then
+        FULL_IMAGE_NAME="$IMAGE_NAME:$TAG"
+    else
+        FULL_IMAGE_NAME="$REGISTRY/$IMAGE_NAME:$TAG"
+    fi
     
-    echo "⬆️  Pushing to registry..."
-    docker push $REGISTRY/$IMAGE_NAME:$TAG
-    REMOTE_IMAGE="$REGISTRY/$IMAGE_NAME:$TAG"
+    echo "⬆️  Pushing image to registry..."
+    docker push $FULL_IMAGE_NAME
+    
+    echo "📥 Pulling image from registry on server..."
+    echo "   Image: $FULL_IMAGE_NAME"
+    ssh -p $PORT $USER@$SERVER "docker pull $FULL_IMAGE_NAME"
+    REMOTE_IMAGE="$FULL_IMAGE_NAME"
 else
     echo "📦 Saving Docker image locally..."
     docker save $IMAGE_NAME:$TAG | gzip > $IMAGE_NAME-$TAG.tar.gz

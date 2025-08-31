@@ -4,6 +4,11 @@ import { getTenantFromHost } from '../shared/lib/tenant';
 import BlogList from '../shared/components/BlogList.astro';
 import BlogPost from '../shared/components/BlogPost.astro';
 
+// Import all site layouts, configs, and pages using import.meta.glob
+const layouts = import.meta.glob('../sites/*/layout.astro', { eager: true });
+const configs = import.meta.glob('../sites/*/config.json', { eager: true });
+const pages = import.meta.glob('../sites/*/pages/**/*.astro', { eager: true });
+
 // Get tenant from host header
 const hostname = Astro.request.headers.get('host') || '127.0.0.1:4321';
 const tenant = getTenantFromHost(hostname);
@@ -13,9 +18,18 @@ const tenantDir = tenant.directory || tenant.id;
 const { slug } = Astro.params;
 const route = slug || 'index';
 
-// Load site layout and config
-const Layout = (await import(`../sites/${tenantDir}/layout.astro`)).default;
-const config = (await import(`../sites/${tenantDir}/config.json`)).default;
+// Load site layout and config from glob imports
+const layoutPath = `../sites/${tenantDir}/layout.astro`;
+const configPath = `../sites/${tenantDir}/config.json`;
+
+const Layout = layouts[layoutPath]?.default;
+const config = configs[configPath]?.default;
+
+// Handle missing layout
+if (!Layout) {
+  console.error(`No layout found for tenant: ${tenantDir}`);
+  return new Response('Site configuration error', { status: 500 });
+}
 
 // Handle blog routes
 let blogSlug = null;
@@ -36,26 +50,22 @@ let PageComponent = null;
 let pageProps = {};
 
 // First try exact match
-try {
-  const pagePath = `../sites/${tenantDir}/pages/${route}.astro`;
-  PageComponent = (await import(/* @vite-ignore */ pagePath)).default;
+const pagePath = `../sites/${tenantDir}/pages/${route}.astro`;
+if (pages[pagePath]) {
+  PageComponent = pages[pagePath].default;
   console.log(`Loaded exact page component for ${tenantDir}/${route}`);
-} catch (e) {
+} else if (route.startsWith('blog/')) {
   // Try to find a dynamic route handler for blog posts
-  if (route.startsWith('blog/')) {
-    try {
-      const dynamicPath = `../sites/${tenantDir}/pages/blog/[slug].astro`;
-      PageComponent = (await import(/* @vite-ignore */ dynamicPath)).default;
-      pageProps = { slug: blogSlug };
-      console.log(`Loaded dynamic blog page for ${tenantDir}`);
-    } catch (e2) {
-      console.log(`No dynamic blog page for ${tenantDir}:`, e2.message);
-    }
+  const dynamicPath = `../sites/${tenantDir}/pages/blog/[slug].astro`;
+  if (pages[dynamicPath]) {
+    PageComponent = pages[dynamicPath].default;
+    pageProps = { slug: blogSlug };
+    console.log(`Loaded dynamic blog page for ${tenantDir}`);
   }
-  
-  if (!PageComponent) {
-    console.log(`No custom page for ${tenantDir}/${route}:`, e.message);
-  }
+}
+
+if (!PageComponent) {
+  console.log(`No custom page for ${tenantDir}/${route}`);
 }
 
 // If no custom page exists, show 404

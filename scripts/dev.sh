@@ -9,7 +9,11 @@ echo "================================================"
 # Load configuration from .env if it exists
 if [ -f ".env" ]; then
     echo "Loading configuration from .env..."
-    export $(cat .env | grep -v '^#' | xargs)
+    # Remove comments (both lines starting with # and inline comments)
+    # and export only valid variable assignments
+    set -a
+    source <(grep -v '^#' .env | sed 's/#.*//')
+    set +a
 fi
 
 # Use environment variables or defaults

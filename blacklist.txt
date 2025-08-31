@@ -1,5 +1,0 @@
-# Sites to exclude from deployment
-# One site ID per line
-codersinflow
-darkflows
-prestongarrison

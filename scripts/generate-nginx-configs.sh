@@ -89,10 +89,16 @@ server {
     # SSL Configuration (Let's Encrypt)
     ssl_certificate /etc/letsencrypt/live/${domain}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${domain}/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/${domain}/chain.pem;
     
-    # SSL Security Settings (if the options file exists)
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    # SSL Security Settings
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    ssl_stapling on;
+    ssl_stapling_verify on;
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;

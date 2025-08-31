@@ -94,7 +94,7 @@ EOF
 echo ""
 echo "📦 Building Docker image..."
 cd $BUILD_DIR
-docker build -f Dockerfile -t $IMAGE_NAME:$TAG .
+docker build --no-cache -f Dockerfile -t $IMAGE_NAME:$TAG .
 cd ..
 
 # Clean up

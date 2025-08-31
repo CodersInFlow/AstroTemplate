@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const semanticPlugin = require("../../shared/tailwind-semantic-plugin")
+
 module.exports = {
   content: [
     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
@@ -11,5 +13,7 @@ module.exports = {
       // No semantic colors needed since it's just a directory page
     },
   },
-  plugins: [],
+  plugins: [
+    semanticPlugin,  // Semantic utility classes for blog module
+  ],
 }

@@ -35,3 +35,6 @@ __pycache__
 
 # Deployment configuration
 .env.deploy
+
+# Docker build temporary directory
+.docker-build-temp/
