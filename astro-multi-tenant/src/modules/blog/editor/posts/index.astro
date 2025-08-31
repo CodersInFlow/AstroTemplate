@@ -1,7 +1,6 @@
 ---
 export const prerender = false;
 
-import '../../../../styles/global.css';
 import Layout from '../../../../layouts/Layout.astro';
 
 // Check authentication
@@ -33,17 +32,17 @@ if (posts.length > 0) {
 ---
 
 <Layout title="Posts - Editor">
-  <div class="min-h-screen bg-gray-900">
+  <div class="min-h-screen bg-background">
     <!-- Editor Header -->
-    <header class="bg-gray-800 border-b border-gray-700">
+    <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-bold text-white">Manage Posts</h1>
+          <h1 class="text-xl font-bold text-text-primary">Manage Posts</h1>
           <div class="flex gap-2">
-            <a href="/blog/editor/posts/new?type=blog" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm text-white">
+            <a href="/blog/editor/posts/new?type=blog" class="px-4 py-2 bg-primary hover:bg-primary/90 rounded-md text-sm text-text-primary">
               New Blog Post
             </a>
-            <a href="/blog/editor/posts/new?type=docs" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-sm text-white">
+            <a href="/blog/editor/posts/new?type=docs" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-sm text-text-primary">
               New Documentation
             </a>
           </div>
@@ -52,12 +51,12 @@ if (posts.length > 0) {
     </header>
 
     <!-- Editor Navigation -->
-    <nav class="bg-gray-800 border-b border-gray-700">
+    <nav class="bg-surface border-b border-border">
       <div class="container mx-auto px-4">
         <div class="flex gap-6">
-          <a href="/blog/editor" class="py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-300">Dashboard</a>
-          <a href="/blog/editor/posts" class="py-3 border-b-2 border-blue-500 text-blue-400">Posts</a>
-          <a href="/blog/editor/categories" class="py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-300">Categories</a>
+          <a href="/blog/editor" class="py-3 border-b-2 border-transparent text-text-muted hover:text-text-secondary">Dashboard</a>
+          <a href="/blog/editor/posts" class="py-3 border-b-2 border-blue-500 text-link">Posts</a>
+          <a href="/blog/editor/categories" class="py-3 border-b-2 border-transparent text-text-muted hover:text-text-secondary">Categories</a>
         </div>
       </div>
     </nav>
@@ -65,27 +64,27 @@ if (posts.length > 0) {
     <main class="container mx-auto px-4 py-8">
       <!-- Blog Posts Section -->
       <section class="mb-8">
-        <h2 class="text-2xl font-bold mb-4 text-white">Blog Posts ({blogPosts.length})</h2>
-        <div class="bg-gray-800 rounded-lg overflow-hidden">
+        <h2 class="text-2xl font-bold mb-4 text-text-primary">Blog Posts ({blogPosts.length})</h2>
+        <div class="bg-surface rounded-lg overflow-hidden">
           <table class="w-full">
-            <thead class="bg-gray-700">
+            <thead class="bg-surface-hover">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Title</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Title</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Category</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-700">
               {blogPosts.map((post: any) => (
-                <tr class="hover:bg-gray-700">
+                <tr class="hover:bg-surface-hover">
                   <td class="px-6 py-4">
-                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-blue-400 hover:text-blue-300">
+                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-link hover:text-link-hover">
                       {post.title}
                     </a>
                   </td>
-                  <td class="px-6 py-4 text-gray-400">
+                  <td class="px-6 py-4 text-text-muted">
                     {post.category_data?.name || 'Uncategorized'}
                   </td>
                   <td class="px-6 py-4">
@@ -95,19 +94,19 @@ if (posts.length > 0) {
                       {post.published ? 'Published' : 'Draft'}
                     </span>
                   </td>
-                  <td class="px-6 py-4 text-gray-400">
+                  <td class="px-6 py-4 text-text-muted">
                     {new Date(post.createdAt).toLocaleDateString()}
                   </td>
                   <td class="px-6 py-4 text-right">
-                    <a href={`/blog/${post.slug}`} target="_blank" class="text-gray-400 hover:text-white mr-3">
+                    <a href={`/blog/${post.slug}`} target="_blank" class="text-text-muted hover:text-text-primary mr-3">
                       View
                     </a>
-                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-blue-400 hover:text-blue-300 mr-3">
+                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-link hover:text-link-hover mr-3">
                       Edit
                     </a>
                     <button 
                       data-post-id={post.id}
-                      class="delete-btn text-red-400 hover:text-red-300"
+                      class="delete-btn text-error hover:text-red-300"
                     >
                       Delete
                     </button>
@@ -118,7 +117,7 @@ if (posts.length > 0) {
           </table>
           
           {blogPosts.length === 0 && (
-            <div class="text-center py-8 text-gray-400">
+            <div class="text-center py-8 text-text-muted">
               No blog posts yet.
             </div>
           )}
@@ -127,27 +126,27 @@ if (posts.length > 0) {
 
       <!-- Documentation Section -->
       <section>
-        <h2 class="text-2xl font-bold mb-4 text-white">Documentation ({docsPosts.length})</h2>
-        <div class="bg-gray-800 rounded-lg overflow-hidden">
+        <h2 class="text-2xl font-bold mb-4 text-text-primary">Documentation ({docsPosts.length})</h2>
+        <div class="bg-surface rounded-lg overflow-hidden">
           <table class="w-full">
-            <thead class="bg-gray-700">
+            <thead class="bg-surface-hover">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Title</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Title</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Category</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-700">
               {docsPosts.map((post: any) => (
-                <tr class="hover:bg-gray-700">
+                <tr class="hover:bg-surface-hover">
                   <td class="px-6 py-4">
-                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-blue-400 hover:text-blue-300">
+                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-link hover:text-link-hover">
                       {post.title}
                     </a>
                   </td>
-                  <td class="px-6 py-4 text-gray-400">
+                  <td class="px-6 py-4 text-text-muted">
                     {post.category_data?.name || 'Uncategorized'}
                   </td>
                   <td class="px-6 py-4">
@@ -157,19 +156,19 @@ if (posts.length > 0) {
                       {post.published ? 'Published' : 'Draft'}
                     </span>
                   </td>
-                  <td class="px-6 py-4 text-gray-400">
+                  <td class="px-6 py-4 text-text-muted">
                     {new Date(post.createdAt).toLocaleDateString()}
                   </td>
                   <td class="px-6 py-4 text-right">
-                    <a href={`/docs/${post.slug}`} target="_blank" class="text-gray-400 hover:text-white mr-3">
+                    <a href={`/docs/${post.slug}`} target="_blank" class="text-text-muted hover:text-text-primary mr-3">
                       View
                     </a>
-                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-blue-400 hover:text-blue-300 mr-3">
+                    <a href={`/blog/editor/posts/edit/${post.id}`} class="text-link hover:text-link-hover mr-3">
                       Edit
                     </a>
                     <button 
                       data-post-id={post.id}
-                      class="delete-btn text-red-400 hover:text-red-300"
+                      class="delete-btn text-error hover:text-red-300"
                     >
                       Delete
                     </button>
@@ -180,7 +179,7 @@ if (posts.length > 0) {
           </table>
           
           {docsPosts.length === 0 && (
-            <div class="text-center py-8 text-gray-400">
+            <div class="text-center py-8 text-text-muted">
               No documentation yet.
             </div>
           )}

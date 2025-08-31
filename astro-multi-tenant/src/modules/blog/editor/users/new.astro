@@ -1,7 +1,6 @@
 ---
 export const prerender = false;
 
-import '../../../../styles/global.css';
 import Layout from '../../../../layouts/Layout.astro';
 
 // Check authentication
@@ -29,13 +28,13 @@ if (currentUser.role !== 'admin') {
 ---
 
 <Layout title="Create User - Editor">
-  <div class="min-h-screen bg-gray-900">
+  <div class="min-h-screen bg-background">
     <!-- Editor Header -->
-    <header class="bg-gray-800 border-b border-gray-700">
+    <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-bold text-white">Create New User</h1>
-          <a href="/blog/editor/users" class="text-gray-400 hover:text-white">
+          <h1 class="text-xl font-bold text-text-primary">Create New User</h1>
+          <a href="/blog/editor/users" class="text-text-muted hover:text-text-primary">
             ← Back to Users
           </a>
         </div>
@@ -43,10 +42,10 @@ if (currentUser.role !== 'admin') {
     </header>
 
     <main class="container mx-auto px-4 py-8 max-w-md">
-      <div class="bg-gray-800 rounded-lg p-6">
+      <div class="bg-surface rounded-lg p-6">
         <form id="createUserForm">
           <div class="mb-4">
-            <label for="name" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="name" class="block text-sm font-medium text-text-secondary mb-2">
               Name
             </label>
             <input
@@ -54,12 +53,12 @@ if (currentUser.role !== 'admin') {
               id="name"
               name="name"
               required
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 bg-surface-hover border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           <div class="mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="email" class="block text-sm font-medium text-text-secondary mb-2">
               Email
             </label>
             <input
@@ -67,12 +66,12 @@ if (currentUser.role !== 'admin') {
               id="email"
               name="email"
               required
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 bg-surface-hover border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           <div class="mb-4">
-            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="password" class="block text-sm font-medium text-text-secondary mb-2">
               Password
             </label>
             <input
@@ -81,32 +80,32 @@ if (currentUser.role !== 'admin') {
               name="password"
               required
               minlength="8"
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 bg-surface-hover border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <p class="mt-1 text-sm text-gray-400">Must be at least 8 characters</p>
+            <p class="mt-1 text-sm text-text-muted">Must be at least 8 characters</p>
           </div>
 
           <div class="mb-6">
-            <label for="role" class="block text-sm font-medium text-gray-300 mb-2">
+            <label for="role" class="block text-sm font-medium text-text-secondary mb-2">
               Role
             </label>
             <select
               id="role"
               name="role"
               required
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3 py-2 bg-surface-hover border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
           </div>
 
-          <div id="errorMessage" class="mb-4 text-red-400 text-sm hidden"></div>
+          <div id="errorMessage" class="mb-4 text-error text-sm hidden"></div>
           <div id="successMessage" class="mb-4 text-green-400 text-sm hidden"></div>
 
           <button
             type="submit"
-            class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+            class="w-full px-4 py-2 bg-primary hover:bg-primary/90 text-text-primary font-medium rounded-md transition-colors"
           >
             Create User
           </button>

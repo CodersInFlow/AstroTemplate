@@ -1,7 +1,6 @@
 ---
 export const prerender = false;
 
-import '../../../styles/global.css';
 import Layout from '../../../layouts/Layout.astro';
 
 // If already logged in, redirect to editor
@@ -12,8 +11,8 @@ if (token) {
 ---
 
 <Layout title="Register - Editor">
-  <main class="min-h-screen flex items-center justify-center bg-gray-900">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
+  <main class="min-h-screen flex items-center justify-center bg-background">
+    <div class="bg-surface p-8 rounded-lg shadow-xl w-full max-w-md">
       <h1 class="text-2xl font-bold text-center mb-6">Create Account</h1>
       
       <form id="registerForm" class="space-y-4">
@@ -24,7 +23,7 @@ if (token) {
             id="name"
             name="name"
             required
-            class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface-hover rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="John Doe"
           />
         </div>
@@ -36,7 +35,7 @@ if (token) {
             id="email"
             name="email"
             required
-            class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface-hover rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="john@example.com"
           />
         </div>
@@ -49,26 +48,26 @@ if (token) {
             name="password"
             required
             minlength="8"
-            class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface-hover rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="••••••••"
           />
-          <p class="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
+          <p class="text-xs text-text-muted mt-1">Minimum 8 characters</p>
         </div>
         
-        <div id="error" class="text-red-400 text-sm hidden"></div>
+        <div id="error" class="text-error text-sm hidden"></div>
         <div id="success" class="text-green-400 text-sm hidden"></div>
         
         <button
           type="submit"
-          class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition-colors"
+          class="w-full py-2 px-4 bg-primary hover:bg-primary/90 rounded-md font-medium transition-colors"
         >
           Register
         </button>
       </form>
       
-      <p class="text-center mt-4 text-sm text-gray-400">
+      <p class="text-center mt-4 text-sm text-text-muted">
         Already have an account? 
-        <a href="/blog/editor/login" class="text-blue-400 hover:text-blue-300">Login</a>
+        <a href="/blog/editor/login" class="text-link hover:text-link-hover">Login</a>
       </p>
       
       <div class="mt-6 p-4 bg-yellow-900/20 border border-yellow-700 rounded-lg">

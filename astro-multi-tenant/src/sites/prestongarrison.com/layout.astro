@@ -111,7 +111,7 @@ const imageURL = new URL(image, url);
       ]
     })} />
   </head>
-  <body>
+  <body class="bg-background text-text-primary">
     <Menu client:load data={{}} />
     {showHeader && <MainTitleHeader data={{ title: "Preston Garrison" }} client:load />}
     <slot />
@@ -119,8 +119,9 @@ const imageURL = new URL(image, url);
 </html>
 
 <style is:global>
-  @import './styles/global.css';
-  @import './styles/preston.css';
+  /* These imports are now handled by the main.css import above */
+  /* @import './styles/global.css'; */
+  /* @import './styles/preston.css'; */
   
   /* Additional global styles if needed */
   html {
@@ -130,7 +131,8 @@ const imageURL = new URL(image, url);
   body {
     margin: 0;
     padding: 0;
-    background-color: #FFFFFF;
-    color: #111827;
+    /* Let Tailwind's bg-background handle this */
+    /* background-color: #FFFFFF; */
+    /* color: #111827; */
   }
 </style>

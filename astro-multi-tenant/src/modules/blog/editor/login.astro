@@ -1,7 +1,6 @@
 ---
 export const prerender = false;
 
-import '../../../styles/global.css';
 import Layout from '../../../layouts/Layout.astro';
 
 // If already logged in, verify token is valid before redirecting
@@ -30,48 +29,48 @@ if (token) {
 ---
 
 <Layout title="Login - Editor">
-  <main class="min-h-screen flex items-center justify-center bg-gray-900">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
-      <h1 class="text-2xl font-bold text-center mb-6">Editor Login</h1>
+  <main class="min-h-screen flex items-center justify-center bg-background">
+    <div class="bg-surface p-8 rounded-lg shadow-xl w-full max-w-md border border-border">
+      <h1 class="text-2xl font-bold text-center mb-6 text-text-primary">Editor Login</h1>
       
       <form id="loginForm" class="space-y-4">
         <div>
-          <label for="email" class="block text-sm font-medium mb-2">Email</label>
+          <label for="email" class="block text-sm font-medium mb-2 text-text-secondary">Email</label>
           <input
             type="email"
             id="email"
             name="email"
             required
-            class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface-hover border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="admin@example.com"
           />
         </div>
         
         <div>
-          <label for="password" class="block text-sm font-medium mb-2">Password</label>
+          <label for="password" class="block text-sm font-medium mb-2 text-text-secondary">Password</label>
           <input
             type="password"
             id="password"
             name="password"
             required
-            class="w-full px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface-hover border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="••••••••"
           />
         </div>
         
-        <div id="error" class="text-red-400 text-sm hidden"></div>
+        <div id="error" class="text-error text-sm hidden"></div>
         
         <button
           type="submit"
-          class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition-colors"
+          class="w-full py-2 px-4 bg-primary hover:bg-primary/90 text-text-primary rounded-md font-medium transition-colors"
         >
           Login
         </button>
       </form>
       
-      <p class="text-center mt-4 text-sm text-gray-400">
+      <p class="text-center mt-4 text-sm text-text-muted">
         Don't have an account? 
-        <a href="/blog/editor/register" class="text-blue-400 hover:text-blue-300">Register</a>
+        <a href="/blog/editor/register" class="text-link hover:text-link-hover">Register</a>
       </p>
     </div>
   </main>

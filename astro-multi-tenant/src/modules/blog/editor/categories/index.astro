@@ -1,7 +1,6 @@
 ---
 export const prerender = false;
 
-import '../../../../styles/global.css';
 import Layout from '../../../../layouts/Layout.astro';
 
 // Check authentication
@@ -41,13 +40,13 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
 ---
 
 <Layout title="Categories - Editor">
-  <div class="min-h-screen bg-gray-900">
+  <div class="min-h-screen bg-background">
     <!-- Editor Header -->
-    <header class="bg-gray-800 border-b border-gray-700">
+    <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-bold text-white">Manage Categories</h1>
-          <a href="/blog/editor" class="text-gray-400 hover:text-white">
+          <h1 class="text-xl font-bold text-text-primary">Manage Categories</h1>
+          <a href="/blog/editor" class="text-text-muted hover:text-text-primary">
             ← Back to Dashboard
           </a>
         </div>
@@ -55,14 +54,14 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
     </header>
 
     <!-- Editor Navigation -->
-    <nav class="bg-gray-800 border-b border-gray-700">
+    <nav class="bg-surface border-b border-border">
       <div class="container mx-auto px-4">
         <div class="flex gap-6">
-          <a href="/blog/editor" class="py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-300">Dashboard</a>
-          <a href="/blog/editor/posts" class="py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-300">Posts</a>
-          <a href="/blog/editor/categories" class="py-3 border-b-2 border-blue-500 text-blue-400">Categories</a>
+          <a href="/blog/editor" class="py-3 border-b-2 border-transparent text-text-muted hover:text-text-secondary">Dashboard</a>
+          <a href="/blog/editor/posts" class="py-3 border-b-2 border-transparent text-text-muted hover:text-text-secondary">Posts</a>
+          <a href="/blog/editor/categories" class="py-3 border-b-2 border-blue-500 text-link">Categories</a>
           {user.role === 'admin' && (
-            <a href="/blog/editor/users" class="py-3 border-b-2 border-transparent text-gray-400 hover:text-gray-300">Users</a>
+            <a href="/blog/editor/users" class="py-3 border-b-2 border-transparent text-text-muted hover:text-text-secondary">Users</a>
           )}
         </div>
       </div>
@@ -71,27 +70,27 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
     <main class="container mx-auto px-4 py-8 max-w-4xl">
       <!-- Create New Category -->
       <section class="mb-8">
-        <h2 class="text-2xl font-bold mb-4 text-white">Create New Category</h2>
-        <form id="categoryForm" class="bg-gray-800 rounded-lg p-6 space-y-4">
+        <h2 class="text-2xl font-bold mb-4 text-text-primary">Create New Category</h2>
+        <form id="categoryForm" class="bg-surface rounded-lg p-6 space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="name" class="block text-sm font-medium mb-2 text-gray-300">Category Name</label>
+              <label for="name" class="block text-sm font-medium mb-2 text-text-secondary">Category Name</label>
               <input
                 type="text"
                 id="name"
                 name="name"
                 required
-                class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 bg-surface-hover text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="e.g., Tutorial"
               />
             </div>
             <div>
-              <label for="type" class="block text-sm font-medium mb-2 text-gray-300">Type</label>
+              <label for="type" class="block text-sm font-medium mb-2 text-text-secondary">Type</label>
               <select
                 id="type"
                 name="type"
                 required
-                class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 bg-surface-hover text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="blog">Blog</option>
                 <option value="docs">Documentation</option>
@@ -100,29 +99,29 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
           </div>
           <button
             type="submit"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-white transition-colors"
+            class="px-4 py-2 bg-primary hover:bg-primary/90 rounded-md font-medium text-text-primary transition-colors"
           >
             Create Category
           </button>
-          <div id="error" class="text-red-400 hidden"></div>
+          <div id="error" class="text-error hidden"></div>
           <div id="success" class="text-green-400 hidden"></div>
         </form>
       </section>
 
       <!-- Blog Categories -->
       <section class="mb-8">
-        <h2 class="text-2xl font-bold mb-4 text-white">Blog Categories ({blogCategories.length})</h2>
+        <h2 class="text-2xl font-bold mb-4 text-text-primary">Blog Categories ({blogCategories.length})</h2>
         <div class="space-y-2">
           {blogCategories.map((category: any) => (
-            <div class="bg-gray-800 rounded-lg p-4 flex justify-between items-center">
+            <div class="bg-surface rounded-lg p-4 flex justify-between items-center">
               <div>
-                <h3 class="font-medium text-white">{category.name}</h3>
-                <p class="text-sm text-gray-400">Slug: {category.slug}</p>
+                <h3 class="font-medium text-text-primary">{category.name}</h3>
+                <p class="text-sm text-text-muted">Slug: {category.slug}</p>
               </div>
               <button
                 data-category-id={category.id}
                 data-category-name={category.name}
-                class="delete-btn text-red-400 hover:text-red-300 p-2"
+                class="delete-btn text-error hover:text-red-300 p-2"
                 title="Delete category"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,25 +131,25 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
             </div>
           ))}
           {blogCategories.length === 0 && (
-            <p class="text-gray-400">No blog categories yet.</p>
+            <p class="text-text-muted">No blog categories yet.</p>
           )}
         </div>
       </section>
 
       <!-- Documentation Categories -->
       <section>
-        <h2 class="text-2xl font-bold mb-4 text-white">Documentation Categories ({docsCategories.length})</h2>
+        <h2 class="text-2xl font-bold mb-4 text-text-primary">Documentation Categories ({docsCategories.length})</h2>
         <div class="space-y-2">
           {docsCategories.map((category: any) => (
-            <div class="bg-gray-800 rounded-lg p-4 flex justify-between items-center">
+            <div class="bg-surface rounded-lg p-4 flex justify-between items-center">
               <div>
-                <h3 class="font-medium text-white">{category.name}</h3>
-                <p class="text-sm text-gray-400">Slug: {category.slug}</p>
+                <h3 class="font-medium text-text-primary">{category.name}</h3>
+                <p class="text-sm text-text-muted">Slug: {category.slug}</p>
               </div>
               <button
                 data-category-id={category.id}
                 data-category-name={category.name}
-                class="delete-btn text-red-400 hover:text-red-300 p-2"
+                class="delete-btn text-error hover:text-red-300 p-2"
                 title="Delete category"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +159,7 @@ const docsCategories = categories.filter((c: any) => c.type === 'docs');
             </div>
           ))}
           {docsCategories.length === 0 && (
-            <p class="text-gray-400">No documentation categories yet.</p>
+            <p class="text-text-muted">No documentation categories yet.</p>
           )}
         </div>
       </section>

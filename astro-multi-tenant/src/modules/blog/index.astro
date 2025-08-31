@@ -22,13 +22,13 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
       
       <!-- Category Filter -->
       <div class="flex gap-2 flex-wrap">
-        <a href="/blog" class={`px-4 py-2 rounded-full transition ${!currentCategory ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
+        <a href="/blog" class={`px-4 py-2 rounded-full transition ${!currentCategory ? 'bg-primary text-text-primary' : 'bg-surface text-text-secondary hover:bg-surface-hover'}`}>
           All
         </a>
         {categories.map((category: any) => (
           <a 
             href={`/blog?category=${category.slug}`} 
-            class={`px-4 py-2 rounded-full transition ${currentCategory === category.slug ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+            class={`px-4 py-2 rounded-full transition ${currentCategory === category.slug ? 'bg-primary text-text-primary' : 'bg-surface text-text-secondary hover:bg-surface-hover'}`}
           >
             {category.name}
           </a>
@@ -52,7 +52,7 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
         
         return (
           <a href={`/blog/${post.slug}`} class="block group">
-            <article class="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden group-hover:border-gray-700 transition cursor-pointer h-full">
+            <article class="bg-background border border-border rounded-lg overflow-hidden group-hover:border-border transition cursor-pointer h-full">
               {post.coverImage && (
                 <div class="h-48 overflow-hidden">
                   <img 
@@ -63,16 +63,16 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
                 </div>
               )}
               <div class="p-6">
-                <h2 class="text-xl font-semibold mb-2 text-white group-hover:text-blue-400 transition">
+                <h2 class="text-xl font-semibold mb-2 text-text-primary group-hover:text-link transition">
                   {post.title}
                 </h2>
-                <p class="text-gray-400 mb-4 line-clamp-3">
+                <p class="text-text-muted mb-4 line-clamp-3">
                   {post.excerpt || post.description || 'No description available.'}
                 </p>
-                <div class="flex justify-between items-center text-sm text-gray-500">
+                <div class="flex justify-between items-center text-sm text-text-muted">
                   <span>{formattedDate}</span>
                   {post.category_data && (
-                    <span class="bg-gray-800 text-gray-300 px-2 py-1 rounded">
+                    <span class="bg-surface text-text-secondary px-2 py-1 rounded">
                       {post.category_data.name}
                     </span>
                   )}
@@ -85,7 +85,7 @@ const categories = categoryResponse.ok ? await categoryResponse.json() : [];
     </div>
 
     {posts.length === 0 && (
-      <div class="text-center py-12 text-gray-500">
+      <div class="text-center py-12 text-text-muted">
         <p>No blog posts found.</p>
       </div>
     )}

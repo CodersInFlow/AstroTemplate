@@ -40,8 +40,8 @@ const regularPosts = allPosts.filter((post: any) =>
           href="/blog" 
           class={`px-4 py-2 rounded-full transition ${
             !currentCategory 
-              ? 'bg-blue-600 text-white hover:bg-blue-700' 
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+              ? 'bg-primary text-text-primary hover:bg-primary/90' 
+              : 'bg-surface text-text-secondary hover:bg-surface-hover hover:text-text-primary'
           }`}
         >
           All
@@ -51,8 +51,8 @@ const regularPosts = allPosts.filter((post: any) =>
             href={`/blog?category=${category.slug}`} 
             class={`px-4 py-2 rounded-full transition ${
               currentCategory === category.slug
-                ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+                ? 'bg-primary text-text-primary hover:bg-primary/90' 
+                : 'bg-surface text-text-secondary hover:bg-surface-hover hover:text-text-primary'
             }`}
           >
             {category.name}
@@ -64,10 +64,10 @@ const regularPosts = allPosts.filter((post: any) =>
     <!-- Featured Posts (only show on main page) -->
     {featuredPosts.length > 0 && !currentCategory && (
       <section class="mb-12">
-        <h2 class="text-2xl font-bold mb-6 text-gray-200">Featured</h2>
+        <h2 class="text-2xl font-bold mb-6 text-text-secondary">Featured</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           {featuredPosts.slice(0, 2).map((post: any) => (
-            <article class="group bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-gray-700">
+            <article class="group bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-border">
               {post.coverImage && (
                 <div class="relative h-64 overflow-hidden">
                   <img 
@@ -79,21 +79,21 @@ const regularPosts = allPosts.filter((post: any) =>
                 </div>
               )}
               <div class="p-8">
-                <div class="flex items-center gap-2 text-sm text-gray-400 mb-3">
-                  <span class="text-blue-400">{post.category_data?.name || 'Uncategorized'}</span>
+                <div class="flex items-center gap-2 text-sm text-text-muted mb-3">
+                  <span class="text-link">{post.category_data?.name || 'Uncategorized'}</span>
                   <span>•</span>
                   <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                   <span>•</span>
                   <span>{post.readingTime} min read</span>
                 </div>
                 
-                <h3 class="text-2xl font-bold mb-3 group-hover:text-blue-400 transition-colors">
+                <h3 class="text-2xl font-bold mb-3 group-hover:text-link transition-colors">
                   <a href={`/blog/${post.slug}`} class="hover:underline">
                     {post.title}
                   </a>
                 </h3>
                 
-                <p class="text-gray-300 mb-6 line-clamp-3">
+                <p class="text-text-secondary mb-6 line-clamp-3">
                   {post.description}
                 </p>
                 
@@ -104,12 +104,12 @@ const regularPosts = allPosts.filter((post: any) =>
                     </div>
                     <div>
                       <div class="font-medium">{post.author_data?.name || 'Anonymous'}</div>
-                      <div class="text-sm text-gray-400">{post.author_data?.email || ''}</div>
+                      <div class="text-sm text-text-muted">{post.author_data?.email || ''}</div>
                     </div>
                   </div>
                   <a 
                     href={`/blog/${post.slug}`} 
-                    class="text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1 group/link"
+                    class="text-link hover:text-link-hover font-medium flex items-center gap-1 group/link"
                   >
                     Read more 
                     <span class="group-hover/link:translate-x-1 transition-transform">→</span>
@@ -125,12 +125,12 @@ const regularPosts = allPosts.filter((post: any) =>
     <!-- Regular Posts -->
     <section>
       {!currentCategory && featuredPosts.length > 0 && (
-        <h2 class="text-2xl font-bold mb-6 text-gray-200">Recent Posts</h2>
+        <h2 class="text-2xl font-bold mb-6 text-text-secondary">Recent Posts</h2>
       )}
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {regularPosts.map((post: any) => (
-          <article class="group bg-gray-900 rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-800 hover:border-gray-700">
+          <article class="group bg-background rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-border hover:border-border">
             {post.coverImage && (
               <div class="relative h-48 overflow-hidden">
                 <img 
@@ -141,35 +141,35 @@ const regularPosts = allPosts.filter((post: any) =>
               </div>
             )}
             <div class="p-6">
-              <div class="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                <span class="text-blue-400">{post.category_data?.name || 'Uncategorized'}</span>
+              <div class="flex items-center gap-2 text-sm text-text-muted mb-2">
+                <span class="text-link">{post.category_data?.name || 'Uncategorized'}</span>
                 <span>•</span>
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
               </div>
               
-              <h3 class="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+              <h3 class="text-xl font-bold mb-2 group-hover:text-link transition-colors">
                 <a href={`/blog/${post.slug}`}>
                   {post.title}
                 </a>
               </h3>
               
-              <p class="text-gray-400 mb-4 line-clamp-2">
+              <p class="text-text-muted mb-4 line-clamp-2">
                 {post.description}
               </p>
               
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm">
+                  <div class="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center text-sm">
                     {post.author_data?.name?.[0]?.toUpperCase() || 'A'}
                   </div>
                   <div class="text-sm">
-                    <div class="text-gray-300">{post.author_data?.name || 'Anonymous'}</div>
-                    <div class="text-gray-500">{post.readingTime} min read</div>
+                    <div class="text-text-secondary">{post.author_data?.name || 'Anonymous'}</div>
+                    <div class="text-text-muted">{post.readingTime} min read</div>
                   </div>
                 </div>
                 <a 
                   href={`/blog/${post.slug}`} 
-                  class="text-gray-400 hover:text-blue-400 text-sm font-medium"
+                  class="text-text-muted hover:text-link text-sm font-medium"
                 >
                   Read →
                 </a>
@@ -181,7 +181,7 @@ const regularPosts = allPosts.filter((post: any) =>
     </section>
 
     {allPosts.length === 0 && (
-      <div class="text-center py-12 text-gray-400">
+      <div class="text-center py-12 text-text-muted">
         <p class="text-xl mb-2">No blog posts found{currentCategory && ` in "${currentCategory}" category`}.</p>
         <p>Check back soon for new content!</p>
       </div>

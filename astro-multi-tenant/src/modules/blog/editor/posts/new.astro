@@ -1,7 +1,6 @@
 ---
 export const prerender = false;
 
-import '../../../../styles/global.css';
 import Layout from '../../../../layouts/Layout.astro';
 import AstroRichTextEditor from '../../components/editor/AstroRichTextEditor';
 
@@ -25,13 +24,13 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
 ---
 
 <Layout title="New Post - Editor">
-  <div class="min-h-screen bg-gray-900">
+  <div class="min-h-screen bg-background">
     <!-- Editor Header -->
-    <header class="bg-gray-800 border-b border-gray-700">
+    <header class="bg-surface border-b border-border">
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-bold text-white">Create New {postType === 'blog' ? 'Blog Post' : 'Documentation'}</h1>
-          <a href="/blog/editor" class="text-gray-400 hover:text-white">
+          <h1 class="text-xl font-bold text-text-primary">Create New {postType === 'blog' ? 'Blog Post' : 'Documentation'}</h1>
+          <a href="/blog/editor" class="text-text-muted hover:text-text-primary">
             ← Back to Dashboard
           </a>
         </div>
@@ -44,53 +43,53 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
         
         <!-- Title -->
         <div>
-          <label for="title" class="block text-sm font-medium mb-2 text-gray-300">Title</label>
+          <label for="title" class="block text-sm font-medium mb-2 text-text-secondary">Title</label>
           <input
             type="text"
             id="title"
             name="title"
             required
-            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Enter post title"
           />
         </div>
 
         <!-- Slug -->
         <div>
-          <label for="slug" class="block text-sm font-medium mb-2 text-gray-300">
+          <label for="slug" class="block text-sm font-medium mb-2 text-text-secondary">
             Slug (URL)
-            <span class="text-gray-400 text-xs ml-2">Leave empty to auto-generate</span>
+            <span class="text-text-muted text-xs ml-2">Leave empty to auto-generate</span>
           </label>
           <input
             type="text"
             id="slug"
             name="slug"
-            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="post-url-slug"
           />
         </div>
 
         <!-- Description -->
         <div>
-          <label for="description" class="block text-sm font-medium mb-2 text-gray-300">Description</label>
+          <label for="description" class="block text-sm font-medium mb-2 text-text-secondary">Description</label>
           <textarea
             id="description"
             name="description"
             required
             rows="3"
-            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Brief description for listing pages"
           ></textarea>
         </div>
 
         <!-- Category -->
         <div>
-          <label for="category" class="block text-sm font-medium mb-2 text-gray-300">Category</label>
+          <label for="category" class="block text-sm font-medium mb-2 text-text-secondary">Category</label>
           <select
             id="category"
             name="category"
             required
-            class="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 bg-surface text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">Select a category</option>
             {categories.map((cat: any) => (
@@ -101,9 +100,9 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
 
         <!-- Cover Image -->
         <div>
-          <label class="block text-sm font-medium mb-2 text-gray-300">
+          <label class="block text-sm font-medium mb-2 text-text-secondary">
             Cover Image
-            <span class="text-gray-400 text-xs ml-2">Optional</span>
+            <span class="text-text-muted text-xs ml-2">Optional</span>
           </label>
           <div class="flex items-center gap-4">
             <!-- Hidden input to store the URL -->
@@ -115,12 +114,12 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
             
             <!-- Image preview or placeholder -->
             <div id="coverPreviewContainer" class="relative">
-              <div id="coverPlaceholder" class="w-32 h-32 bg-gray-800 rounded-md border-2 border-dashed border-gray-600 flex items-center justify-center">
-                <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div id="coverPlaceholder" class="w-32 h-32 bg-surface rounded-md border-2 border-dashed border-border flex items-center justify-center">
+                <svg class="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
               </div>
-              <img id="coverPreviewImg" class="w-32 h-32 object-cover rounded-md border border-gray-700 hidden" />
+              <img id="coverPreviewImg" class="w-32 h-32 object-cover rounded-md border border-border hidden" />
             </div>
             
             <!-- Upload/Change button -->
@@ -128,7 +127,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
               <button
                 type="button"
                 id="uploadCoverBtn"
-                class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors flex items-center gap-2"
+                class="px-4 py-2 bg-surface-hover hover:bg-surface-hover text-text-primary rounded-md transition-colors flex items-center gap-2"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -138,7 +137,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
               <button
                 type="button"
                 id="removeCoverBtn"
-                class="px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded-md transition-colors hidden"
+                class="px-4 py-2 bg-error hover:bg-error text-text-primary rounded-md transition-colors hidden"
               >
                 Remove
               </button>
@@ -148,7 +147,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
 
         <!-- Content -->
         <div>
-          <label class="block text-sm font-medium mb-2 text-gray-300">Content</label>
+          <label class="block text-sm font-medium mb-2 text-text-secondary">Content</label>
           <AstroRichTextEditor 
             client:load
             content=""
@@ -165,9 +164,9 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
               type="checkbox"
               name="published"
               id="published"
-              class="rounded bg-gray-700 border-gray-600"
+              class="rounded bg-surface-hover border-border"
             />
-            <span class="text-gray-300">Publish immediately</span>
+            <span class="text-text-secondary">Publish immediately</span>
           </label>
         </div>
 
@@ -175,19 +174,19 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
         <div class="flex gap-4">
           <button
             type="submit"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-white transition-colors"
+            class="px-4 py-2 bg-primary hover:bg-primary/90 rounded-md font-medium text-text-primary transition-colors"
           >
             Create Post
           </button>
           <a
             href="/blog/editor"
-            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium text-white transition-colors"
+            class="px-4 py-2 bg-surface-hover hover:bg-surface-hover rounded-md font-medium text-text-primary transition-colors"
           >
             Cancel
           </a>
         </div>
 
-        <div id="error" class="text-red-400 hidden"></div>
+        <div id="error" class="text-error hidden"></div>
       </form>
     </main>
   </div>
@@ -326,33 +325,33 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
     dialog.id = 'coverPasteDialog';
     dialog.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center';
     dialog.innerHTML = `
-      <div class="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 border border-gray-700" onclick="event.stopPropagation()">
-        <h3 class="text-lg font-semibold text-white mb-4">Add Cover Image</h3>
+      <div class="bg-surface rounded-lg p-6 max-w-md w-full mx-4 border border-border" onclick="event.stopPropagation()">
+        <h3 class="text-lg font-semibold text-text-primary mb-4">Add Cover Image</h3>
         
         <div class="space-y-4">
           <!-- Paste option -->
-          <div class="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
+          <div class="border-2 border-dashed border-border rounded-lg p-6 text-center">
             <div class="mb-2">
-              <svg class="w-8 h-8 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8 mx-auto text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
             </div>
-            <p class="text-gray-300 mb-2">Paste an image from clipboard</p>
-            <p class="text-sm text-gray-500">Copy an image and press Ctrl+V / Cmd+V</p>
+            <p class="text-text-secondary mb-2">Paste an image from clipboard</p>
+            <p class="text-sm text-text-muted">Copy an image and press Ctrl+V / Cmd+V</p>
           </div>
           
           <!-- Divider -->
           <div class="flex items-center gap-4">
-            <div class="flex-1 h-px bg-gray-700"></div>
-            <span class="text-gray-500 text-sm">OR</span>
-            <div class="flex-1 h-px bg-gray-700"></div>
+            <div class="flex-1 h-px bg-surface-hover"></div>
+            <span class="text-text-muted text-sm">OR</span>
+            <div class="flex-1 h-px bg-surface-hover"></div>
           </div>
           
           <!-- File upload option -->
           <button
             type="button"
             id="selectFileBtn"
-            class="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
+            class="w-full px-4 py-3 bg-surface-hover hover:bg-surface-hover rounded-lg text-text-primary transition-colors"
           >
             Select File from Computer
           </button>
@@ -361,7 +360,7 @@ const categories = categoriesResponse.ok ? await categoriesResponse.json() : [];
           <button
             type="button"
             id="cancelDialogBtn"
-            class="w-full px-4 py-2 text-gray-400 hover:text-white transition-colors"
+            class="w-full px-4 py-2 text-text-muted hover:text-text-primary transition-colors"
           >
             Cancel
           </button>
