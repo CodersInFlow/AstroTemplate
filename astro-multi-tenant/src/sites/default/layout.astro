@@ -1,4 +1,7 @@
 ---
+// Import the generated CSS as raw text for isolation
+import defaultStyles from './styles/main.css?raw';
+
 export interface Props {
   title?: string;
 }
@@ -18,6 +21,8 @@ const { title = 'Site Directory' } = Astro.props;
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body class="default-site-body">
+    <!-- Inject Tailwind CSS for the directory page -->
+    <style set:html={defaultStyles}></style>
     <slot />
   </body>
 </html>

@@ -17,10 +17,7 @@ for SITE_PATH in "$SITES_DIR"/*; do
     SITE=$(basename "$SITE_PATH")
     SITE_NAME="${SITE%%.*}"
     
-    # Skip the 'default' site if it exists
-    if [ "$SITE_NAME" = "default" ]; then
-      continue
-    fi
+    # Don't skip any sites - default needs CSS too!
     
     echo "  → Generating CSS for $SITE_NAME..."
     
