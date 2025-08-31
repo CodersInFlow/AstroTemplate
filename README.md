@@ -9,7 +9,12 @@ A single codebase that serves multiple websites with different domains, database
 1. **Setup configuration:**
 ```bash
 cp .env.example .env
-# Edit .env with your settings
+# Edit .env with your settings - ALL configuration (frontend, backend, deployment) is in this single file
+# Key settings to configure:
+#   - MONGODB_URI for your database
+#   - JWT_SECRET for security (change from default!)
+#   - API_PORT (backend) and PORT (frontend) if defaults conflict
+#   - ALLOWED_DOMAINS for your domains
 ```
 
 2. **Start development:**
@@ -452,14 +457,30 @@ Each site uses semantic Tailwind classes that map to different colors:
 
 ## 📝 Environment Variables
 
-All configuration is handled through a single `.env` file. Copy `.env.example` to `.env` and configure:
+All configuration is centralized in a single `.env` file in the root directory. 
+
+**IMPORTANT:** Create this file before running the application:
+```bash
+cp .env.example .env
+# Edit .env with your specific settings
+```
+
+The `.env` file controls EVERYTHING - frontend, backend, deployment, and features:
 
 ### Core Settings
 - `PORT` - Frontend SSR port (default: 4321)
 - `API_PORT` - Backend API port (default: 3001)  
 - `MONGODB_URI` - MongoDB connection string
 - `PUBLIC_API_URL` - Backend URL for frontend
-- `JWT_SECRET` - Secret key for authentication
+- `JWT_SECRET` - Secret key for authentication (CHANGE THIS!)
+- `CORS_ORIGIN` - CORS settings for API
+- `ALLOWED_DOMAINS` - Comma-separated list of allowed domains
+- `SITES_CONFIG_PATH` - Path to sites configuration file
+
+### Multi-tenant Settings
+- `SITES_CONFIG_PATH` - Path to sites-config.json (default: ./sites-config.json)
+- `UPLOAD_DIR` - Directory for file uploads
+- `MAX_UPLOAD_SIZE` - Maximum upload size in bytes
 
 ### Deployment Settings
 - `DEPLOY_SERVER` - Target server hostname/IP
@@ -469,7 +490,9 @@ All configuration is handled through a single `.env` file. Copy `.env.example` t
 - `FRONTEND_PORT` - External nginx port for frontend
 - `BACKEND_PORT` - External nginx port for API
 
-See `.env.example` for all available options
+See `.env.example` for all available options.
+
+**Note:** The backend automatically loads the `.env` file from the root directory. No separate backend/.env file is needed.
 
 ## 🐳 Docker & Deployment
 
