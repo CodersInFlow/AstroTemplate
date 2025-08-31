@@ -19,6 +19,10 @@ interface SiteConfig {
 
 const sites = getSitesConfig() as Record<string, SiteConfig>;
 
+// Check if we're in development mode
+const isDevelopment = import.meta.env.DEV;
+const DEV_FRONTEND_PORT = import.meta.env.PUBLIC_DEV_FRONTEND_PORT || '4321';
+
 // Filter out localhost, 127.0.0.1, and default entries
 const displaySites = Object.entries(sites).filter(([domain, config]) => {
   return !domain.includes('localhost') && 
@@ -35,6 +39,17 @@ const uniqueSites = displaySites.reduce<Record<string, SiteConfig>>((acc, [domai
   }
   return acc;
 }, {});
+
+// Generate URL based on environment
+const getUrl = (domain: string) => {
+  if (isDevelopment) {
+    // In dev, use localhost with port from config
+    return `http://${domain.replace('.com', '.localhost')}:${DEV_FRONTEND_PORT}`;
+  } else {
+    // In production, use HTTPS with actual domain
+    return `https://${domain}`;
+  }
+};
 ---
 
 <Layout title="Site Directory">
@@ -47,7 +62,7 @@ const uniqueSites = displaySites.reduce<Record<string, SiteConfig>>((acc, [domai
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
       {Object.entries(uniqueSites).map(([domain, config]) => (
         <a 
-          href={`https://${domain}`}
+          href={getUrl(domain)}
           target="_blank"
           rel="noopener noreferrer"
           class="group relative overflow-hidden rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 p-8 transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:shadow-2xl"
@@ -95,14 +110,18 @@ const uniqueSites = displaySites.reduce<Record<string, SiteConfig>>((acc, [domai
         <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
         </svg>
-        <span class="text-sm">All sites are live and secured with HTTPS</span>
+        <span class="text-sm">
+          {isDevelopment ? 'All sites are available locally' : 'All sites are live and secured with HTTPS'}
+        </span>
       </div>
     </div>
     
     <div class="mt-8 text-center opacity-75">
       <p class="text-sm">
         Visit sites directly at their domain: 
-        <code class="px-2 py-1 mx-1 rounded bg-white/10 backdrop-blur-sm">https://[domain]</code>
+        <code class="px-2 py-1 mx-1 rounded bg-white/10 backdrop-blur-sm">
+          {isDevelopment ? `http://[domain].localhost:${DEV_FRONTEND_PORT}` : 'https://[domain]'}
+        </code>
       </p>
     </div>
   </main>
