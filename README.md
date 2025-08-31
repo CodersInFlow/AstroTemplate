@@ -78,24 +78,36 @@ Access at: http://localhost
 
 ## ➕ Add New Site
 
+**Quick Start:**
+```bash
+./scripts/add-a-site.sh yourdomain.com
+```
+
+Or manually:
 1. Create site directory: `astro-multi-tenant/src/sites/yourdomain.com/`
-2. Add `config.json` with site configuration
-3. Add `layout.astro` with site theme/layout
-4. Create `pages/` directory with at least `index.astro`
-5. Update `sites-config.json` with site entry
-6. (Optional) Run `./scripts/add-site.sh` to add local domain
-7. Restart server
+2. Add `tailwind.config.cjs` with semantic color mappings
+3. Add `config.json` with site configuration
+4. Add `layout.astro` with site theme/layout (must import CSS with `?raw`)
+5. Create `pages/` directory with at least `index.astro`
+6. Update `sites-config.json` with site entry
+7. Run `npm run generate-css` to generate site CSS
+8. Restart server
 
 **Site Structure Example:**
 ```
 astro-multi-tenant/src/sites/yourdomain.com/
 ├── config.json           # Site metadata
 ├── layout.astro          # Site layout/theme
+├── tailwind.config.cjs   # Site-specific Tailwind config
+├── styles/
+│   └── main.css         # Generated CSS (do not edit)
 ├── pages/                # Site pages
 │   ├── index.astro       # Homepage
 │   └── about.astro       # Additional pages
 └── components/           # Optional site-specific components
 ```
+
+See [ADD_A_SITE.md](ADD_A_SITE.md) for detailed instructions.
 
 ## 🔧 Configuration
 
@@ -195,20 +207,39 @@ export default {
 4. Register in `/src/shared/lib/module-loader.ts`
 5. Module automatically works on ALL sites!
 
-## 🎨 Theming Modules
+## 🎨 Theming System
 
-Modules use CSS classes that sites define:
+### Semantic Color System
+Each site uses semantic Tailwind classes that map to different colors:
+
+**Semantic Classes Available:**
+- `bg-background`, `bg-surface`, `bg-surface-hover` - Background colors
+- `bg-primary`, `bg-secondary`, `bg-accent` - Brand colors  
+- `text-text-primary`, `text-text-secondary`, `text-text-muted` - Text colors
+- `text-link`, `text-link-hover` - Link colors
+- `border-border` - Border colors
+
+**Example Usage:**
 ```astro
-<!-- In module -->
-<h1 class="page-heading">Title</h1>
-<div class="blog-card">Content</div>
-
-<!-- In site layout.astro -->
-<style>
-  .page-heading { color: #yourcolor; }
-  .blog-card { background: #yourcolor; }
-</style>
+<!-- Same code, different colors per site! -->
+<div class="bg-background text-text-primary">
+  <h1 class="text-3xl">Welcome</h1>
+  <button class="bg-primary text-text-inverse">
+    Click Me
+  </button>
+</div>
 ```
+
+### CSS Generation
+1. Each site has its own `tailwind.config.cjs` with color mappings
+2. Running `npm run dev` or `npm run generate-css` creates site-specific CSS
+3. CSS is loaded in isolation - no cross-contamination between sites
+
+### Important CSS Rules
+- **Never** import CSS files directly
+- **Always** use `import styles from './styles/main.css?raw'` in layouts
+- **Always** inject with `<style set:html={styles}></style>`
+- **Always** use semantic class names, not color-specific ones
 
 ## 📝 Environment Variables
 
