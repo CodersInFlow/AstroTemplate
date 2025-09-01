@@ -12,7 +12,7 @@ const Projects = ({ projectItems = [], header = {} }) => {
 
   return (
     <>
-      <DevComponentWrapper componentName="TitleHeader" dataPath="projects.json" componentId="projects-header">
+      <DevComponentWrapper componentName="TitleHeader" dataPath="projects-header.json" componentId="projects-header">
         <TitleHeader
           title={title}
           description={description}
@@ -27,7 +27,7 @@ const Projects = ({ projectItems = [], header = {} }) => {
             <DevComponentWrapper 
               key={item.id}
               componentName="ProjectItem" 
-              dataPath="projects.json" 
+              dataPath="projects-items.json" 
               componentId={`project-item-${item.id}`}
             >
               <ProjectItem

@@ -8,16 +8,18 @@ import Contact from '../../../shared/components/Contact/Contact.jsx';
 
 // Import data
 import heroData from '../data/hero.json';
-import projectsData from '../data/projects.json';
+import projectsHeaderData from '../data/projects-header.json';
+import projectsItemsData from '../data/projects-items.json';
 import experiencesData from '../data/experiences.json';
 import qualificationsHeaderData from '../data/qualifications-header.json';
 import skillsData from '../data/skills.json';
+import contactData from '../data/contact.json';
 ---
 
 <Layout title="Preston Garrison - Developer">
   <main>
     <Hero client:load data={heroData} />
-    <Projects client:load projectItems={projectsData.items} header={projectsData.header} />
+    <Projects client:load projectItems={projectsItemsData} header={projectsHeaderData} />
     <div id="qualifications">
       <Qualifications client:load headerData={qualificationsHeaderData} skillsData={skillsData} />
     </div>
@@ -25,7 +27,7 @@ import skillsData from '../data/skills.json';
       <Experiences client:load experienceItems={experiencesData.items} header={experiencesData.header} />
     </div>
     <div id="contact">
-      <Contact client:load />
+      <Contact client:load contactData={contactData} />
     </div>
   </main>
 </Layout>
