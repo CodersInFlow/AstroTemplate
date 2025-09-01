@@ -43,8 +43,16 @@ module.exports = {
         nunito: ['Nunito', 'sans-serif'],
       },
       fontSize: {
-        'budgetpt': ['2.5rem', { lineHeight: '1.2' }],  // 40px
-        'pospt': ['1.125rem', { lineHeight: '1.5' }],    // 18px
+        'titlept': ['84px', '84px'],
+        'smtitlept': ['44px', '44px'],
+        '24pt': ['18px', '26px'],
+        'budgetpt': ['46px', '42px'],
+        'pospt': ['26px', '26px'],
+        'botpt': ['30px', '32px'],
+        'header_titlept': ['60px', '60px'],
+        'header_descpt': ['18px', '20px'],
+        'header_smtitlept': ['40px', '40px'],
+        'header_smdescpt': ['12px', '14px'],
       },
     },
   },
