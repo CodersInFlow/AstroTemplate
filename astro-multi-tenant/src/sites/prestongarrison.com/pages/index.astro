@@ -10,6 +10,7 @@ import Contact from '../../../shared/components/Contact/Contact.jsx';
 import heroData from '../data/hero.json';
 import projectsData from '../data/projects.json';
 import experiencesData from '../data/experiences.json';
+import qualificationsHeaderData from '../data/qualifications-header.json';
 import skillsData from '../data/skills.json';
 ---
 
@@ -18,7 +19,7 @@ import skillsData from '../data/skills.json';
     <Hero client:load data={heroData} />
     <Projects client:load projectItems={projectsData.items} header={projectsData.header} />
     <div id="qualifications">
-      <Qualifications client:load skillsData={skillsData} />
+      <Qualifications client:load headerData={qualificationsHeaderData} skillsData={skillsData} />
     </div>
     <div id="experiences">
       <Experiences client:load experienceItems={experiencesData.items} header={experiencesData.header} />

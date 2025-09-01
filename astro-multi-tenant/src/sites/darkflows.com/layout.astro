@@ -1,6 +1,8 @@
 ---
 // Import the generated CSS directly without path conflicts
 import darkflowsStyles from './styles/main.css?raw';
+// Import DevModeOverlay for development
+import DevModeOverlay from '../../shared/components/Dev/DevModeOverlay.tsx';
 
 export interface Props {
   title?: string;
@@ -9,6 +11,9 @@ export interface Props {
 
 const { title = 'DarkFlows Router OS', description = 'High Performance Routing and Firewalling Reimagined' } = Astro.props;
 import config from './config.json';
+
+// Check if we're in development mode
+const isDevelopment = import.meta.env.DEV;
 ---
 
 <!DOCTYPE html>
@@ -18,7 +23,7 @@ import config from './config.json';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title}</title>
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-darkflows.svg" />
     <link rel="apple-touch-icon" href="/apple-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,6 +32,7 @@ import config from './config.json';
   <body class="bg-background text-text-primary">
     <style set:html={darkflowsStyles}></style>
     <slot />
+    {isDevelopment && <DevModeOverlay client:load />}
   </body>
 </html>
 

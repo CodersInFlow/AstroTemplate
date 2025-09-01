@@ -2,6 +2,8 @@
 // Import the generated CSS directly without path conflicts
 import codersinflowStyles from './styles/main.css?raw';
 import HeaderSimple from '../../shared/components/Headers/HeaderSimple.astro';
+// Import DevModeOverlay for development
+import DevModeOverlay from '../../shared/components/Dev/DevModeOverlay.tsx';
 
 export interface Props {
   title: string;
@@ -9,6 +11,9 @@ export interface Props {
 
 const { title } = Astro.props;
 import config from './config.json';
+
+// Check if we're in development mode
+const isDevelopment = import.meta.env.DEV;
 ---
 
 <!DOCTYPE html>
@@ -17,7 +22,7 @@ import config from './config.json';
     <meta charset="UTF-8" />
     <meta name="description" content="AI-Powered Pair Programming with Coders In Flow" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-codersinflow.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title} - CodersInFlow</title>
   </head>
@@ -26,5 +31,6 @@ import config from './config.json';
     <HeaderSimple />
     <div style="height: 56px;"></div> <!-- Spacer for fixed header -->
     <slot />
+    {isDevelopment && <DevModeOverlay client:load />}
   </body>
 </html>

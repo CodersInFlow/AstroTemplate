@@ -19,7 +19,7 @@ const StatusBar = ({ title, percentage, color }) => {
         </div>
       </div>
 
-      <div className="w-full bg-white h-2 rounded p-0 m-0 mb-0">
+      <div className="w-full bg-gray-200 h-2 rounded p-0 m-0 mb-0">
         {/* Apply dynamic color class and percentage width */}
         <div
           className={`h-2 rounded ${color}`}

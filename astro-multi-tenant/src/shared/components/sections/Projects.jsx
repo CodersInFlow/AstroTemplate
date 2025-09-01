@@ -1,5 +1,6 @@
 import TitleHeader from '../Headers/TitleHeader.jsx'
 import ProjectItem from '../Cards/ProjectItem.jsx'
+import DevComponentWrapper from '../Dev/DevComponentWrapper.jsx'
 
 const Projects = ({ projectItems = [], header = {} }) => {
   const {
@@ -11,23 +12,31 @@ const Projects = ({ projectItems = [], header = {} }) => {
 
   return (
     <>
-      <TitleHeader
-        title={title}
-        description={description}
-        image={image}
-        imageDesc={imageDesc}
-      />
+      <DevComponentWrapper componentName="TitleHeader" dataPath="projects.json" componentId="projects-header">
+        <TitleHeader
+          title={title}
+          description={description}
+          image={image}
+          imageDesc={imageDesc}
+        />
+      </DevComponentWrapper>
 
       <div className="flex items-center justify-center">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 p-[20px] w-full md:w-[960px]">
           {projectItems.map(item => (
-            <ProjectItem
+            <DevComponentWrapper 
               key={item.id}
-              image_name={item.image_name}
-              image_desc={item.image_desc}
-              title={item.title}
-              desc={item.desc}
-            />
+              componentName="ProjectItem" 
+              dataPath="projects.json" 
+              componentId={`project-item-${item.id}`}
+            >
+              <ProjectItem
+                image_name={item.image_name}
+                image_desc={item.image_desc}
+                title={item.title}
+                desc={item.desc}
+              />
+            </DevComponentWrapper>
           ))}
         </div>
       </div>

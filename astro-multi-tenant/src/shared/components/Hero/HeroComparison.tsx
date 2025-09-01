@@ -1,6 +1,39 @@
 import React from 'react';
 
-const HeroComparison: React.FC = () => {
+interface HeroComparisonData {
+  badge?: string;
+  title?: {
+    line1?: string;
+    line2?: string;
+    line3?: string;
+  };
+  description?: string[];
+  cta?: {
+    text?: string;
+    link?: string;
+  };
+}
+
+interface HeroComparisonProps {
+  data?: HeroComparisonData;
+}
+
+const HeroComparison: React.FC<HeroComparisonProps> = ({ data = {} }) => {
+  // Default values
+  const badge = data.badge || "Coders in Flow vs. Competition";
+  const title = data.title || {
+    line1: "Coders in Flow",
+    line2: "AI Powered Development team",
+    line3: "in VS Code."
+  };
+  const description = data.description || [
+    "Work 10x faster, its like having a full development team in the palm of your hands. Powerful AI coding assistant that works for engineers, developers and the average person, boosting productivity, code quality, and collaboration.",
+    "When comparing Coders in Flow and other AI assistants, discover how our true multitasking platform with AI Companion capabilities can transform team collaboration, reduce costs, and enhance the experience for developers and customers."
+  ];
+  const cta = data.cta || {
+    text: "↓ Scroll ↓ for more, or click for features",
+    link: "/features"
+  };
   return (
     <section className="relative bg-gradient-to-br from-[#0a0e27] via-[#151935] to-[#0a0e27] overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
@@ -9,44 +42,40 @@ const HeroComparison: React.FC = () => {
           <div className="relative z-10">
             {/* Competitor badges */}
             <div className="flex items-center gap-2 mb-6 opacity-0 animate-fadeInDown animation-delay-100">
-              <span className="text-gray-400 text-sm">Coders in Flow vs. Competition</span>
+              <span className="text-gray-400 text-sm">{badge}</span>
             </div>
             
             {/* Main Title */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               <span className="inline-block opacity-0 animate-slideInLeft animation-delay-200">
-                Coders in Flow
+                {title.line1}
               </span>
               <br />
               <span className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent opacity-0 animate-slideInRight animation-delay-400">
-                AI Powered Development team
+                {title.line2}
               </span>
               <br />
               <span className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent opacity-0 animate-slideInLeft animation-delay-600">
-                in VS Code.
+                {title.line3}
               </span>
             </h1>
             
             {/* Description */}
-            <p className="text-gray-400 text-lg mb-8 leading-relaxed opacity-0 animate-fadeInUp animation-delay-800">
-              Work 10x faster, its like having a full development team in the palm of your hands. Powerful AI coding assistant that works for 
-              engineers, developers and the average person, boosting productivity, code quality, and 
-              collaboration.
-            </p>
-            
-            <p className="text-gray-400 text-lg mb-8 leading-relaxed opacity-0 animate-fadeInUp animation-delay-1000">
-              When comparing Coders in Flow and other AI assistants, discover how 
-              our true multitasking platform with AI Companion capabilities can transform 
-              team collaboration, reduce costs, and enhance the experience for 
-              developers and customers.
-            </p>
+            {description.map((text, index) => (
+              <p 
+                key={index}
+                className={`text-gray-400 text-lg mb-8 leading-relaxed opacity-0 animate-fadeInUp animation-delay-${800 + (index * 200)}`}
+              >
+                {text}
+              </p>
+            ))}
             
             {/* CTA Button */}
             <button 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-purple-500/25 opacity-0 animate-fadeInUp animation-delay-1200"
-              onClick={() => window.location.href = '/features'}
+              onClick={() => window.location.href = cta.link}
             >
-              ↓ Scroll ↓ for more, or click for features
+              {cta.text}
             </button>
           </div>
           

@@ -71,6 +71,16 @@ module.exports = {
     
     // Hover states
     'hover:bg-primary/90',
+    
+    // Skills section colors from JSON
+    'bg-blue-600',
+    'bg-purple-600',
+    'bg-green-500',
+    'bg-yellow-400',
+    'bg-blue-800',
+    'bg-green-400',
+    'bg-cyan-300',
+    'bg-red-500',
   ],
   plugins: [
     semanticPlugin,  // Semantic utility classes for blog module

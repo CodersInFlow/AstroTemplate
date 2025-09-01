@@ -166,6 +166,34 @@ astro-multi-tenant/src/sites/yourdomain.com/
 
 See [ADD_A_SITE.md](ADD_A_SITE.md) for detailed instructions.
 
+## ⚠️ Important: TailwindCSS and Dynamic Classes
+
+**When using Tailwind classes from JSON files or dynamic data:**
+
+If you're loading Tailwind classes from JSON files (like `bg-blue-600`, `bg-red-500`, etc.), you MUST add them to the `safelist` in your site's `tailwind.config.cjs`. Otherwise, Tailwind will purge these classes during build and they won't work.
+
+Example in `src/sites/yourdomain.com/tailwind.config.cjs`:
+```javascript
+module.exports = {
+  // ... other config
+  safelist: [
+    // Add any dynamic classes loaded from JSON
+    'bg-blue-600',
+    'bg-purple-600',
+    'bg-green-500',
+    'bg-yellow-400',
+    'bg-red-500',
+    // Add any other classes that come from JSON data
+  ],
+}
+```
+
+This is especially important for:
+- Component colors loaded from JSON
+- Dynamic theme colors
+- Conditional classes based on data
+- Any class names not directly written in your components
+
 ## 🔧 Configuration
 
 Edit `sites-config.json`:

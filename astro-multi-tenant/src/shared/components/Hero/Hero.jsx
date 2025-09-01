@@ -1,3 +1,5 @@
+import DevComponentWrapper from '../Dev/DevComponentWrapper.jsx';
+
 const Hero = ({ data = {} }) => {
   const {
     mainText = "Continuously seeking the next challenge...",
@@ -11,7 +13,8 @@ const Hero = ({ data = {} }) => {
   } = data;
 
   return (
-    <section>
+    <DevComponentWrapper componentName="Hero" dataPath="hero.json" componentId="hero-main">
+      <section>
       <div className="flex flex-col lg:flex-row w-full  pt-5 pb-8 bg-white animate-in fade-in zoom-in duration-700">
         <div className="flex-1 flex items-center justify-center p-0 m-0 sm:w-0"></div>
         <div className="lg:w-[450px] flex flex-col items-center justify-center text-black  pl-2 lg:pl-0 pb-5 lg:pb-0">
@@ -29,6 +32,7 @@ const Hero = ({ data = {} }) => {
         <div className="flex-1 flex items-center justify-center sm:w-0"></div>
       </div>
     </section>
+    </DevComponentWrapper>
   )
 }
 

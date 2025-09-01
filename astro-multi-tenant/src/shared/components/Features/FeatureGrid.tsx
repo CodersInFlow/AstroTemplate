@@ -1,12 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from '../Icons/Icons';
 
-const FeatureGrid = () => {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const [visibleCards, setVisibleCards] = useState<boolean[]>(new Array(27).fill(false));
-  const gridRef = useRef<HTMLDivElement>(null);
+interface Feature {
+  id: number;
+  title: string;
+  items: string[];
+  icon: string;
+  gradient: string;
+  pattern: string;
+  className: string;
+  mobileClass: string;
+  hasImage?: boolean;
+  imageSrc?: string;
+  learnMoreLink?: string;
+}
 
-  const features = [
+interface FeatureGridProps {
+  data?: {
+    features?: Feature[];
+  };
+}
+
+const FeatureGrid: React.FC<FeatureGridProps> = ({ data }) => {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  
+  // Use data from props or fall back to defaults
+  const defaultFeatures: Feature[] = [
     {
       id: 1,
       title: 'iPhone & Android App',
@@ -391,6 +410,10 @@ const FeatureGrid = () => {
       mobileClass: 'col-span-1'
     }
   ];
+
+  const features = data?.features || defaultFeatures;
+  const [visibleCards, setVisibleCards] = useState<boolean[]>(new Array(features.length).fill(false));
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

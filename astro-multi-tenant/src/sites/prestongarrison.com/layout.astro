@@ -3,6 +3,8 @@
 import prestonStyles from './styles/main.css?raw';
 import Menu from '../../shared/components/Navigation/Menu.jsx';
 import MainTitleHeader from '../../shared/components/Headers/MainTitleHeader.jsx';
+// Import DevModeOverlay for development
+import DevModeOverlay from '../../shared/components/Dev/DevModeOverlay.tsx';
 
 export interface Props {
   title?: string;
@@ -23,6 +25,9 @@ const {
   author = 'Preston Garrison',
   showHeader = true
 } = Astro.props;
+
+// Check if we're in development mode
+const isDevelopment = import.meta.env.DEV;
 
 const canonicalURL = new URL(Astro.url.pathname, url);
 const imageURL = new URL(image, url);
@@ -77,7 +82,7 @@ const imageURL = new URL(image, url);
     <meta name="googlebot" content="index, follow" />
     
     <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-prestongarrison.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -117,6 +122,7 @@ const imageURL = new URL(image, url);
     <Menu client:load data={{}} />
     {showHeader && <MainTitleHeader data={{ title: "Preston Garrison" }} client:load />}
     <slot />
+    {isDevelopment && <DevModeOverlay client:load />}
   </body>
 </html>
 
