@@ -24,7 +24,7 @@ IMAGE_NAME="${DOCKER_IMAGE_NAME:-multi-tenant-app}"
 CONTAINER_NAME="${DOCKER_CONTAINER_NAME:-multi-tenant-container}"
 SERVER="${DEPLOY_SERVER}"
 USER="${DEPLOY_USER:-root}"
-PORT="${DEPLOY_PORT:-22}"
+SSH_PORT="${DEPLOY_PORT:-22}"
 
 # Check if server is configured
 if [ -z "$SERVER" ] || [ "$SERVER" = "your-server.com" ]; then
@@ -37,7 +37,7 @@ NGINX_CONFIG_DIR="${NGINX_CONFIG_DIR:-/etc/nginx}"
 
 echo "🚀 Deploying to Production"
 echo "========================="
-echo "Server: $USER@$SERVER:$PORT"
+echo "Server: $USER@$SERVER:$SSH_PORT"
 echo "Image: $IMAGE_NAME:$TAG"
 echo "Container: $CONTAINER_NAME"
 echo "Registry: $REGISTRY"
@@ -76,8 +76,8 @@ if [ -f "scripts/build-with-blacklist.sh" ] && [ -f "blacklist.txt" ]; then
     # Need to pass the image name to the build script
     DOCKER_IMAGE_NAME=$IMAGE_NAME DOCKER_TAG=$TAG ./scripts/build-with-blacklist.sh
 else
-    echo "📦 Building Docker image..."
-    docker build -f Dockerfile -t $IMAGE_NAME:$TAG .
+    echo "📦 Building Docker image for linux/amd64..."
+    docker buildx build --platform linux/amd64 -f Dockerfile -t $IMAGE_NAME:$TAG --load .
 fi
 
 # Handle Docker image deployment
@@ -94,17 +94,17 @@ if [ "$REGISTRY" != "local" ]; then
     
     echo "📥 Pulling image from registry on server..."
     echo "   Image: $FULL_IMAGE_NAME"
-    ssh -p $PORT $USER@$SERVER "docker pull $FULL_IMAGE_NAME"
+    ssh -p $SSH_PORT $USER@$SERVER "docker pull $FULL_IMAGE_NAME"
     REMOTE_IMAGE="$FULL_IMAGE_NAME"
 else
     echo "📦 Saving Docker image locally..."
     docker save $IMAGE_NAME:$TAG | gzip > $IMAGE_NAME-$TAG.tar.gz
     
     echo "⬆️  Uploading image to server..."
-    scp -P $PORT $IMAGE_NAME-$TAG.tar.gz $USER@$SERVER:$REMOTE_BASE_DIR/
+    scp -P $SSH_PORT $IMAGE_NAME-$TAG.tar.gz $USER@$SERVER:$REMOTE_BASE_DIR/
     
     echo "🔄 Loading image on server..."
-    ssh -p $PORT $USER@$SERVER "cd $REMOTE_BASE_DIR && gunzip -c $IMAGE_NAME-$TAG.tar.gz | docker load && rm $IMAGE_NAME-$TAG.tar.gz"
+    ssh -p $SSH_PORT $USER@$SERVER "cd $REMOTE_BASE_DIR && gunzip -c $IMAGE_NAME-$TAG.tar.gz | docker load && rm $IMAGE_NAME-$TAG.tar.gz"
     
     rm $IMAGE_NAME-$TAG.tar.gz
     REMOTE_IMAGE="$IMAGE_NAME:$TAG"
@@ -116,7 +116,7 @@ echo "🔧 Generating nginx configurations..."
 
 # Upload nginx configs (only non-blacklisted)
 echo "📤 Uploading nginx configurations..."
-ssh -p $PORT $USER@$SERVER "mkdir -p $NGINX_CONFIG_DIR/sites-enabled $NGINX_CONFIG_DIR/includes"
+ssh -p $SSH_PORT $USER@$SERVER "mkdir -p $NGINX_CONFIG_DIR/sites-enabled $NGINX_CONFIG_DIR/includes"
 
 for conf in nginx/sites-enabled/*.conf; do
     if [ -f "$conf" ]; then
@@ -128,7 +128,7 @@ for conf in nginx/sites-enabled/*.conf; do
             echo "  ⏭️  Skipping $domain (blacklisted)"
         else
             echo "  📤 Uploading $domain"
-            scp -P $PORT "$conf" $USER@$SERVER:$NGINX_CONFIG_DIR/sites-enabled/
+            scp -P $SSH_PORT "$conf" $USER@$SERVER:$NGINX_CONFIG_DIR/sites-enabled/
         fi
     fi
 done
@@ -145,7 +145,7 @@ if [ -d "nginx/includes" ]; then
                 echo "  ⏭️  Skipping include for $site_id (blacklisted)"
             else
                 echo "  📤 Uploading include: $filename"
-                scp -P $PORT "$include" $USER@$SERVER:$NGINX_CONFIG_DIR/includes/
+                scp -P $SSH_PORT "$include" $USER@$SERVER:$NGINX_CONFIG_DIR/includes/
             fi
         fi
     done
@@ -182,51 +182,45 @@ print(json.dumps(filtered_config, indent=2))
 EOF
     
     echo "  📤 Uploading filtered sites-config.json..."
-    scp -P $PORT sites-config-filtered.json $USER@$SERVER:$REMOTE_BASE_DIR/sites-config.json
+    scp -P $SSH_PORT sites-config-filtered.json $USER@$SERVER:$REMOTE_BASE_DIR/sites-config.json
     rm sites-config-filtered.json
 else
     echo "  📤 Uploading sites-config.json..."
-    scp -P $PORT sites-config.json $USER@$SERVER:$REMOTE_BASE_DIR/
+    scp -P $SSH_PORT sites-config.json $USER@$SERVER:$REMOTE_BASE_DIR/
 fi
 
 # Upload docker-compose.yml
 echo "  📤 Uploading docker-compose.yml..."
-scp -P $PORT docker-compose.yml $USER@$SERVER:$REMOTE_BASE_DIR/
+scp -P $SSH_PORT docker-compose.yml $USER@$SERVER:$REMOTE_BASE_DIR/
 
 # Deploy on server
 echo "🌐 Deploying on $SERVER..."
-ssh -p $PORT $USER@$SERVER << EOF
+ssh -p $SSH_PORT $USER@$SERVER << EOF
   cd $REMOTE_BASE_DIR
   
   # Stop existing container with same name
   docker stop $CONTAINER_NAME 2>/dev/null || true
   docker rm $CONTAINER_NAME 2>/dev/null || true
   
-  # Create deployment-specific docker-compose
-  cat > docker-compose-$CONTAINER_NAME.yml << 'COMPOSE'
-version: '3.8'
-services:
-  app:
-    image: $REMOTE_IMAGE
-    container_name: $CONTAINER_NAME
-    ports:
-      - "${FRONTEND_PORT:-80}:4321"
-      - "${BACKEND_PORT:-3001}:3001"
-    environment:
-      - NODE_ENV=production
-      - PORT=4321
-      - API_PORT=3001
-      - MONGODB_URI=${MONGODB_URI:-mongodb://host.docker.internal:27017/codersblog}
-      - JWT_SECRET=${JWT_SECRET}
-      - PUBLIC_API_URL=${PUBLIC_API_URL:-http://127.0.0.1:3001}
-    volumes:
-      - ./uploads:/app/uploads
-      - ./sites-config.json:/app/sites-config.json:ro
-    restart: unless-stopped
-COMPOSE
-  
-  # Start new container
-  docker-compose -f docker-compose-$CONTAINER_NAME.yml up -d
+  # Start new container with docker run (no docker-compose needed)
+  docker run -d \
+    --name $CONTAINER_NAME \
+    -p 4321:4321 \
+    -p 3001:3001 \
+    -e NODE_ENV=production \
+    -e PORT="${PORT}" \
+    -e API_PORT="3001" \
+    -e MONGODB_URI="${MONGODB_URI}" \
+    -e JWT_SECRET="${JWT_SECRET}" \
+    -e PUBLIC_API_URL="${PUBLIC_API_URL}" \
+    -e PUBLIC_DEV_FRONTEND_PORT="${PUBLIC_DEV_FRONTEND_PORT}" \
+    -e PUBLIC_DEV_API_PORT="${PUBLIC_DEV_API_PORT}" \
+    -e CORS_ORIGIN="${CORS_ORIGIN}" \
+    -v $REMOTE_BASE_DIR/uploads:/app/uploads \
+    -v $REMOTE_BASE_DIR/mongodb-data:/data/db \
+    -v $REMOTE_BASE_DIR/sites-config.json:/app/sites-config.json:ro \
+    --restart unless-stopped \
+    $REMOTE_IMAGE
   
   # Reload nginx
   nginx -t && nginx -s reload

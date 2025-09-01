@@ -205,6 +205,7 @@ EOF
                application/vnd.ms-fontobject application/x-font-ttf 
                font/opentype;
 }
+
 EOF
     
     count=$((count + 1))

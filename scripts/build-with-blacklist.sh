@@ -14,7 +14,7 @@ echo "Image: $IMAGE_NAME:$TAG"
 # Check if blacklist.txt exists
 if [ ! -f "blacklist.txt" ]; then
     echo "⚠️  No blacklist.txt found, building with all sites"
-    docker build -f Dockerfile -t $IMAGE_NAME:$TAG .
+    docker buildx build --platform linux/amd64 -f Dockerfile -t $IMAGE_NAME:$TAG --load .
     exit 0
 fi
 
@@ -92,9 +92,9 @@ EOF
 
 # Build the Docker image from the filtered context
 echo ""
-echo "📦 Building Docker image..."
+echo "📦 Building Docker image for linux/amd64..."
 cd $BUILD_DIR
-docker build --no-cache -f Dockerfile -t $IMAGE_NAME:$TAG .
+docker buildx build --platform linux/amd64 -f Dockerfile -t $IMAGE_NAME:$TAG --load .
 cd ..
 
 # Clean up

@@ -24,11 +24,23 @@ COPY backend/ /build/
 RUN go mod download && \
     go build -o server cmd/server/main.go
 
-# Runtime stage
-FROM node:20-alpine
+# Runtime stage  
+FROM node:20-slim
 
-# Install supervisor
-RUN apk add --no-cache supervisor mongodb-tools
+# Install supervisor, MongoDB and required tools
+RUN apt-get update && apt-get install -y \
+    supervisor \
+    wget \
+    gnupg \
+    && wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | apt-key add - \
+    && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list \
+    && apt-get update \
+    && apt-get install -y mongodb-org \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create necessary directories
+RUN mkdir -p /var/log/supervisor /data/db /var/log/mongodb
 
 WORKDIR /app
 
@@ -42,16 +54,9 @@ COPY --from=backend-builder /build/server /app/
 
 # Copy configuration files
 COPY sites-config.json /app/sites-config.json
-COPY scripts/supervisor.conf /etc/supervisor/conf.d/
+COPY scripts/supervisor.conf /etc/supervisor/supervisord.conf
 
-# Environment variables
-ENV NODE_ENV=production
-ENV PORT=4321
-ENV API_PORT=3001
-ENV MONGODB_URI=mongodb://127.0.0.1:27017/codersblog
-ENV PUBLIC_API_URL=http://127.0.0.1:3001
-
-# Expose ports
+# Expose ports (these will be overridden by runtime env vars)
 EXPOSE 4321 3001
 
 # Start services
