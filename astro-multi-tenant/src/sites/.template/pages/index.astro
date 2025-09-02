@@ -1,105 +1,65 @@
 ---
 import Layout from '../layout.astro';
-// Import shared components from the platform
-import HeroSection from '../../../shared/components/Hero/HeroSection.astro';
-import FeaturesSection from '../../../shared/components/Features/FeaturesSection.tsx';
-import CallToAction from '../../../shared/components/CallToAction/CallToAction.tsx';
-import FAQ from '../../../shared/components/FAQ/FAQ.astro';
-import TechSection from '../../../shared/components/Tech/TechSection.tsx';
 
-// Demo data for the components
-const heroData = {
-  hero: {
-    title: "Welcome to SITE_NAME_PLACEHOLDER",
-    subtitle: "SITE_DESCRIPTION_PLACEHOLDER",
-    finalTitle: "Build Amazing Things",
-    finalSubtitle: "Start your journey today",
-    image: "/placeholder.jpg"
-  }
-};
+// Import data files (required for auto-wrapper to work)
+import heroData from '../data/features-hero.json';
+import featuresData from '../data/features-items.json';
+import comparisonData from '../data/comparison.json';
+import videosData from '../data/videos.json';
+import heroComparisonData from '../data/hero-comparison.json';
+import whyBetterData from '../data/why-better.json';
+import featureGridData from '../data/feature-grid.json';
 
-const featuresData = {
-  title: "Why Choose SITE_NAME_PLACEHOLDER",
-  subtitle: "Everything you need to succeed online",
-  features: [
-    {
-      icon: "⚡",
-      title: "Lightning Fast",
-      description: "Built with performance in mind, your site loads instantly"
-    },
-    {
-      icon: "🎨",
-      title: "Beautiful Design",
-      description: "Modern, responsive design that looks great on all devices"
-    },
-    {
-      icon: "🔒",
-      title: "Secure by Default",
-      description: "Enterprise-grade security with HTTPS and authentication"
-    },
-    {
-      icon: "📈",
-      title: "SEO Optimized",
-      description: "Built-in SEO best practices for better search rankings"
-    },
-    {
-      icon: "🚀",
-      title: "Easy to Scale",
-      description: "Grow your site from a blog to a full platform"
-    },
-    {
-      icon: "🛠️",
-      title: "Fully Customizable",
-      description: "Tailor every aspect to match your brand"
-    }
-  ]
-};
+// Hero and Feature Showcase components
+import HeroComparison from '../../../shared/components/Hero/HeroComparison';
+import FeaturesHero from '../../../shared/components/Features/FeaturesHero';
+import FeaturesItems from '../../../shared/components/Features/FeaturesItems';
+import ComparisonTable from '../../../shared/components/Comparison/ComparisonTable';
 
-const ctaData = {
-  title: "Ready to Get Started?",
-  description: "Join thousands of satisfied users and transform your online presence today.",
-  primaryButton: { text: "Start Now", href: "/signup" },
-  secondaryButton: { text: "Contact Sales", href: "/contact" }
-};
+// Section components
+import WhyBetterSection from '../../../shared/components/Sections/WhyBetterSection';
+import VideoSection from '../../../shared/components/Sections/VideoSection';
+import KeyFeaturesSection from '../../../shared/components/Sections/KeyFeaturesSection.astro';
 
-const faqItems = [
-  {
-    question: "How do I get started?",
-    answer: "Simply sign up for an account and follow our quick setup guide. You'll be up and running in minutes!"
-  },
-  {
-    question: "Can I customize the design?",
-    answer: "Absolutely! Every aspect of your site can be customized to match your brand and vision."
-  },
-  {
-    question: "Is there customer support?",
-    answer: "Yes, we offer 24/7 customer support to help you with any questions or issues."
-  },
-  {
-    question: "What features are included?",
-    answer: "All plans include blog functionality, SEO tools, analytics, and responsive design. Premium plans add e-commerce and advanced features."
-  }
-];
+// Interactive sections
+import TechStackSection from '../../../shared/components/Sections/TechStackSection';
+import TestimonialsWrapper from '../../../shared/components/Sections/TestimonialsWrapper';
+import CallToAction from '../../../shared/components/Sections/CallToAction';
 ---
 
 <Layout 
-  title="SITE_NAME_PLACEHOLDER - Home"
+  title="SITE_NAME_PLACEHOLDER - Modern Web Solutions"
   description="SITE_DESCRIPTION_PLACEHOLDER"
 >
-  <main>
-    <!-- Hero Section -->
-    <HeroSection {...heroData} />
-    
-    <!-- Features Grid -->
-    <FeaturesSection {...featuresData} client:load />
-    
-    <!-- Tech Stack (optional - remove if not needed) -->
-    <TechSection client:visible />
-    
-    <!-- FAQ Section -->
-    <FAQ items={faqItems} />
-    
-    <!-- Call to Action -->
-    <CallToAction {...ctaData} client:visible />
-  </main>
+  
+  <!-- Hero Comparison Card -->
+  <HeroComparison client:load data={heroComparisonData} />
+  
+  <!-- Features Hero Section -->
+  <FeaturesHero client:load data={heroData} />
+  
+  <!-- Features Items Section -->
+  <FeaturesItems client:load data={featuresData} />
+  
+  <!-- Key Features Grid -->
+  <KeyFeaturesSection data={featureGridData} />
+  
+  <!-- Comparison Table -->
+  <ComparisonTable client:load data={comparisonData} />
+  
+  <!-- Why We're Better Section -->
+  <WhyBetterSection client:load data={whyBetterData} />
+  
+  <!-- Video Section -->
+  <VideoSection client:load data={videosData} />
+  
+  <!-- Tech Stack Section -->
+  <TechStackSection client:visible />
+  
+  <!-- Testimonials -->
+  <TestimonialsWrapper client:visible />
+  
+  <!-- Call to Action -->
+  <CallToAction client:load />
+  
 </Layout>

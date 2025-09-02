@@ -9,24 +9,30 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Semantic colors - customize for your brand
-        'primary': '#3B82F6',         // blue-500 - main brand color
-        'secondary': '#8B5CF6',       // violet-500
-        'accent': '#10B981',          // green-500
+        // Semantic colors for dark theme with blue accent
+        'primary': '#60A5FA',         // blue-400 - main brand color
+        'secondary': '#A78BFA',       // violet-400
+        'accent': '#34D399',          // green-400
         
         // Background colors
-        'background': '#FFFFFF',      // white - page background
-        'surface': '#F9FAFB',         // gray-50 - card backgrounds
-        'muted': '#F3F4F6',          // gray-100 - disabled states
+        'background': '#0F172A',      // slate-900 - page background
+        'surface': '#1E293B',         // slate-800 - card backgrounds
+        'surface-hover': '#334155',   // slate-700 - hover state
+        'muted': '#475569',           // slate-600 - disabled states
         
         // Text colors
-        'text-primary': '#111827',   // gray-900 - main text
-        'text-secondary': '#6B7280', // gray-500 - secondary text
-        'text-muted': '#9CA3AF',     // gray-400 - muted text
+        'text-primary': '#F1F5F9',    // slate-100 - main text
+        'text-secondary': '#CBD5E1',  // slate-300 - secondary text
+        'text-muted': '#94A3B8',      // slate-400 - muted text
+        'text-inverse': '#0F172A',    // slate-900 - text on light backgrounds
         
         // Border colors
-        'border': '#E5E7EB',         // gray-200
-        'border-hover': '#D1D5DB',   // gray-300
+        'border': '#334155',          // slate-700
+        'border-hover': '#475569',    // slate-600
+        
+        // Interactive elements
+        'link': '#60A5FA',            // blue-400
+        'link-hover': '#93C5FD',      // blue-300
         
         // Status colors
         'success': '#10B981',        // green-500
