@@ -133,6 +133,60 @@ if (!fs.existsSync(sitesConfigPath)) {
       "theme": "dark-blue",
       "features": ["blog", "auth", "payments"]
     },
+    "darkflows.com": {
+      "id": "darkflows",
+      "name": "DarkFlows",
+      "description": "Advanced Router OS & Network Solutions",
+      "directory": "darkflows.com",
+      "database": "darkflows_db",
+      "theme": "dark-red",
+      "features": ["blog", "docs"]
+    },
+    "www.darkflows.com": {
+      "id": "darkflows",
+      "name": "DarkFlows",
+      "description": "Advanced Router OS & Network Solutions",
+      "directory": "darkflows.com",
+      "database": "darkflows_db",
+      "theme": "dark-red",
+      "features": ["blog", "docs"]
+    },
+    "prestongarrison.com": {
+      "id": "prestongarrison",
+      "name": "Preston Garrison",
+      "description": "Full Stack Developer Portfolio",
+      "directory": "prestongarrison.com",
+      "database": "prestongarrison_db",
+      "theme": "light",
+      "features": ["blog", "docs"]
+    },
+    "www.prestongarrison.com": {
+      "id": "prestongarrison",
+      "name": "Preston Garrison",
+      "description": "Full Stack Developer Portfolio",
+      "directory": "prestongarrison.com",
+      "database": "prestongarrison_db",
+      "theme": "light",
+      "features": ["blog", "docs"]
+    },
+    "magicvideodownloader.com": {
+      "id": "magicvideodownloader",
+      "name": "Magic Video Downloader",
+      "description": "Download videos from anywhere",
+      "directory": "magicvideodownloader.com",
+      "database": "magicvideodownloader_db",
+      "theme": "light",
+      "features": ["blog", "docs"]
+    },
+    "www.magicvideodownloader.com": {
+      "id": "magicvideodownloader",
+      "name": "Magic Video Downloader",
+      "description": "Download videos from anywhere",
+      "directory": "magicvideodownloader.com",
+      "database": "magicvideodownloader_db",
+      "theme": "light",
+      "features": ["blog", "docs"]
+    },
     "localhost": {
       "id": "default",
       "directory": "default",
