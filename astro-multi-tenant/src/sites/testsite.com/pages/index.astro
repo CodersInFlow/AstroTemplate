@@ -1,0 +1,65 @@
+---
+import Layout from '../layout.astro';
+
+// Import data files (required for auto-wrapper to work)
+import heroData from '../data/features-hero.json';
+import featuresData from '../data/features-items.json';
+import comparisonData from '../data/comparison.json';
+import videosData from '../data/videos.json';
+import heroComparisonData from '../data/hero-comparison.json';
+import whyBetterData from '../data/why-better.json';
+import featureGridData from '../data/feature-grid.json';
+
+// Hero and Feature Showcase components
+import HeroComparison from '../../../shared/components/Hero/HeroComparison.tsx';
+import FeaturesHero from '../../../shared/components/Features/FeaturesHero.tsx';
+import FeaturesItems from '../../../shared/components/Features/FeaturesItems.tsx';
+import ComparisonTable from '../../../shared/components/Comparison/ComparisonTable.tsx';
+
+// Section components
+import WhyBetterSection from '../../../shared/components/Sections/WhyBetterSection.tsx';
+import VideoSection from '../../../shared/components/Sections/VideoSection.tsx';
+import KeyFeaturesSection from '../../../shared/components/Sections/KeyFeaturesSection.astro';
+
+// Interactive sections
+import TechStackSection from '../../../shared/components/Sections/TechStackSection.tsx';
+import TestimonialsWrapper from '../../../shared/components/Sections/TestimonialsWrapper.tsx';
+import CallToAction from '../../../shared/components/Sections/CallToAction.tsx';
+---
+
+<Layout 
+  title="SITE_NAME_PLACEHOLDER - Modern Web Solutions"
+  description="SITE_DESCRIPTION_PLACEHOLDER"
+>
+  
+  <!-- Hero Comparison Card -->
+  <HeroComparison client:load data={heroComparisonData} />
+  
+  <!-- Features Hero Section -->
+  <FeaturesHero client:load data={heroData} />
+  
+  <!-- Features Items Section -->
+  <FeaturesItems client:load data={featuresData} />
+  
+  <!-- Key Features Grid -->
+  <KeyFeaturesSection data={featureGridData} />
+  
+  <!-- Comparison Table -->
+  <ComparisonTable client:load data={comparisonData} />
+  
+  <!-- Why We're Better Section -->
+  <WhyBetterSection client:load data={whyBetterData} />
+  
+  <!-- Video Section -->
+  <VideoSection client:load data={videosData} />
+  
+  <!-- Tech Stack Section -->
+  <TechStackSection client:visible />
+  
+  <!-- Testimonials -->
+  <TestimonialsWrapper client:visible />
+  
+  <!-- Call to Action -->
+  <CallToAction client:load />
+  
+</Layout>
