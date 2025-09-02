@@ -113,5 +113,41 @@
     "features": [
       "blog"
     ]
+  },
+  "magicvideodownloader.com": {
+    "id": "magicvideodownloader",
+    "name": "Magic Video Downloader",
+    "description": "Download videos from any website with ease",
+    "directory": "magicvideodownloader.com",
+    "database": "magicvideodownloader_db",
+    "theme": "dark",
+    "features": [
+      "blog",
+      "docs"
+    ]
+  },
+  "www.magicvideodownloader.com": {
+    "id": "magicvideodownloader",
+    "name": "Magic Video Downloader",
+    "description": "Download videos from any website with ease",
+    "directory": "magicvideodownloader.com",
+    "database": "magicvideodownloader_db",
+    "theme": "dark",
+    "features": [
+      "blog",
+      "docs"
+    ]
+  },
+  "magicvideodownloader.localhost": {
+    "id": "magicvideodownloader",
+    "name": "Magic Video Downloader",
+    "description": "Download videos from any website with ease",
+    "directory": "magicvideodownloader.com",
+    "database": "magicvideodownloader_db",
+    "theme": "dark",
+    "features": [
+      "blog",
+      "docs"
+    ]
   }
 }

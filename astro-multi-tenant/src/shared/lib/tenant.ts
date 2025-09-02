@@ -10,9 +10,24 @@ export interface SiteConfig {
 }
 
 let sitesConfig: Record<string, SiteConfig> | null = null;
+let configFilePath: string | null = null;
+let lastModifiedTime: number = 0;
 
 export function getSitesConfig(): Record<string, SiteConfig> {
-  if (!sitesConfig) {
+  const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
+  
+  // Check if config file has been modified
+  let shouldReload = false;
+  if (isDev && configFilePath && fs.existsSync(configFilePath)) {
+    const stats = fs.statSync(configFilePath);
+    const currentModifiedTime = stats.mtimeMs;
+    if (currentModifiedTime > lastModifiedTime) {
+      shouldReload = true;
+      lastModifiedTime = currentModifiedTime;
+    }
+  }
+  
+  if (!sitesConfig || shouldReload) {
     const configPath = process.env.SITES_CONFIG_PATH || '/app/sites-config.json';
     
     // For development, try relative path
@@ -26,6 +41,15 @@ export function getSitesConfig(): Record<string, SiteConfig> {
       if (fs.existsSync(p)) {
         const content = fs.readFileSync(p, 'utf-8');
         sitesConfig = JSON.parse(content);
+        configFilePath = p;
+        
+        // Update last modified time
+        const stats = fs.statSync(p);
+        lastModifiedTime = stats.mtimeMs;
+        
+        if (shouldReload) {
+          console.log('[tenant.ts] Sites config changed, reloaded from:', p);
+        }
         break;
       }
     }

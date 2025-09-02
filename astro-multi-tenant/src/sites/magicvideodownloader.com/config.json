@@ -1,11 +1,8 @@
 {
-  "name": "magicvideodownloader",
-  "description": "Welcome to magicvideodownloader",
-  "features": ["blog", "docs"],
-  "logo": "/logo.svg",
+  "name": "Magic Video Downloader",
+  "description": "Download videos from any website with ease",
   "favicon": "/favicon.ico",
-  "social": {
-    "twitter": "",
-    "github": ""
+  "fonts": {
+    "google": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
   }
 }

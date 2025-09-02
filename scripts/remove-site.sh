@@ -40,6 +40,26 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
+# Detect if we're in the wrong directory and adjust paths
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Check if we're being run from the astro-multi-tenant subdirectory
+if [ -d "../scripts" ] && [ -f "../package.json" ] && [ -d "src/sites" ]; then
+    echo -e "${YELLOW}Warning: Script is being run from astro-multi-tenant subdirectory${NC}"
+    echo -e "${YELLOW}Adjusting to run from project root...${NC}"
+    cd ..
+    PROJECT_ROOT="$(pwd)"
+fi
+
+# Now check if we're in the right place
+if [ ! -d "astro-multi-tenant" ] || [ ! -d "scripts" ]; then
+    echo -e "${RED}Error: This script must be run from the project root directory${NC}"
+    echo "Current directory: $(pwd)"
+    echo "Please cd to the project root and try again."
+    exit 1
+fi
+
 # Remove site directory
 SITE_DIR="astro-multi-tenant/src/sites/$DOMAIN"
 if [ -d "$SITE_DIR" ]; then

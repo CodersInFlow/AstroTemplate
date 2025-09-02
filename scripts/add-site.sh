@@ -154,6 +154,30 @@ if [ -f "$SITES_CONFIG" ]; then
     fi
 fi
 
+# Detect if we're in the wrong directory and adjust paths
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Check if we're being run from the astro-multi-tenant subdirectory
+if [ -d "../scripts" ] && [ -f "../package.json" ] && [ -d "src/sites" ]; then
+    echo -e "${YELLOW}Warning: Script is being run from astro-multi-tenant subdirectory${NC}"
+    echo -e "${YELLOW}Adjusting to run from project root...${NC}"
+    cd ..
+    PROJECT_ROOT="$(pwd)"
+fi
+
+# Now check if we're in the right place
+if [ ! -d "astro-multi-tenant" ] || [ ! -d "scripts" ]; then
+    echo -e "${RED}Error: This script must be run from the project root directory${NC}"
+    echo "Expected directory structure:"
+    echo "  ./scripts/add-site.sh (this script)"
+    echo "  ./astro-multi-tenant/src/sites/.template"
+    echo ""
+    echo "Current directory: $(pwd)"
+    echo "Please cd to the project root and try again."
+    exit 1
+fi
+
 # Create site directory from template
 TEMPLATE_DIR="astro-multi-tenant/src/sites/.template"
 SITE_DIR="astro-multi-tenant/src/sites/$DOMAIN"
@@ -301,11 +325,22 @@ mkdir -p "$SITE_DIR/pages/docs"
 mkdir -p "$SITE_DIR/components"
 mkdir -p "$SITE_DIR/styles"
 
+# Generate CSS for the new site
+echo ""
+echo -e "${GREEN}🎨 Generating CSS for the new site...${NC}"
+cd astro-multi-tenant && npm run generate-css > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ CSS generated successfully${NC}"
+else
+    echo -e "${YELLOW}⚠️  CSS generation had issues, you may need to run 'npm run generate-css' manually${NC}"
+fi
+cd "$PROJECT_ROOT"
+
 echo ""
 echo -e "${GREEN}🎉 Site created successfully!${NC}"
 echo ""
 echo "Next steps:"
-echo "  1. Start the dev server: npm run dev"
+echo "  1. The site will appear immediately in the dropdown (auto-detects changes)"
 echo "  2. Access your site:"
 echo "     • Development: http://${SITE_ID}.localhost:4321"
 echo "     • Production: https://$DOMAIN"

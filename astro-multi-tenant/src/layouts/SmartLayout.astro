@@ -3,38 +3,56 @@
 import { getTenantFromHost } from '../shared/lib/tenant';
 import DevModeOverlay from '../shared/components/Dev/DevModeOverlay.tsx';
 
-// Import all configs, styles, and data using import.meta.glob
+// Import all configs and styles using import.meta.glob
 const configs = import.meta.glob('../sites/*/config.json', { eager: true });
 const styles = import.meta.glob('../sites/*/styles/main.css', { eager: true, query: '?raw', import: 'default' });
-const navbarDataFiles = import.meta.glob('../sites/*/data/navbar.json', { eager: true });
-const footerDataFiles = import.meta.glob('../sites/*/data/footer.json', { eager: true });
+
+// Import site-specific header and footer components
+const headerComponents = import.meta.glob('../sites/*/components/Header.*');
+const footerComponents = import.meta.glob('../sites/*/components/Footer.*');
 
 // Get current tenant from hostname
 const hostname = Astro.request.headers.get('host') || '';
 const tenant = getTenantFromHost(hostname, Astro.url.searchParams);
 const tenantDir = tenant.directory || tenant.id;
 
-// Load tenant-specific config and styles from glob imports
+// Load tenant-specific config and styles
 const configPath = `../sites/${tenantDir}/config.json`;
 const stylePath = `../sites/${tenantDir}/styles/main.css`;
-const navbarPath = `../sites/${tenantDir}/data/navbar.json`;
-const footerPath = `../sites/${tenantDir}/data/footer.json`;
 
 const config = configs[configPath]?.default || {};
 const siteStyles = styles[stylePath] || '';
-const navbarData = navbarDataFiles[navbarPath]?.default || null;
-const footerData = footerDataFiles[footerPath]?.default || null;
 
-// Dynamic imports for nav/footer components based on site needs
-let TopNavBar = null;
+// Load site-specific components if they exist
+let Header = null;
 let Footer = null;
 
-// Only import components if we have data for them
-if (navbarData) {
-  TopNavBar = (await import('../shared/components/Navigation/TopNavBarData.astro')).default;
+// Check for Header component (could be .astro, .tsx, .jsx)
+const headerPaths = [
+  `../sites/${tenantDir}/components/Header.astro`,
+  `../sites/${tenantDir}/components/Header.tsx`,
+  `../sites/${tenantDir}/components/Header.jsx`
+];
+
+for (const path of headerPaths) {
+  if (headerComponents[path]) {
+    Header = (await headerComponents[path]()).default;
+    break;
+  }
 }
-if (footerData) {
-  Footer = (await import('../shared/components/Footer/FooterData.jsx')).default;
+
+// Check for Footer component
+const footerPaths = [
+  `../sites/${tenantDir}/components/Footer.astro`,
+  `../sites/${tenantDir}/components/Footer.tsx`,
+  `../sites/${tenantDir}/components/Footer.jsx`
+];
+
+for (const path of footerPaths) {
+  if (footerComponents[path]) {
+    Footer = (await footerComponents[path]()).default;
+    break;
+  }
 }
 
 const { title = config.name || 'Site', showNav = true, showFooter = true } = Astro.props;
@@ -65,18 +83,14 @@ const googleFonts = config.fonts?.google || 'https://fonts.googleapis.com/css2?f
   </head>
   
   <body class={`tenant-${tenantDir.replace('.', '-')} bg-background text-text-primary`}>
-    <!-- Navigation (if site has it) -->
-    {showNav && navbarData && TopNavBar && (
-      <TopNavBar data={navbarData} />
-    )}
+    <!-- Header (if site has one) -->
+    {showNav && Header && <Header />}
     
     <!-- Page content -->
     <slot />
     
-    <!-- Footer (if site has it) -->
-    {showFooter && footerData && Footer && (
-      <Footer data={footerData} />
-    )}
+    <!-- Footer (if site has one) -->
+    {showFooter && Footer && <Footer />}
     
     <!-- Dev overlay in development -->
     {isDevelopment && <DevModeOverlay client:load />}
