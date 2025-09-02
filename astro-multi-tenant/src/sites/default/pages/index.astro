@@ -46,6 +46,29 @@ const getUrl = (domain: string) => {
     return `https://${domain}`;
   }
 };
+
+// Prepare dropdown sites (including the welcome page)
+const dropdownSites = [
+  {
+    domain: 'Welcome Page',
+    name: 'Platform Overview',
+    url: isDevelopment ? `http://localhost:${DEV_FRONTEND_PORT}` : '/'
+  },
+  ...Object.entries(sites)
+    .filter(([domain]) => 
+      !domain.includes('localhost') && 
+      !domain.includes('127.0.0.1') && 
+      domain !== 'default' &&
+      !domain.startsWith('www.')
+    )
+    .map(([domain, config]) => ({
+      domain,
+      name: config.name || domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1),
+      url: isDevelopment 
+        ? `http://${domain.split('.')[0]}.localhost:${DEV_FRONTEND_PORT}`
+        : `https://${domain}`
+    }))
+];
 ---
 
 <Layout title="Multi-Tenant Platform - Component Library">
@@ -59,6 +82,40 @@ const getUrl = (domain: string) => {
         <p class="text-2xl text-gray-300 mb-8">
           Build faster by reusing components from any of our sites
         </p>
+      </div>
+
+      <!-- Dashboard Section -->
+      <div class="max-w-7xl mx-auto mb-16">
+        <div class="bg-black/40 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden">
+          <div class="dashboard-header p-4 bg-black/60 border-b border-white/20">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div class="site-selector flex items-center gap-3">
+                <label for="site-select" class="text-white font-medium">Select Site:</label>
+                <select id="site-select" class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white backdrop-blur-sm focus:outline-none focus:border-blue-400 transition-colors">
+                  {dropdownSites.map((site, index) => (
+                    <option value={site.url} selected={index === 0} class="bg-gray-900">
+                      {site.name} {site.domain !== 'Welcome Page' && `(${site.domain})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div class="selection-info flex items-center gap-3">
+                <span class="selected-count text-gray-300">Selected: <span id="count" class="font-bold text-white">0</span> components</span>
+                <button id="send-to-vscode" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium">Send to VSCode</button>
+                <button id="clear-selection" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors font-medium">Clear Selection</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="selected-components p-4 bg-black/30 border-b border-white/20 hidden" id="selected-section">
+            <h3 class="text-lg font-semibold text-white mb-2">Selected Components:</h3>
+            <ul id="component-list" class="space-y-1 text-gray-300"></ul>
+          </div>
+          
+          <div class="iframe-container" style="height: 600px;">
+            <iframe id="site-frame" src={`${dropdownSites[0]?.url || 'http://localhost:4321'}`} class="w-full h-full"></iframe>
+          </div>
+        </div>
       </div>
 
       <!-- Instructions Card -->
@@ -236,4 +293,135 @@ const getUrl = (domain: string) => {
     animation: float 6s ease-in-out infinite;
     animation-delay: 0.2s;
   }
+  
+  #selected-section:not(.hidden) {
+    display: block;
+  }
 </style>
+
+<script>
+  // Initialize WebSocket for VSCode communication
+  const ws = new WebSocket('ws://localhost:7651');
+  
+  ws.onopen = () => {
+    console.log('Connected to VSCode WebSocket');
+    ws.send(JSON.stringify({ type: 'connected', message: 'Dashboard connected to VSCode extension WebSocket server' }));
+  };
+  
+  ws.onmessage = (event) => {
+    console.log('Received from VSCode:', event.data);
+  };
+  
+  ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+  };
+  
+  ws.onclose = () => {
+    console.log('WebSocket closed');
+  };
+
+  // Component tracking
+  let selectedComponents = [];
+  
+  // Handle site selection
+  const siteSelect = document.getElementById('site-select');
+  const siteFrame = document.getElementById('site-frame');
+  const componentList = document.getElementById('component-list');
+  const countSpan = document.getElementById('count');
+  const selectedSection = document.getElementById('selected-section');
+  
+  siteSelect?.addEventListener('change', (e) => {
+    const url = e.target.value;
+    if (siteFrame) {
+      // Don't add dashboardMode to the welcome page
+      const isDashboardUrl = !url.includes('localhost:4321') || url.includes('.localhost');
+      siteFrame.src = isDashboardUrl ? `${url}?dashboardMode=true` : url;
+    }
+  });
+  
+  // Listen for messages from iframe
+  window.addEventListener('message', (event) => {
+    if (event.data.type === 'component-selected') {
+      const { component, isSelected } = event.data;
+      
+      if (isSelected) {
+        selectedComponents.push(component);
+      } else {
+        selectedComponents = selectedComponents.filter(c => 
+          !(c.name === component.name && c.site === component.site)
+        );
+      }
+      
+      updateSelectedList();
+    }
+  });
+  
+  function updateSelectedList() {
+    if (componentList) {
+      componentList.innerHTML = selectedComponents.map(comp => 
+        `<li class="flex items-center justify-between p-2 bg-white/5 rounded">
+          <span>${comp.name} (${comp.site})</span>
+          <button onclick="removeComponent('${comp.name}', '${comp.site}')" class="text-red-400 hover:text-red-300">×</button>
+        </li>`
+      ).join('');
+    }
+    
+    if (countSpan) {
+      countSpan.textContent = selectedComponents.length;
+    }
+    
+    if (selectedSection) {
+      if (selectedComponents.length > 0) {
+        selectedSection.classList.remove('hidden');
+      } else {
+        selectedSection.classList.add('hidden');
+      }
+    }
+  }
+  
+  window.removeComponent = function(name, site) {
+    selectedComponents = selectedComponents.filter(c => 
+      !(c.name === name && c.site === site)
+    );
+    updateSelectedList();
+    
+    // Notify iframe to deselect
+    if (siteFrame) {
+      siteFrame.contentWindow?.postMessage({
+        type: 'deselect-component',
+        component: { name, site }
+      }, '*');
+    }
+  };
+  
+  // Send to VSCode button
+  document.getElementById('send-to-vscode')?.addEventListener('click', () => {
+    if (selectedComponents.length === 0) {
+      alert('No components selected');
+      return;
+    }
+    
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: 'components-selected',
+        components: selectedComponents
+      }));
+      alert(`Sent ${selectedComponents.length} component(s) to VSCode`);
+    } else {
+      alert('Not connected to VSCode. Make sure the extension is running.');
+    }
+  });
+  
+  // Clear selection button
+  document.getElementById('clear-selection')?.addEventListener('click', () => {
+    selectedComponents = [];
+    updateSelectedList();
+    
+    // Notify iframe to clear all selections
+    if (siteFrame) {
+      siteFrame.contentWindow?.postMessage({
+        type: 'clear-selections'
+      }, '*');
+    }
+  });
+</script>
