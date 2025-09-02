@@ -63,9 +63,13 @@ if [ -f "$SITES_CONFIG" ]; then
         const fs = require('fs');
         const config = JSON.parse(fs.readFileSync('$SITES_CONFIG', 'utf8'));
         
-        // Remove both domain and www.domain entries
+        // Extract site ID from domain (remove .com, .org, etc.)
+        const siteId = '$DOMAIN'.split('.')[0];
+        
+        // Remove all variants: domain, www.domain, and localhost
         delete config['$DOMAIN'];
         delete config['www.$DOMAIN'];
+        delete config[siteId + '.localhost'];
         
         fs.writeFileSync('$SITES_CONFIG', JSON.stringify(config, null, 2));
         

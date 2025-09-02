@@ -211,7 +211,7 @@ FEATURES_JSON=$(echo "$FEATURES" | awk -F',' '{
     printf "]"
 }')
 
-# Create the site config JSON
+# Create the site config JSON with localhost version for development
 SITE_CONFIG=$(cat <<EOF
 {
   "$DOMAIN": {
@@ -224,6 +224,15 @@ SITE_CONFIG=$(cat <<EOF
     "features": $FEATURES_JSON
   },
   "www.$DOMAIN": {
+    "id": "$SITE_ID",
+    "name": "$NAME",
+    "description": "$DESCRIPTION",
+    "directory": "$DOMAIN",
+    "database": "${SITE_ID}_db",
+    "theme": "$THEME",
+    "features": $FEATURES_JSON
+  },
+  "${SITE_ID}.localhost": {
     "id": "$SITE_ID",
     "name": "$NAME",
     "description": "$DESCRIPTION",
