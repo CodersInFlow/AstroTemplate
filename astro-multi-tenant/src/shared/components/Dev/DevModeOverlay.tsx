@@ -215,12 +215,29 @@ const DevModeOverlay: React.FC = () => {
     // Try to load the actual JSON data
     if (component.dataPath) {
       try {
-        // Extract site from hostname (e.g., prestongarrison.localhost -> prestongarrison.com)
-        let site = window.location.hostname;
-        if (site.includes('.localhost')) {
-          site = site.replace('.localhost', '.com');
-        } else if (site === 'localhost' || site === '127.0.0.1') {
-          site = 'prestongarrison.com'; // Default for direct localhost access
+        // Extract site from hostname or query params
+        const urlParams = new URLSearchParams(window.location.search);
+        const tenantParam = urlParams.get('tenant');
+        
+        let site = '';
+        if (tenantParam) {
+          site = tenantParam;
+        } else {
+          site = window.location.hostname;
+          if (site.includes('.localhost')) {
+            site = site.replace('.localhost', '.com');
+          } else if (site === 'localhost' || site === '127.0.0.1') {
+            // Try to get from environment
+            const siteEnv = import.meta.env.PUBLIC_SITE || import.meta.env.SITE;
+            if (!siteEnv) {
+              console.error('Cannot determine site: no SITE environment variable and running on localhost');
+              component.props = {};
+              setEditingComponent(component);
+              setJsonEditorOpen(true);
+              return;
+            }
+            site = siteEnv;
+          }
         }
         
         // Check if dataPath includes array index notation
@@ -250,11 +267,14 @@ const DevModeOverlay: React.FC = () => {
             component.props = data;
           }
         } else {
-          console.error('Failed to load JSON data');
+          const errorMsg = `API returned ${response.status}: ${response.statusText}`;
+          console.error('Failed to load JSON data:', errorMsg);
+          alert(`Failed to load JSON data from API server:\n${errorMsg}\n\nMake sure the API server is running.`);
           component.props = {};
         }
       } catch (error) {
         console.error('Failed to load JSON data:', error);
+        alert(`Cannot connect to API server at ${apiBase}\n\nError: ${error.message}\n\nMake sure the API server is running with:\nnpm run api`);
         component.props = {};
       }
     }
@@ -291,9 +311,13 @@ const DevModeOverlay: React.FC = () => {
       if (site.includes('.localhost')) {
         site = site.replace('.localhost', '.com');
       } else if (site === 'localhost' || site === '127.0.0.1') {
-        // Try to detect from path
-        const pathParts = window.location.pathname.split('/');
-        site = 'prestongarrison.com'; // Default
+        // Try to get from environment
+        const siteEnv = import.meta.env.PUBLIC_SITE || import.meta.env.SITE;
+        if (!siteEnv) {
+          console.error('Cannot determine site for reordering: no SITE environment variable');
+          return;
+        }
+        site = siteEnv;
       }
 
       const response = await fetch(`${apiBase}/api/reorder-components`, {

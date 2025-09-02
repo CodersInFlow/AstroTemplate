@@ -274,12 +274,27 @@ const JSONEditorModal: React.FC<JSONEditorModalProps> = ({
             {component.dataPath && (
               <button
                 onClick={() => {
-                  // Extract site from hostname
-                  let site = window.location.hostname;
-                  if (site.includes('.localhost')) {
-                    site = site.replace('.localhost', '.com');
-                  } else if (site === 'localhost' || site === '127.0.0.1') {
-                    site = 'prestongarrison.com'; // Default for direct localhost access
+                  // Get the current site from the SITE env variable or detect from URL
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const tenantParam = urlParams.get('tenant');
+                  
+                  let site = '';
+                  if (tenantParam) {
+                    site = tenantParam;
+                  } else {
+                    site = window.location.hostname;
+                    if (site.includes('.localhost')) {
+                      site = site.replace('.localhost', '.com');
+                    } else if (site === 'localhost' || site === '127.0.0.1') {
+                      // Try to get from environment
+                      const siteEnv = import.meta.env.PUBLIC_SITE || import.meta.env.SITE;
+                      if (!siteEnv) {
+                        console.error('Cannot determine site: no SITE environment variable and running on localhost');
+                        alert('Cannot determine which site you are editing. Please use npm run dev:[sitename]');
+                        return;
+                      }
+                      site = siteEnv;
+                    }
                   }
                   
                   // Remove array notation from path if present
@@ -287,6 +302,8 @@ const JSONEditorModal: React.FC<JSONEditorModalProps> = ({
                   
                   // Construct the full file path
                   const fullPath = `/Users/prestongarrison/Source/codersinflow.com/astro-multi-tenant/src/sites/${site}/data/${cleanPath}`;
+                  
+                  console.log('Opening in VS Code:', fullPath);
                   
                   // Open in VS Code
                   window.location.href = `vscode://file${fullPath}`;
