@@ -1,13 +1,7 @@
 ---
-export interface Props {
-  items: Array<{
-    title: string;
-    description: string;
-    imageSrc: string;
-  }>;
-}
-
-const { items } = Astro.props;
+const { data = [] } = Astro.props;
+// If data is an array, use it directly as items; otherwise extract items property
+const items = Array.isArray(data) ? data : (data.items || []);
 ---
 
 <div 

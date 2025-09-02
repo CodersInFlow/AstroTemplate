@@ -1,27 +1,21 @@
 ---
-// Accept FAQ data as props instead of importing JSON
-export interface Props {
-  faq: {
-    title: string;
-    subtitle: string;
-    items: Array<{
-      question: string;
-      answer: string;
-    }>;
-  };
-}
-
-const { faq } = Astro.props;
+// Accept FAQ data as props
+const { data = {} } = Astro.props;
+const {
+  title = "Frequently Asked Questions",
+  subtitle = "Find answers to common questions",
+  items = []
+} = data;
 ---
 
 <section id="faq" class="py-8 px-4 md:px-8 max-w-6xl mx-auto">
   <div class="text-center mb-6">
-    <h2 class="text-3xl font-bold text-text-primary mb-2">{faq.title}</h2>
-    <p class="text-text-muted">{faq.subtitle}</p>
+    <h2 class="text-3xl font-bold text-text-primary mb-2">{title}</h2>
+    <p class="text-text-muted">{subtitle}</p>
   </div>
   
   <div class="space-y-2">
-    {faq.items.map((item, index) => (
+    {items.map((item, index) => (
       <div
         class="faq-item border border-border rounded-lg overflow-hidden bg-surface/50 backdrop-blur-sm"
         data-index={index}

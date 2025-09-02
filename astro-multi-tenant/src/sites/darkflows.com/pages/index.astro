@@ -4,14 +4,18 @@ import SwirlingParticles from '../../../shared/components/Effects/SwirlingPartic
 import TopNavBar from '../../../shared/components/Navigation/TopNavBar.astro';
 import FeaturedPost from '../../../shared/components/Features/FeaturedPost.astro';
 import ScrollReveal from '../../../shared/components/Effects/ScrollReveal.astro';
-import DataConnectSection from '../../../shared/components/Sections/DataConnectSection.astro';
+import DataConnectSections from '../../../shared/components/Sections/DataConnectSections.astro';
 import FeatureCarousel from '../../../shared/components/Features/FeatureCarousel.astro';
 import FAQ from '../../../shared/components/FAQ/FAQ.astro';
 import Footer from '../../../shared/components/Footer/Footer.astro';
 import { API_URL } from '../../../shared/lib/api-config';
-import siteContent from '../site-content.json';
 
-const { dataConnectSections, carousel } = siteContent;
+// Import separate JSON files with "Data" suffix for auto-wrapper detection
+import heroData from '../data/hero.json';
+import dataConnectSectionsData from '../data/data-connect-sections.json';
+import carouselData from '../data/carousel.json';
+import faqData from '../data/faq.json';
+import footerData from '../data/footer.json';
 ---
 
 <Layout>
@@ -20,18 +24,11 @@ const { dataConnectSections, carousel } = siteContent;
     <div class="relative z-20">
       <TopNavBar />
       <FeaturedPost apiUrl={API_URL} />
-      <ScrollReveal hero={siteContent.hero} />
-      <div class="space-y-2">
-        {dataConnectSections.map((section, index) => (
-          <DataConnectSection
-            data={section}
-            imageOnRight={index % 2 === 0}
-          />
-        ))}
-      </div>
-      <FeatureCarousel items={carousel} />
-      <FAQ faq={siteContent.faq} />
-      <Footer footer={siteContent.footer} />
+      <ScrollReveal data={heroData} />
+      <DataConnectSections data={dataConnectSectionsData} />
+      <FeatureCarousel data={carouselData} />
+      <FAQ data={faqData} />
+      <Footer data={footerData} />
     </div>
   </main>
 </Layout>

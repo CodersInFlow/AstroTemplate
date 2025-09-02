@@ -1,0 +1,29 @@
+{
+  "logo": {
+    "text": "CodersInFlow",
+    "href": "/"
+  },
+  "navigation": [
+    { "href": "/", "text": "Home" },
+    { "href": "/features", "text": "Features" },
+    { "href": "/enterprise", "text": "Enterprise" },
+    { "href": "/blog", "text": "Blog" },
+    { "href": "/blog/docs", "text": "Docs" }
+  ],
+  "social": [
+    {
+      "name": "Discord",
+      "href": "https://discord.com/invite/3QmjpqX2Y5",
+      "icon": "discord"
+    },
+    {
+      "name": "Reddit", 
+      "href": "https://www.reddit.com/r/codersinflow/",
+      "icon": "reddit"
+    }
+  ],
+  "cta": {
+    "text": "Install",
+    "href": "/download"
+  }
+}

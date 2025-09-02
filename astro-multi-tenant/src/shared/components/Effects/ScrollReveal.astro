@@ -1,6 +1,12 @@
 ---
-import siteContent from '../../../sites/darkflows.com/site-content.json';
-const { hero } = siteContent;
+const { data = {} } = Astro.props;
+const {
+  title = "DarkFlows Router OS",
+  subtitle = "High Performance Routing and Firewalling Reimagined",
+  finalTitle = "Powerful and Easy to Use",
+  finalSubtitle = "Latency free gaming, high performance traffic shaping, and easy to use dashboard",
+  image = "/laptop.png"
+} = data;
 ---
 
 <div class="relative min-h-[300vh] bg-transparent">
@@ -13,10 +19,10 @@ const { hero } = siteContent;
         class="text-white text-center transition-opacity duration-500"
       >
         <h1 class="text-4xl md:text-6xl font-bold mb-6">
-          {hero.title}
+          {title}
         </h1>
         <p class="text-xl md:text-2xl text-gray-300">
-          {hero.subtitle}
+          {subtitle}
         </p>
 
         <!-- Scroll indicator -->
@@ -63,7 +69,7 @@ const { hero } = siteContent;
           class="relative w-full max-w-[900px] transition-all duration-1000 opacity-0"
         >
           <img
-            src={hero.image}
+            src={image}
             alt="Laptop Display"
             width="900"
             height="600"
@@ -116,10 +122,10 @@ const { hero } = siteContent;
       >
         <div class="text-white text-center">
           <h2 class="text-3xl md:text-5xl font-bold mb-4">
-            {hero.finalTitle}
+            {finalTitle}
           </h2>
           <p class="text-lg md:text-xl text-gray-300">
-            {hero.finalSubtitle}
+            {finalSubtitle}
           </p>
         </div>
       </div>

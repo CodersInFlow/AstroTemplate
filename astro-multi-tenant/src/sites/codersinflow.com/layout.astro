@@ -1,9 +1,14 @@
 ---
 // Import the generated CSS directly without path conflicts
 import codersinflowStyles from './styles/main.css?raw';
-import HeaderSimple from '../../shared/components/Headers/HeaderSimple.astro';
+import HeaderData from '../../shared/components/Headers/HeaderData.jsx';
+import FooterData from '../../shared/components/Footer/FooterData.jsx';
 // Import DevModeOverlay for development
 import DevModeOverlay from '../../shared/components/Dev/DevModeOverlay.tsx';
+
+// Import data
+import headerData from './data/header.json';
+import footerData from './data/footer.json';
 
 export interface Props {
   title: string;
@@ -28,9 +33,10 @@ const isDevelopment = import.meta.env.DEV;
   </head>
   <body class="bg-background text-text-primary min-h-screen">
     <style set:html={codersinflowStyles}></style>
-    <HeaderSimple />
+    <HeaderData data={headerData} client:load />
     <div style="height: 56px;"></div> <!-- Spacer for fixed header -->
     <slot />
+    <FooterData data={footerData} />
     {isDevelopment && <DevModeOverlay client:load />}
   </body>
 </html>

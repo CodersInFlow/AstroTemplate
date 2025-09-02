@@ -2,7 +2,7 @@
 
 ## Overview
 
-This multi-tenant Astro application uses a sophisticated component system that enables code reuse across multiple sites while maintaining site-specific customization. The system leverages JSON data files for content management and a shared component library for consistent functionality.
+This multi-tenant Astro application uses a sophisticated component system that enables code reuse across multiple sites while maintaining site-specific customization. The system leverages JSON data files for content management, a shared component library for consistent functionality, and an automatic dev-mode editing system that allows real-time content updates without modifying code.
 
 ## Directory Structure
 
@@ -10,23 +10,31 @@ This multi-tenant Astro application uses a sophisticated component system that e
 astro-multi-tenant/
 ├── src/
 │   ├── shared/
-│   │   └── components/          # Shared component library
-│   │       ├── CallToAction/
-│   │       ├── Cards/
-│   │       ├── Comparison/
-│   │       ├── Contact/
-│   │       ├── Effects/
-│   │       ├── FAQ/
-│   │       ├── Features/
-│   │       ├── Footer/
-│   │       ├── Headers/
-│   │       ├── Hero/
-│   │       ├── Icons/
-│   │       ├── Media/
-│   │       ├── Navigation/
-│   │       ├── sections/
-│   │       ├── Tech/
-│   │       └── Testimonials/
+│   │   ├── components/          # Shared component library
+│   │   │   ├── CallToAction/
+│   │   │   ├── Cards/
+│   │   │   ├── Comparison/
+│   │   │   ├── Contact/
+│   │   │   ├── Dev/            # Dev mode components
+│   │   │   │   ├── DevModeOverlay.tsx
+│   │   │   │   ├── DevWrapper.astro
+│   │   │   │   ├── DevComponentWrapper.jsx
+│   │   │   │   ├── ComponentOverlay.tsx
+│   │   │   │   └── JSONEditorModal.tsx
+│   │   │   ├── Effects/
+│   │   │   ├── FAQ/
+│   │   │   ├── Features/
+│   │   │   ├── Footer/
+│   │   │   ├── Headers/
+│   │   │   ├── Hero/
+│   │   │   ├── Icons/
+│   │   │   ├── Media/
+│   │   │   ├── Navigation/
+│   │   │   ├── Sections/
+│   │   │   ├── Tech/
+│   │   │   └── Testimonials/
+│   │   └── integrations/        # Astro integrations
+│   │       └── astro-auto-wrapper.js
 │   └── sites/
 │       ├── codersinflow.com/
 │       │   ├── data/            # Site-specific JSON data
@@ -67,6 +75,55 @@ Components are organized by type rather than by site, promoting maximum reusabil
    - Integrated into Astro pages using `client:` directives
    - Example: `ProjectItem.jsx`, `VideoPlayer.tsx`
 
+## Auto-Wrapper System (NEW)
+
+The auto-wrapper is an Astro integration that automatically wraps components with DevWrapper during build time, enabling dev mode editing without manual wrapper code.
+
+### How It Works
+
+1. **File Detection**: Processes `.astro` files in `/sites/*/pages/` and `/sites/*/layout.astro`
+2. **Component Matching**: Identifies React/Astro components (uppercase first letter) with data props
+3. **Data Detection**: Looks for props containing variables ending with "Data" or containing "data"
+4. **Wrapper Injection**: Automatically wraps matched components with DevWrapper
+5. **Import Addition**: Adds DevWrapper import at the top of the frontmatter
+
+### Requirements for Auto-Wrapping
+
+```astro
+<!-- ✅ Will be auto-wrapped -->
+<Menu data={navigationData} />
+<ProjectsHeader data={projectsHeaderData} />
+
+<!-- ❌ Won't be wrapped -->
+<menu />                           <!-- HTML element -->
+<Menu className="nav" />           <!-- No data prop -->
+{showHeader && <Menu data={x} />} <!-- Inside JSX expression -->
+```
+
+### Component Naming Convention
+
+The auto-wrapper converts prop variable names to JSON file names:
+- `navigationData` → `navigation.json`
+- `projectsHeaderData` → `projects-header.json`
+- `mainHeaderData` → `main-header.json`
+
+## Dev Mode Overlay System (NEW)
+
+In development mode, wrapped components get visual overlays for real-time editing:
+
+### Features
+- **Visual Boundaries**: Hover to see component outlines
+- **Edit JSON Button**: Click to edit component data
+- **Live Updates**: Changes save to JSON files and reload automatically
+- **Array Support**: Edit individual items in arrays
+
+### How to Use
+1. Run in dev mode: `npm run dev`
+2. Hover over any component with data
+3. Click "Edit JSON" in the overlay
+4. Make changes in the modal editor
+5. Save to update the JSON file
+
 ## JSON Data Loading System
 
 ### Data Structure
@@ -74,11 +131,29 @@ Each site has its own `data/` directory containing JSON files for content:
 
 ```
 sites/prestongarrison.com/data/
-├── contact.json
-├── experiences.json
-├── projects.json
-├── qualifications.json
-└── skills.json
+├── navigation.json          # Navigation menu
+├── main-header.json        # Site main header
+├── hero.json              # Hero section
+├── projects-header.json   # Projects section header
+├── projects-items.json    # Projects items array
+├── experiences.json       # Experiences data
+├── qualifications-header.json # Qualifications header
+├── skills.json           # Skills data
+├── videos.json          # YouTube videos
+├── contact-header.json  # Contact section header
+└── contact-info.json    # Contact information
+```
+
+### Splitting Components Pattern (NEW)
+To enable granular editing, complex components are split:
+
+```astro
+<!-- OLD: Single combined component -->
+<Projects data={projectsData} />
+
+<!-- NEW: Split into header and items -->
+<ProjectsHeader data={projectsHeaderData} />
+<ProjectsItems data={projectsItemsData} />
 ```
 
 ### Loading Data in Astro Pages
@@ -139,11 +214,18 @@ import Projects from '@shared/components/sections/Projects.jsx';
 
 ## Component Props Pattern
 
-Components accept data through props, making them reusable across sites:
+Components accept data through props, making them reusable across sites. **Always provide default values** to prevent errors:
 
 ```jsx
-// ProjectItem.jsx
-const ProjectItem = ({ image_name, image_desc, title, desc }) => {
+// Modern pattern with data prop and defaults
+const ProjectItem = ({ data = {} }) => {
+  const {
+    image_name = "/default.png",
+    image_desc = "Project",
+    title = "Untitled",
+    desc = "Description"
+  } = data;
+  
   return (
     <div className="project-card">
       <img src={image_name} alt={image_desc} />
@@ -278,27 +360,52 @@ fontSize: {
 }
 ```
 
+### Dynamic Classes from JSON (IMPORTANT)
+When using dynamic Tailwind classes from JSON data, add them to the safelist:
+
+```javascript
+// tailwind.config.cjs
+module.exports = {
+  safelist: [
+    'bg-blue-600',
+    'bg-green-500',
+    'bg-red-500',
+    // Add all colors that might come from JSON
+  ]
+}
+```
+
 ## Best Practices
 
 1. **Component Reusability**
    - Keep components generic and data-driven
-   - Use props for all customizable content
-   - Provide sensible defaults
+   - Always accept a `data` prop for auto-wrapper compatibility
+   - Provide sensible defaults for all destructured values
+   - Split complex components into header/content sections
 
 2. **Data Management**
    - Store all content in JSON files
    - Keep data structure consistent across sites
-   - Use TypeScript interfaces when possible
+   - Use descriptive file names ending with "Data" in imports
+   - Separate combined JSON into logical files
 
-3. **Performance**
+3. **Auto-Wrapper Compatibility**
+   - Component names must start with uppercase
+   - Import JSON with names ending in "Data" (e.g., `navigationData`)
+   - Keep components outside of JSX expressions
+   - Use in `.astro` files (pages or layouts)
+
+4. **Performance**
    - Use appropriate client directives for hydration
-   - Lazy load heavy components
-   - Optimize images and media assets
+   - `client:load` for immediately needed components
+   - `client:visible` for components with animations
+   - `client:idle` for non-critical components
 
-4. **Maintenance**
+5. **Maintenance**
    - Document component props
    - Keep shared components site-agnostic
    - Test components across all sites
+   - Add dynamic Tailwind classes to safelist
 
 ## Example: Adding a New Site
 
