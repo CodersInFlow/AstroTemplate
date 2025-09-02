@@ -1,5 +1,7 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
+import HeaderData from '../../shared/components/Headers/HeaderData.jsx';
+import headerData from './data/header.json';
 import siteStyles from './styles/main.css?raw';
 
 export interface Props {
@@ -58,6 +60,7 @@ const canonicalURL = Astro.site
   </head>
   
   <body class="min-h-screen bg-background text-text-primary">
+    <HeaderData client:load data={headerData} />
     <slot />
   </body>
 </html>
