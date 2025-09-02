@@ -93,6 +93,31 @@ Access sites via:
 
 ## 🛠️ Adding a New Site
 
+### Automated Method (Recommended)
+
+Use the add-site script to quickly create a new site:
+
+```bash
+# Basic usage
+./scripts/add-site.sh example.com
+
+# With options
+./scripts/add-site.sh mysite.com \
+  --name "My Awesome Site" \
+  --description "A fantastic website" \
+  --theme dark-blue \
+  --features blog,auth,payments
+```
+
+The script will:
+- Create the site directory from template
+- Configure all necessary files
+- Update sites-config.json
+- Set up Tailwind configuration
+- Create page templates without Layout wrappers
+
+### Manual Method
+
 1. **Create site directory:**
    ```bash
    mkdir -p src/sites/newsite.com/{pages,data,styles}
@@ -151,19 +176,7 @@ Access sites via:
    npm run generate-css
    ```
 
-6. **Add to tenant config:**
-   ```javascript
-   // src/shared/lib/sites-config.js
-   export const sites = [
-     // ... existing sites
-     {
-       id: 'newsite.com',
-       name: 'New Site',
-       domain: 'newsite.com',
-       directory: 'newsite.com'
-     }
-   ];
-   ```
+6. **Update sites-config.json** (or use the script which does this automatically)
 
 ## 📦 Scripts
 
@@ -172,6 +185,8 @@ Access sites via:
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run generate-css` - Generate Tailwind CSS for all sites
+- `./scripts/add-site.sh` - Add a new site to the platform
+- `./scripts/remove-site.sh` - Remove a site from the platform
 
 ## 🔧 Key Components
 
