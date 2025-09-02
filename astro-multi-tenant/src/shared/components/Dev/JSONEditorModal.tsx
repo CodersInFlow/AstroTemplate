@@ -271,6 +271,47 @@ const JSONEditorModal: React.FC<JSONEditorModalProps> = ({
           </button>
 
           <div style={{ display: 'flex', gap: '8px' }}>
+            {component.dataPath && (
+              <button
+                onClick={() => {
+                  // Extract site from hostname
+                  let site = window.location.hostname;
+                  if (site.includes('.localhost')) {
+                    site = site.replace('.localhost', '.com');
+                  } else if (site === 'localhost' || site === '127.0.0.1') {
+                    site = 'prestongarrison.com'; // Default for direct localhost access
+                  }
+                  
+                  // Remove array notation from path if present
+                  const cleanPath = component.dataPath.replace(/\[\d+\]$/, '');
+                  
+                  // Construct the full file path
+                  const fullPath = `/Users/prestongarrison/Source/codersinflow.com/astro-multi-tenant/src/sites/${site}/data/${cleanPath}`;
+                  
+                  // Open in VS Code
+                  window.location.href = `vscode://file${fullPath}`;
+                }}
+                style={{
+                  background: 'rgba(34, 197, 94, 0.2)',
+                  border: '1px solid rgba(34, 197, 94, 0.4)',
+                  color: '#86efac',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(34, 197, 94, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(34, 197, 94, 0.2)';
+                }}
+              >
+                Open in VS Code
+              </button>
+            )}
+            
             <button
               onClick={onClose}
               style={{
