@@ -169,24 +169,6 @@ if (!fs.existsSync(sitesConfigPath)) {
       "theme": "light",
       "features": ["blog", "docs"]
     },
-    "magicvideodownloader.com": {
-      "id": "magicvideodownloader",
-      "name": "Magic Video Downloader",
-      "description": "Download videos from anywhere",
-      "directory": "magicvideodownloader.com",
-      "database": "magicvideodownloader_db",
-      "theme": "light",
-      "features": ["blog", "docs"]
-    },
-    "www.magicvideodownloader.com": {
-      "id": "magicvideodownloader",
-      "name": "Magic Video Downloader",
-      "description": "Download videos from anywhere",
-      "directory": "magicvideodownloader.com",
-      "database": "magicvideodownloader_db",
-      "theme": "light",
-      "features": ["blog", "docs"]
-    },
     "localhost": {
       "id": "default",
       "directory": "default",
