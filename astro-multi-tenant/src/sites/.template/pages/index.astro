@@ -1,7 +1,82 @@
 ---
 import Layout from '../layout.astro';
-import Hero from '../components/Hero.astro';
-import Features from '../components/Features.astro';
+// Import shared components from the platform
+import HeroSection from '../../../shared/components/Hero/HeroSection.astro';
+import FeaturesSection from '../../../shared/components/Features/FeaturesSection.tsx';
+import CallToAction from '../../../shared/components/CallToAction/CallToAction.tsx';
+import FAQ from '../../../shared/components/FAQ/FAQ.astro';
+import Tech from '../../../shared/components/Tech/Tech.astro';
+
+// Demo data for the components
+const heroData = {
+  title: "Welcome to SITE_NAME_PLACEHOLDER",
+  subtitle: "SITE_DESCRIPTION_PLACEHOLDER",
+  primaryButton: { text: "Get Started", href: "/blog" },
+  secondaryButton: { text: "Learn More", href: "/about" }
+};
+
+const featuresData = {
+  title: "Why Choose SITE_NAME_PLACEHOLDER",
+  subtitle: "Everything you need to succeed online",
+  features: [
+    {
+      icon: "⚡",
+      title: "Lightning Fast",
+      description: "Built with performance in mind, your site loads instantly"
+    },
+    {
+      icon: "🎨",
+      title: "Beautiful Design",
+      description: "Modern, responsive design that looks great on all devices"
+    },
+    {
+      icon: "🔒",
+      title: "Secure by Default",
+      description: "Enterprise-grade security with HTTPS and authentication"
+    },
+    {
+      icon: "📈",
+      title: "SEO Optimized",
+      description: "Built-in SEO best practices for better search rankings"
+    },
+    {
+      icon: "🚀",
+      title: "Easy to Scale",
+      description: "Grow your site from a blog to a full platform"
+    },
+    {
+      icon: "🛠️",
+      title: "Fully Customizable",
+      description: "Tailor every aspect to match your brand"
+    }
+  ]
+};
+
+const ctaData = {
+  title: "Ready to Get Started?",
+  description: "Join thousands of satisfied users and transform your online presence today.",
+  primaryButton: { text: "Start Now", href: "/signup" },
+  secondaryButton: { text: "Contact Sales", href: "/contact" }
+};
+
+const faqItems = [
+  {
+    question: "How do I get started?",
+    answer: "Simply sign up for an account and follow our quick setup guide. You'll be up and running in minutes!"
+  },
+  {
+    question: "Can I customize the design?",
+    answer: "Absolutely! Every aspect of your site can be customized to match your brand and vision."
+  },
+  {
+    question: "Is there customer support?",
+    answer: "Yes, we offer 24/7 customer support to help you with any questions or issues."
+  },
+  {
+    question: "What features are included?",
+    answer: "All plans include blog functionality, SEO tools, analytics, and responsive design. Premium plans add e-commerce and advanced features."
+  }
+];
 ---
 
 <Layout 
@@ -9,16 +84,19 @@ import Features from '../components/Features.astro';
   description="SITE_DESCRIPTION_PLACEHOLDER"
 >
   <main>
-    <Hero />
-    <Features />
+    <!-- Hero Section -->
+    <HeroSection {...heroData} />
     
-    <section class="py-16 px-4">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl font-bold mb-4">Welcome to SITE_NAME_PLACEHOLDER</h2>
-        <p class="text-lg text-text-secondary">
-          This is your new site powered by the multi-tenant platform.
-        </p>
-      </div>
-    </section>
+    <!-- Features Grid -->
+    <FeaturesSection {...featuresData} client:load />
+    
+    <!-- Tech Stack (optional - remove if not needed) -->
+    <Tech />
+    
+    <!-- FAQ Section -->
+    <FAQ items={faqItems} />
+    
+    <!-- Call to Action -->
+    <CallToAction {...ctaData} client:visible />
   </main>
 </Layout>
