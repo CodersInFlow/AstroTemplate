@@ -1,6 +1,4 @@
 ---
-import Layout from '../layout.astro';
-
 // Import data files
 import heroData from '../data/features-hero.json';
 
@@ -9,15 +7,10 @@ import FeaturesHero from '../../../shared/components/Features/FeaturesHero.tsx';
 import CallToAction from '../../../shared/components/Sections/CallToAction.tsx';
 ---
 
-<Layout 
-  title="Your Business"
-  description="Transform your business with our solutions"
->
-  
+<main>
   <!-- Features Hero Section -->
   <FeaturesHero client:load data={heroData} />
   
   <!-- Call to Action -->
   <CallToAction client:load />
-  
-</Layout>
+</main>

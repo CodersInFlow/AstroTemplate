@@ -9,7 +9,7 @@
     "features": []
   },
   "www.welcome.com": {
-    "id": "welcome", 
+    "id": "welcome",
     "name": "Platform Overview",
     "description": "Multi-Tenant Component Platform",
     "directory": "welcome.com",
