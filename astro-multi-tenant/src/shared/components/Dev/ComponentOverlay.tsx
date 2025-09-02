@@ -78,7 +78,7 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
       className="dev-component-overlay"
       style={{
         position: 'absolute',
-        top: `${position.top - 30}px`,
+        top: `${position.top}px`,
         left: `${position.left}px`,
         zIndex: 9999,
         pointerEvents: 'auto'

@@ -6,6 +6,10 @@ import MainTitleHeader from '../../shared/components/Headers/MainTitleHeader.jsx
 // Import DevModeOverlay for development
 import DevModeOverlay from '../../shared/components/Dev/DevModeOverlay.tsx';
 
+// Import data
+import navigationData from './data/navigation.json';
+import mainHeaderData from './data/main-header.json';
+
 export interface Props {
   title?: string;
   description?: string;
@@ -119,8 +123,8 @@ const imageURL = new URL(image, url);
   </head>
   <body class="bg-background text-text-primary">
     <style set:html={prestonStyles}></style>
-    <Menu data={{}} />
-    {showHeader && <MainTitleHeader data={{ title: "Preston Garrison" }} />}
+    <Menu data={navigationData} />
+    {showHeader && <MainTitleHeader data={mainHeaderData} />}
     <slot />
     {isDevelopment && <DevModeOverlay client:load />}
   </body>

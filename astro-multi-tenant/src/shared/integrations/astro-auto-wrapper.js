@@ -18,8 +18,15 @@ export function astroAutoWrapper() {
                 enforce: 'pre',
                 
                 async load(id) {
-                  // Only process .astro files in sites/*/pages directories
-                  if (!id.endsWith('.astro') || !id.includes('/sites/') || !id.includes('/pages/')) {
+                  // Only process .astro files in sites directories (pages and layout)
+                  if (!id.endsWith('.astro') || !id.includes('/sites/')) {
+                    return null;
+                  }
+                  
+                  // Only process pages and layout files
+                  const isPageFile = id.includes('/pages/');
+                  const isLayoutFile = id.endsWith('/layout.astro');
+                  if (!isPageFile && !isLayoutFile) {
                     return null;
                   }
                   
@@ -49,26 +56,39 @@ export function astroAutoWrapper() {
                   const frontmatter = content.substring(0, frontmatterEnd + 3);
                   const template = content.substring(frontmatterEnd + 3);
                   
-                  // Pattern to match components with data props
-                  const componentPattern = /<(\w+)\s+([^>]*(?:data|Data|header|Header|items|Items|projectItems|experienceItems|headerData|skillsData|contactData)=\{[^}]+\}[^>]*)(\/>|>[\s\S]*?<\/\1>)/g;
+                  // Pattern to match components with any prop that receives imported data
+                  // Only match components starting with uppercase (React/Astro components, not HTML elements)
+                  const componentPattern = /<([A-Z]\w+)\s+([^>]*\w+=\{[^}]+\}[^>]*)(\/>|>[\s\S]*?<\/\1>)/g;
                   
                   let modifiedTemplate = template;
                   let needsImport = false;
                   const wrappedComponents = [];
                   
-                  modifiedTemplate = modifiedTemplate.replace(componentPattern, (match, componentName, props, closing) => {
+                  modifiedTemplate = modifiedTemplate.replace(componentPattern, (match, componentName, props, closing, offset, str) => {
+                    // Check if this component is inside a JSX expression (like {showHeader && ...})
+                    // Look for an unclosed { before this component
+                    const beforeMatch = str.substring(0, offset);
+                    const lastOpenBrace = beforeMatch.lastIndexOf('{');
+                    const lastCloseBrace = beforeMatch.lastIndexOf('}');
+                    
+                    // If there's an unclosed { before this component, don't wrap it
+                    if (lastOpenBrace > lastCloseBrace) {
+                      return match;
+                    }
                     // Extract data file name from props
                     const propMatches = [...props.matchAll(/(\w+)=\{([^}]+)\}/g)];
                     let dataFile = null;
                     
                     for (const [, propName, propValue] of propMatches) {
                       // Skip non-data props
-                      if (propName === 'class' || propName === 'className' || propName === 'id') continue;
+                      if (propName === 'class' || propName === 'className' || propName === 'id' || propName === 'client') continue;
                       
-                      // Check if the prop value looks like imported data
-                      if (propValue.includes('Data') || propValue.includes('data')) {
-                        // Convert to filename
-                        const fileName = propValue.trim()
+                      // Check if the prop value looks like imported JSON data
+                      // Look for variables that end with Data or contain the word data
+                      const trimmedValue = propValue.trim();
+                      if (trimmedValue.match(/Data$|data/i) && !trimmedValue.startsWith('"') && !trimmedValue.startsWith("'")) {
+                        // Convert variable name to likely filename
+                        const fileName = trimmedValue
                           .replace(/Data$/, '')
                           .replace(/([A-Z])/g, '-$1')
                           .toLowerCase()
@@ -105,11 +125,17 @@ export function astroAutoWrapper() {
                   if (needsImport) {
                     console.log(`  -> Wrapped components: ${wrappedComponents.join(', ')}`);
                     
-                    // Add DevWrapper import to frontmatter
-                    const importStatement = `import DevWrapper from '../../../shared/components/Dev/DevWrapper.astro';`;
+                    // Determine correct import path based on file location
+                    const isLayoutFile = id.endsWith('/layout.astro');
+                    const importPath = isLayoutFile 
+                      ? '../../shared/components/Dev/DevWrapper.astro'
+                      : '../../../shared/components/Dev/DevWrapper.astro';
+                    
+                    // Add DevWrapper import at the top of the frontmatter (after the opening ---)
+                    const importStatement = `import DevWrapper from '${importPath}';`;
                     const modifiedFrontmatter = frontmatter.replace(
-                      /\n---$/,
-                      `\n${importStatement}\n---`
+                      /^---\n/,
+                      `---\n${importStatement}\n`
                     );
                     
                     // Return the modified content
