@@ -1,11 +1,20 @@
 {
-  "welcome.localhost": {
+  "welcome.com": {
     "id": "welcome",
     "name": "Platform Overview",
     "description": "Multi-Tenant Component Platform",
-    "directory": "welcome",
+    "directory": "welcome.com",
     "database": "welcome_db",
-    "theme": "dark",
+    "theme": "light",
+    "features": []
+  },
+  "www.welcome.com": {
+    "id": "welcome", 
+    "name": "Platform Overview",
+    "description": "Multi-Tenant Component Platform",
+    "directory": "welcome.com",
+    "database": "welcome_db",
+    "theme": "light",
     "features": []
   },
   "codersinflow.com": {
