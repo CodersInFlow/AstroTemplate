@@ -3,6 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "postinstall": "cd astro-multi-tenant && npm install",
+    "setup": "./setup.sh",
     "dev": "./scripts/dev-docker.sh",
     "dev:watch": "./scripts/dev-docker-watch.sh",
     "dev:astro": "astro dev",

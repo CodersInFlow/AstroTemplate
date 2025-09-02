@@ -6,15 +6,17 @@ A single codebase that serves multiple websites with different domains, database
 
 ### Development
 
-1. **Setup configuration:**
+1. **Clone and setup:**
 ```bash
-cp .env.example .env
-# Edit .env with your settings - ALL configuration (frontend, backend, deployment) is in this single file
-# Key settings to configure:
-#   - MONGODB_URI for your database
-#   - JWT_SECRET for security (change from default!)
-#   - API_PORT (backend) and PORT (frontend) if defaults conflict
-#   - ALLOWED_DOMAINS for your domains
+git clone git@github.com:CodersInFlow/AstroTemplate.git
+cd AstroTemplate
+
+# Run the automated setup (installs all dependencies, creates .env)
+./setup.sh
+
+# OR manually:
+npm install  # Automatically installs both root and astro-multi-tenant dependencies
+cp .env.example .env  # Then edit .env with your settings
 ```
 
 2. **Start development:**
