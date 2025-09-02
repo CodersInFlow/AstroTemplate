@@ -6,7 +6,11 @@
     "directory": "codersinflow.com",
     "database": "codersinflow_db",
     "theme": "dark-blue",
-    "features": ["blog", "auth", "payments"]
+    "features": [
+      "blog",
+      "auth",
+      "payments"
+    ]
   },
   "www.codersinflow.com": {
     "id": "codersinflow",
@@ -15,7 +19,11 @@
     "directory": "codersinflow.com",
     "database": "codersinflow_db",
     "theme": "dark-blue",
-    "features": ["blog", "auth", "payments"]
+    "features": [
+      "blog",
+      "auth",
+      "payments"
+    ]
   },
   "darkflows.com": {
     "id": "darkflows",
@@ -24,7 +32,10 @@
     "directory": "darkflows.com",
     "database": "darkflows_db",
     "theme": "dark-red",
-    "features": ["blog", "docs"]
+    "features": [
+      "blog",
+      "docs"
+    ]
   },
   "www.darkflows.com": {
     "id": "darkflows",
@@ -33,7 +44,10 @@
     "directory": "darkflows.com",
     "database": "darkflows_db",
     "theme": "dark-red",
-    "features": ["blog", "docs"]
+    "features": [
+      "blog",
+      "docs"
+    ]
   },
   "prestongarrison.com": {
     "id": "prestongarrison",
@@ -42,7 +56,10 @@
     "directory": "prestongarrison.com",
     "database": "prestongarrison_db",
     "theme": "light",
-    "features": ["blog", "docs"]
+    "features": [
+      "blog",
+      "docs"
+    ]
   },
   "www.prestongarrison.com": {
     "id": "prestongarrison",
@@ -51,7 +68,10 @@
     "directory": "prestongarrison.com",
     "database": "prestongarrison_db",
     "theme": "light",
-    "features": ["blog", "docs"]
+    "features": [
+      "blog",
+      "docs"
+    ]
   },
   "magicvideodownloader.com": {
     "id": "magicvideodownloader",
@@ -60,7 +80,10 @@
     "directory": "magicvideodownloader.com",
     "database": "magicvideodownloader_db",
     "theme": "light",
-    "features": ["blog", "docs"],
+    "features": [
+      "blog",
+      "docs"
+    ],
     "adminUser": {
       "email": "admin@magicvideodownloader.com",
       "password": "changeme123!",
@@ -74,7 +97,10 @@
     "directory": "magicvideodownloader.com",
     "database": "magicvideodownloader_db",
     "theme": "light",
-    "features": ["blog", "docs"]
+    "features": [
+      "blog",
+      "docs"
+    ]
   },
   "localhost": {
     "id": "default",
@@ -95,6 +121,8 @@
     "directory": "default",
     "database": "default_db",
     "theme": "light",
-    "features": ["blog"]
+    "features": [
+      "blog"
+    ]
   }
 }

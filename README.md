@@ -75,6 +75,46 @@ The deployment script will:
 - Setup SSL certificates via Let's Encrypt
 - Start Docker containers
 
+## 🎨 Adding a New Site
+
+### Quick Method (Recommended)
+
+Use the provided script to create a new site from template:
+
+```bash
+# Basic usage
+./scripts/add-site.sh mysite.com
+
+# With custom options
+./scripts/add-site.sh techblog.com \
+  --name "Tech Blog" \
+  --description "Latest tech articles and tutorials" \
+  --theme dark-blue \
+  --features blog,auth,docs
+```
+
+**Options:**
+- `--name` - Display name for the site (default: derived from domain)
+- `--description` - Site description (default: "Welcome to [name]")
+- `--theme` - Theme color scheme: `light`, `dark`, `dark-blue`, `dark-red` (default: light)
+- `--features` - Comma-separated features: `blog`, `docs`, `auth`, `payments` (default: blog,docs)
+
+**Important:** Domain must be in the format `example.com` (not `www.example.com` or `https://example.com`)
+
+The script will:
+1. Create site directory from template
+2. Configure all placeholders with your settings
+3. Update `sites-config.json` automatically
+4. Set up both www and non-www versions
+
+### Remove a Site
+
+```bash
+./scripts/remove-site.sh mysite.com
+```
+
+This will remove the site directory and configuration entries.
+
 ## 📁 Structure
 
 ```
