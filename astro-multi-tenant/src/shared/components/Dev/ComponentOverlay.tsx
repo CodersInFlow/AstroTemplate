@@ -6,6 +6,7 @@ interface ComponentInfo {
   dataPath?: string;
   element: HTMLElement;
   isReusable: boolean;
+  isSelected?: boolean;  // For dashboard mode
   props?: any;
   order?: number;
   totalComponents?: number;
@@ -29,6 +30,16 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
+  
+  // Detect dashboard mode (only on client side)
+  const [isDashboardMode, setIsDashboardMode] = useState(false);
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isInIframe = window.parent !== window;
+      setIsDashboardMode(isInIframe && new URLSearchParams(window.location.search).has('dashboardMode'));
+    }
+  }, []);
 
   useEffect(() => {
     const updatePosition = () => {
@@ -47,20 +58,34 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
     window.addEventListener('scroll', handleUpdate);
     window.addEventListener('resize', handleUpdate);
 
-    // Highlight component on hover
+    // Highlight component on hover (different color if selected in dashboard mode)
     const handleMouseEnter = () => {
-      component.element.style.outline = '2px dashed rgba(59, 130, 246, 0.5)';
+      if (isDashboardMode && component.isSelected) {
+        component.element.style.outline = '2px solid rgba(34, 197, 94, 0.8)';
+      } else {
+        component.element.style.outline = '2px dashed rgba(59, 130, 246, 0.5)';
+      }
       component.element.style.outlineOffset = '2px';
     };
 
     const handleMouseLeave = () => {
-      component.element.style.outline = '';
-      component.element.style.outlineOffset = '';
+      if (isDashboardMode && component.isSelected) {
+        component.element.style.outline = '2px solid rgba(34, 197, 94, 0.5)';
+      } else {
+        component.element.style.outline = '';
+      }
+      component.element.style.outlineOffset = component.isSelected ? '2px' : '';
     };
 
     // Add hover listeners to component element
     component.element.addEventListener('mouseenter', handleMouseEnter);
     component.element.addEventListener('mouseleave', handleMouseLeave);
+    
+    // Set persistent outline for selected components in dashboard mode
+    if (isDashboardMode && component.isSelected) {
+      component.element.style.outline = '2px solid rgba(34, 197, 94, 0.5)';
+      component.element.style.outlineOffset = '2px';
+    }
 
     // Observe element position changes
     const resizeObserver = new ResizeObserver(updatePosition);
@@ -145,8 +170,8 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
             marginLeft: '2px'
           }}
         >
-          {/* Reorder buttons */}
-          {component.order !== undefined && (
+          {/* Reorder buttons - hide in dashboard mode */}
+          {component.order !== undefined && !isDashboardMode && (
             <div style={{ display: 'flex', gap: '2px' }}>
               <button
                 onClick={onMoveUp}
@@ -219,18 +244,21 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
           >
             <input
               type="checkbox"
-              checked={component.isReusable}
+              checked={isDashboardMode ? component.isSelected : component.isReusable}
               onChange={onToggleReusable}
               style={{
                 cursor: 'pointer',
                 width: '14px',
-                height: '14px'
+                height: '14px',
+                accentColor: isDashboardMode && component.isSelected ? '#22c55e' : undefined
               }}
             />
-            <span style={{ fontSize: '11px' }}>Reuse</span>
+            <span style={{ fontSize: '11px' }}>
+              {isDashboardMode ? 'Select' : 'Reuse'}
+            </span>
           </label>
           
-          {component.dataPath && (
+          {component.dataPath && !isDashboardMode && (
             <button
               onClick={onEditJson}
               style={{

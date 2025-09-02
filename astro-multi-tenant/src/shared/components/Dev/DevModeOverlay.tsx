@@ -9,6 +9,7 @@ interface ComponentInfo {
   dataPath?: string;
   element: HTMLElement;
   isReusable: boolean;
+  isSelected?: boolean;  // For dashboard mode
   props?: any;
   order?: number;
   totalComponents?: number;
@@ -19,15 +20,45 @@ const DevModeOverlay: React.FC = () => {
   const [editingComponent, setEditingComponent] = useState<ComponentInfo | null>(null);
   const [jsonEditorOpen, setJsonEditorOpen] = useState(false);
   const observerRef = useRef<MutationObserver | null>(null);
+  
+  // Detect if we're in dashboard iframe mode (only on client side)
+  const [isDashboardMode, setIsDashboardMode] = useState(false);
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isInIframe = window.parent !== window;
+      setIsDashboardMode(isInIframe && new URLSearchParams(window.location.search).has('dashboardMode'));
+    }
+  }, []);
 
   // Add a visible indicator that the overlay is loaded
   useEffect(() => {
     console.log('[DevModeOverlay] Component mounted!');
     console.log('[DevModeOverlay] Environment:', { 
       isDev: import.meta.env.DEV,
-      mode: import.meta.env.MODE 
+      mode: import.meta.env.MODE,
+      isDashboardMode 
     });
-  }, []);
+    
+    // Listen for clear all selections from parent
+    if (isDashboardMode && typeof window !== 'undefined') {
+      const handleParentMessage = (event: MessageEvent) => {
+        if (event.data.type === 'CLEAR_ALL_SELECTIONS') {
+          setComponents(prev => {
+            const newMap = new Map(prev);
+            newMap.forEach((comp, key) => {
+              comp.isSelected = false;
+              newMap.set(key, { ...comp });
+            });
+            return newMap;
+          });
+        }
+      };
+      
+      window.addEventListener('message', handleParentMessage);
+      return () => window.removeEventListener('message', handleParentMessage);
+    }
+  }, [isDashboardMode]);
 
   useEffect(() => {
     console.log('[DevModeOverlay] Initializing...');
@@ -67,6 +98,7 @@ const DevModeOverlay: React.FC = () => {
             dataPath,
             element,
             isReusable: false,
+            isSelected: false,
             props,
             order,
             totalComponents: componentElements.length
@@ -124,15 +156,59 @@ const DevModeOverlay: React.FC = () => {
   }, []);
 
   const handleToggleReusable = (componentId: string) => {
-    setComponents(prev => {
-      const newMap = new Map(prev);
-      const component = newMap.get(componentId);
-      if (component) {
-        component.isReusable = !component.isReusable;
-        newMap.set(componentId, { ...component });
+    const component = components.get(componentId);
+    if (!component) return;
+    
+    // In dashboard mode, send selection to parent
+    if (isDashboardMode) {
+      const newSelected = !component.isSelected;
+      
+      // Update local state
+      setComponents(prev => {
+        const newMap = new Map(prev);
+        const comp = newMap.get(componentId);
+        if (comp) {
+          comp.isSelected = newSelected;
+          newMap.set(componentId, { ...comp });
+        }
+        return newMap;
+      });
+      
+      // Get current site name
+      let site = window.location.hostname;
+      if (site.includes('.localhost')) {
+        site = site.replace('.localhost', '.com');
+      } else if (site === 'localhost' || site === '127.0.0.1') {
+        // Determine from port
+        const port = window.location.port;
+        if (port === '3002') site = 'darkflows.com';
+        else if (port === '3003') site = 'prestongarrison.com';
+        else if (port === '3004') site = 'codersinflow.com';
+        else site = 'prestongarrison.com';
       }
-      return newMap;
-    });
+      
+      // Send message to parent frame
+      window.parent.postMessage({
+        type: newSelected ? 'COMPONENT_SELECTED' : 'COMPONENT_DESELECTED',
+        component: {
+          id: componentId,
+          name: component.name,
+          path: component.dataPath || 'unknown.json',
+          site: site
+        }
+      }, '*');
+    } else {
+      // Original behavior for normal mode
+      setComponents(prev => {
+        const newMap = new Map(prev);
+        const comp = newMap.get(componentId);
+        if (comp) {
+          comp.isReusable = !comp.isReusable;
+          newMap.set(componentId, { ...comp });
+        }
+        return newMap;
+      });
+    }
   };
 
   const handleEditJson = async (component: ComponentInfo) => {
