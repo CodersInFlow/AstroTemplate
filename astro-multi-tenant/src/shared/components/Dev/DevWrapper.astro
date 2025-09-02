@@ -6,9 +6,10 @@ export interface Props {
   data?: any;
   class?: string;
   style?: string | object;
+  order?: number;
 }
 
-const { componentName, dataPath, data, class: className, style } = Astro.props;
+const { componentName, dataPath, data, class: className, style, order } = Astro.props;
 
 // Only add dev attributes in development mode
 const isDev = import.meta.env.DEV;
@@ -21,6 +22,7 @@ const componentId = isDev ? `${componentName}-${Date.now()}-${Math.random().toSt
     data-component-name={componentName}
     data-component-path={dataPath}
     data-component-props={data ? JSON.stringify(data) : undefined}
+    data-component-order={order !== undefined ? order.toString() : undefined}
     class={className}
     style:list={[
       typeof style === 'object' ? style : {},

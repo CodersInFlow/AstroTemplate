@@ -63,6 +63,7 @@ export function astroAutoWrapper() {
                   let modifiedTemplate = template;
                   let needsImport = false;
                   const wrappedComponents = [];
+                  let componentOrder = 0;
                   
                   modifiedTemplate = modifiedTemplate.replace(componentPattern, (match, componentName, props, closing, offset, str) => {
                     // Check if this component is inside a JSX expression (like {showHeader && ...})
@@ -104,16 +105,19 @@ export function astroAutoWrapper() {
                       const componentId = `${componentName.toLowerCase()}-auto`;
                       wrappedComponents.push(componentName);
                       
-                      console.log(`  -> Wrapping ${componentName} with dataPath: ${dataFile}`);
+                      console.log(`  -> Wrapping ${componentName} with dataPath: ${dataFile}, order: ${componentOrder}`);
                       
-                      // Wrap with DevWrapper
+                      // Wrap with DevWrapper including order
+                      const orderAttr = `order={${componentOrder}}`;
+                      componentOrder++;
+                      
                       if (closing === '/>') {
-                        return `<DevWrapper componentName="${componentName}" dataPath="${dataFile}" componentId="${componentId}">
+                        return `<DevWrapper componentName="${componentName}" dataPath="${dataFile}" componentId="${componentId}" ${orderAttr}>
   <${componentName} ${props}/>
 </DevWrapper>`;
                       } else {
                         const innerContent = closing.substring(1, closing.lastIndexOf(`</${componentName}>`));
-                        return `<DevWrapper componentName="${componentName}" dataPath="${dataFile}" componentId="${componentId}">
+                        return `<DevWrapper componentName="${componentName}" dataPath="${dataFile}" componentId="${componentId}" ${orderAttr}>
   <${componentName} ${props}>${innerContent}</${componentName}>
 </DevWrapper>`;
                       }

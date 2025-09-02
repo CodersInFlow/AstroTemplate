@@ -7,18 +7,24 @@ interface ComponentInfo {
   element: HTMLElement;
   isReusable: boolean;
   props?: any;
+  order?: number;
+  totalComponents?: number;
 }
 
 interface ComponentOverlayProps {
   component: ComponentInfo;
   onToggleReusable: () => void;
   onEditJson: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
 const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
   component,
   onToggleReusable,
-  onEditJson
+  onEditJson,
+  onMoveUp,
+  onMoveDown
 }) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -108,9 +114,23 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
           className="component-name"
           style={{
             fontWeight: 'bold',
-            color: '#60a5fa'
+            color: '#60a5fa',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
           }}
         >
+          {component.order !== undefined && (
+            <span style={{
+              background: 'rgba(59, 130, 246, 0.3)',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontSize: '10px',
+              fontWeight: 'normal'
+            }}>
+              #{component.order + 1}
+            </span>
+          )}
           {component.name}
         </span>
         
@@ -125,6 +145,69 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
             marginLeft: '2px'
           }}
         >
+          {/* Reorder buttons */}
+          {component.order !== undefined && (
+            <div style={{ display: 'flex', gap: '2px' }}>
+              <button
+                onClick={onMoveUp}
+                disabled={component.order === 0}
+                title="Move up"
+                style={{
+                  background: component.order === 0 ? 'rgba(100, 100, 100, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                  border: '1px solid rgba(59, 130, 246, 0.5)',
+                  color: component.order === 0 ? '#666' : '#93c5fd',
+                  padding: '2px 4px',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  cursor: component.order === 0 ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+                onMouseEnter={(e) => {
+                  if (component.order !== 0) {
+                    e.currentTarget.style.background = 'rgba(59, 130, 246, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (component.order !== 0) {
+                    e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+                  }
+                }}
+              >
+                ↑
+              </button>
+              <button
+                onClick={onMoveDown}
+                disabled={component.order === (component.totalComponents || 0) - 1}
+                title="Move down"
+                style={{
+                  background: component.order === (component.totalComponents || 0) - 1 ? 'rgba(100, 100, 100, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                  border: '1px solid rgba(59, 130, 246, 0.5)',
+                  color: component.order === (component.totalComponents || 0) - 1 ? '#666' : '#93c5fd',
+                  padding: '2px 4px',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  cursor: component.order === (component.totalComponents || 0) - 1 ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+                onMouseEnter={(e) => {
+                  if (component.order !== (component.totalComponents || 0) - 1) {
+                    e.currentTarget.style.background = 'rgba(59, 130, 246, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (component.order !== (component.totalComponents || 0) - 1) {
+                    e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+                  }
+                }}
+              >
+                ↓
+              </button>
+            </div>
+          )}
           <label 
             style={{
               display: 'flex',

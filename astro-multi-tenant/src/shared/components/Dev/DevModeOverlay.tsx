@@ -10,6 +10,8 @@ interface ComponentInfo {
   element: HTMLElement;
   isReusable: boolean;
   props?: any;
+  order?: number;
+  totalComponents?: number;
 }
 
 const DevModeOverlay: React.FC = () => {
@@ -44,8 +46,9 @@ const DevModeOverlay: React.FC = () => {
           const name = element.getAttribute('data-component-name') || 'Unknown Component';
           const dataPath = element.getAttribute('data-component-path') || undefined;
           const propsStr = element.getAttribute('data-component-props');
+          const orderStr = element.getAttribute('data-component-order');
           
-          console.log(`[DevModeOverlay] Processing component: ${name}`);
+          console.log(`[DevModeOverlay] Processing component: ${name}, order: ${orderStr}`);
           
           let props = {};
           if (propsStr) {
@@ -56,13 +59,17 @@ const DevModeOverlay: React.FC = () => {
             }
           }
 
+          const order = orderStr !== null ? parseInt(orderStr) : undefined;
+
           newComponents.set(id, {
             id,
             name,
             dataPath,
             element,
             isReusable: false,
-            props
+            props,
+            order,
+            totalComponents: componentElements.length
           });
         }
       });
@@ -180,6 +187,71 @@ const DevModeOverlay: React.FC = () => {
     setJsonEditorOpen(true);
   };
 
+  const handleMoveComponent = async (componentId: string, direction: 'up' | 'down') => {
+    const component = components.get(componentId);
+    if (!component || component.order === undefined) return;
+
+    const currentOrder = component.order;
+    const newOrder = direction === 'up' ? currentOrder - 1 : currentOrder + 1;
+    
+    // Find the component to swap with
+    let swapComponent: ComponentInfo | undefined;
+    components.forEach(comp => {
+      if (comp.order === newOrder) {
+        swapComponent = comp;
+      }
+    });
+
+    if (!swapComponent) return;
+
+    try {
+      // Send reorder request to API
+      const apiBase = import.meta.env.PUBLIC_API_URL || 
+                     (import.meta.env.DEV 
+                       ? `http://localhost:${import.meta.env.PUBLIC_DEV_API_PORT || '3001'}` 
+                       : '');
+      
+      let site = window.location.hostname;
+      if (site.includes('.localhost')) {
+        site = site.replace('.localhost', '.com');
+      } else if (site === 'localhost' || site === '127.0.0.1') {
+        // Try to detect from path
+        const pathParts = window.location.pathname.split('/');
+        site = 'prestongarrison.com'; // Default
+      }
+
+      const response = await fetch(`${apiBase}/api/reorder-components`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          site,
+          component1: {
+            name: component.name,
+            order: currentOrder
+          },
+          component2: {
+            name: swapComponent.name,
+            order: newOrder
+          },
+          pagePath: window.location.pathname
+        })
+      });
+
+      if (response.ok) {
+        // Reload page to see changes
+        window.location.reload();
+      } else {
+        console.error('Failed to reorder components');
+        alert('Failed to reorder components. This feature requires backend implementation.');
+      }
+    } catch (error) {
+      console.error('Error reordering components:', error);
+      alert('Component reordering requires backend implementation to modify .astro files.');
+    }
+  };
+
   const handleSaveJson = async (componentId: string, newData: any) => {
     const component = components.get(componentId);
     if (!component || !component.dataPath) return;
@@ -263,6 +335,8 @@ const DevModeOverlay: React.FC = () => {
           component={component}
           onToggleReusable={() => handleToggleReusable(component.id)}
           onEditJson={() => handleEditJson(component)}
+          onMoveUp={() => handleMoveComponent(component.id, 'up')}
+          onMoveDown={() => handleMoveComponent(component.id, 'down')}
         />
       ))}
       
