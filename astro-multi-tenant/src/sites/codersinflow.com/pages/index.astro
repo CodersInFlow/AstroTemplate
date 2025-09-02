@@ -4,7 +4,8 @@ import Footer from '../../../shared/components/Footer/Footer.astro';
 import DevWrapper from '../../../shared/components/Dev/DevWrapper.astro';
 
 // Import data
-import featuresData from '../data/features.json';
+import featuresHeroData from '../data/features-hero.json';
+import featuresItemsData from '../data/features-items.json';
 import comparisonData from '../data/comparison.json';
 import videosData from '../data/videos.json';
 import heroComparisonData from '../data/hero-comparison.json';
@@ -13,7 +14,8 @@ import featureGridData from '../data/feature-grid.json';
 
 // Hero and Feature Showcase components
 import HeroComparison from '../../../shared/components/Hero/HeroComparison';
-import FeatureShowcaseSection from '../../../shared/components/Features/FeatureShowcaseSection';
+import FeaturesHero from '../../../shared/components/Features/FeaturesHero';
+import FeaturesItems from '../../../shared/components/Features/FeaturesItems';
 import ComparisonTable from '../../../shared/components/Comparison/ComparisonTable';
 
 // Section components
@@ -38,9 +40,14 @@ import CallToAction from '../../../shared/components/Sections/CallToAction';
     <HeroComparison client:load data={heroComparisonData} />
   </DevWrapper>
   
-  <!-- Feature Showcase Section with Hero and Features -->
-  <DevWrapper componentName="FeatureShowcase" dataPath="../data/features.json" data={featuresData}>
-    <FeatureShowcaseSection client:load data={featuresData} />
+  <!-- Features Hero Section -->
+  <DevWrapper componentName="FeaturesHero" dataPath="../data/features-hero.json" data={featuresHeroData}>
+    <FeaturesHero client:load data={featuresHeroData} />
+  </DevWrapper>
+  
+  <!-- Features Items Section -->
+  <DevWrapper componentName="FeaturesItems" dataPath="../data/features-items.json" data={featuresItemsData}>
+    <FeaturesItems client:load data={featuresItemsData} />
   </DevWrapper>
   
   <!-- Comparison Table -->
