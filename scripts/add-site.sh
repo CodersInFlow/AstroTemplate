@@ -181,30 +181,51 @@ cp -r "$TEMPLATE_DIR" "$SITE_DIR"
 # Replace placeholders in the copied files
 echo -e "${GREEN}🔧 Configuring site files...${NC}"
 
+# Escape special characters for sed
+escape_for_sed() {
+    echo "$1" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed "s/'/\\\\'/g"
+}
+
+# Prepare escaped values
+DOMAIN_ESCAPED=$(escape_for_sed "$DOMAIN")
+NAME_ESCAPED=$(escape_for_sed "$NAME")
+DESCRIPTION_ESCAPED=$(escape_for_sed "$DESCRIPTION")
+SITE_ID_ESCAPED=$(escape_for_sed "$SITE_ID")
+
 # Update all files with placeholders
 find "$SITE_DIR" -type f \( -name "*.astro" -o -name "*.tsx" -o -name "*.ts" -o -name "*.cjs" -o -name "*.js" -o -name "*.json" \) | while read file; do
     # Use different sed syntax for macOS vs Linux
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" "$file"
-        sed -i '' "s/SITE_NAME_PLACEHOLDER/$NAME/g" "$file"
-        sed -i '' "s/SITE_DESCRIPTION_PLACEHOLDER/$DESCRIPTION/g" "$file"
-        sed -i '' "s/SITE_ID_PLACEHOLDER/$SITE_ID/g" "$file"
+        sed -i '' "s/DOMAIN_PLACEHOLDER/$DOMAIN_ESCAPED/g" "$file"
+        sed -i '' "s/SITE_NAME_PLACEHOLDER/$NAME_ESCAPED/g" "$file"
+        sed -i '' "s/SITE_DESCRIPTION_PLACEHOLDER/$DESCRIPTION_ESCAPED/g" "$file"
+        sed -i '' "s/SITE_ID_PLACEHOLDER/$SITE_ID_ESCAPED/g" "$file"
     else
-        sed -i "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" "$file"
-        sed -i "s/SITE_NAME_PLACEHOLDER/$NAME/g" "$file"
-        sed -i "s/SITE_DESCRIPTION_PLACEHOLDER/$DESCRIPTION/g" "$file"
-        sed -i "s/SITE_ID_PLACEHOLDER/$SITE_ID/g" "$file"
+        sed -i "s/DOMAIN_PLACEHOLDER/$DOMAIN_ESCAPED/g" "$file"
+        sed -i "s/SITE_NAME_PLACEHOLDER/$NAME_ESCAPED/g" "$file"
+        sed -i "s/SITE_DESCRIPTION_PLACEHOLDER/$DESCRIPTION_ESCAPED/g" "$file"
+        sed -i "s/SITE_ID_PLACEHOLDER/$SITE_ID_ESCAPED/g" "$file"
     fi
 done
 
 # Create/update sites-config.json
 echo -e "${GREEN}📝 Updating sites configuration...${NC}"
 
+# Escape for JSON
+escape_for_json() {
+    echo "$1" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed "s/'/\\'/g" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/\t/\\t/g' | sed 's/\r/\\r/g'
+}
+
+# Prepare JSON-escaped values
+NAME_JSON=$(escape_for_json "$NAME")
+DESCRIPTION_JSON=$(escape_for_json "$DESCRIPTION")
+
 # Convert comma-separated features to JSON array
 FEATURES_JSON=$(echo "$FEATURES" | awk -F',' '{
     printf "["
     for(i=1; i<=NF; i++) {
         gsub(/^[ \t]+|[ \t]+$/, "", $i)
+        gsub(/"/, "\\\"", $i)
         printf "\"%s\"", $i
         if(i<NF) printf ", "
     }
@@ -216,8 +237,8 @@ SITE_CONFIG=$(cat <<EOF
 {
   "$DOMAIN": {
     "id": "$SITE_ID",
-    "name": "$NAME",
-    "description": "$DESCRIPTION",
+    "name": "$NAME_JSON",
+    "description": "$DESCRIPTION_JSON",
     "directory": "$DOMAIN",
     "database": "${SITE_ID}_db",
     "theme": "$THEME",
@@ -225,8 +246,8 @@ SITE_CONFIG=$(cat <<EOF
   },
   "www.$DOMAIN": {
     "id": "$SITE_ID",
-    "name": "$NAME",
-    "description": "$DESCRIPTION",
+    "name": "$NAME_JSON",
+    "description": "$DESCRIPTION_JSON",
     "directory": "$DOMAIN",
     "database": "${SITE_ID}_db",
     "theme": "$THEME",
@@ -234,8 +255,8 @@ SITE_CONFIG=$(cat <<EOF
   },
   "${SITE_ID}.localhost": {
     "id": "$SITE_ID",
-    "name": "$NAME",
-    "description": "$DESCRIPTION",
+    "name": "$NAME_JSON",
+    "description": "$DESCRIPTION_JSON",
     "directory": "$DOMAIN",
     "database": "${SITE_ID}_db",
     "theme": "$THEME",
