@@ -6,6 +6,17 @@ set -e
 echo "🚀 Starting Multi-Tenant Development Environment"
 echo "================================================"
 
+# Function to kill process on port
+kill_port() {
+    local port=$1
+    local pid=$(lsof -ti :$port 2>/dev/null)
+    if [ ! -z "$pid" ]; then
+        echo "⚠️  Killing existing process on port $port (PID: $pid)"
+        kill -9 $pid 2>/dev/null || true
+        sleep 1
+    fi
+}
+
 # Load configuration from .env if it exists
 if [ -f ".env" ]; then
     echo "Loading configuration from .env..."
@@ -30,6 +41,18 @@ if [ -f "app-config.json" ]; then
     MONGODB_PORT=${MONGODB_PORT:-$(jq -r '.server.ports.mongodb' app-config.json)}
     API_URL=${API_URL:-$(jq -r '.urls.api' app-config.json)}
     MONGODB_URI=${MONGODB_URI:-$(jq -r '.urls.mongodb' app-config.json)}
+fi
+
+# Clean up existing processes on our ports
+echo "🧹 Cleaning up existing processes..."
+kill_port $BACKEND_PORT
+kill_port $FRONTEND_PORT
+
+# Also kill any lingering Go server processes from this project
+pkill -f "backend/cmd/server/main.go" 2>/dev/null || true
+# Kill the compiled binary if it's running
+if [ -f "backend/main" ]; then
+    pkill -f "backend/main" 2>/dev/null || true
 fi
 
 # Start MongoDB if not running
@@ -75,5 +98,33 @@ echo "💡 Tip: .localhost domains work automatically in modern browsers!"
 echo ""
 echo "Press Ctrl+C to stop"
 
-trap "kill $BACKEND_PID $FRONTEND_PID 2>/dev/null" EXIT
-wait
+# Cleanup function
+cleanup() {
+    echo ""
+    echo "🛑 Shutting down services..."
+    
+    # Kill backend process
+    if [ ! -z "$BACKEND_PID" ] && kill -0 $BACKEND_PID 2>/dev/null; then
+        echo "   Stopping backend..."
+        kill $BACKEND_PID 2>/dev/null || true
+    fi
+    
+    # Kill frontend process
+    if [ ! -z "$FRONTEND_PID" ] && kill -0 $FRONTEND_PID 2>/dev/null; then
+        echo "   Stopping frontend..."
+        kill $FRONTEND_PID 2>/dev/null || true
+    fi
+    
+    # Also kill by port in case PIDs don't work
+    kill_port $BACKEND_PORT
+    kill_port $FRONTEND_PORT
+    
+    echo "✅ Cleanup complete"
+    exit 0
+}
+
+# Set up trap for clean exit
+trap cleanup EXIT INT TERM
+
+# Wait for processes
+wait $BACKEND_PID $FRONTEND_PID
