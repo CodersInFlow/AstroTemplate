@@ -4,6 +4,8 @@ A single codebase that serves multiple websites with different domains, database
 
 ## 🚀 Quick Start
 
+> **Note:** After cloning, just run `npm install` - it automatically handles all dependencies!
+
 ### Development
 
 1. **Clone and setup:**
