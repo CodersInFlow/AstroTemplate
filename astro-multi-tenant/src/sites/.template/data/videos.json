@@ -1,0 +1,19 @@
+{
+  "title": "See It In Action",
+  "videos": [
+    {
+      "id": "demo1",
+      "title": "Getting Started",
+      "description": "Learn how to get started quickly",
+      "thumbnail": "/placeholder.jpg",
+      "url": "#"
+    },
+    {
+      "id": "demo2",
+      "title": "Advanced Features",
+      "description": "Explore our advanced features",
+      "thumbnail": "/placeholder.jpg",
+      "url": "#"
+    }
+  ]
+}

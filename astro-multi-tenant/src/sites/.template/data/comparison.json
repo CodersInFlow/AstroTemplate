@@ -1,0 +1,32 @@
+{
+  "title": "Why Choose Us",
+  "competitors": [
+    {
+      "name": "Competitor A",
+      "features": {
+        "performance": false,
+        "security": true,
+        "support": false,
+        "pricing": true
+      }
+    },
+    {
+      "name": "Competitor B",
+      "features": {
+        "performance": true,
+        "security": false,
+        "support": true,
+        "pricing": false
+      }
+    }
+  ],
+  "us": {
+    "name": "SITE_NAME_PLACEHOLDER",
+    "features": {
+      "performance": true,
+      "security": true,
+      "support": true,
+      "pricing": true
+    }
+  }
+}

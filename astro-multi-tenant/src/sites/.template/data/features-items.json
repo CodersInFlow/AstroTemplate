@@ -1,0 +1,19 @@
+{
+  "features": [
+    {
+      "title": "Fast Performance",
+      "description": "Built for speed and optimized for performance",
+      "icon": "⚡"
+    },
+    {
+      "title": "Modern Design",
+      "description": "Beautiful, responsive design that works everywhere",
+      "icon": "🎨"
+    },
+    {
+      "title": "Easy to Use",
+      "description": "Simple and intuitive interface for everyone",
+      "icon": "✨"
+    }
+  ]
+}

@@ -182,7 +182,7 @@ cp -r "$TEMPLATE_DIR" "$SITE_DIR"
 echo -e "${GREEN}🔧 Configuring site files...${NC}"
 
 # Update all files with placeholders
-find "$SITE_DIR" -type f \( -name "*.astro" -o -name "*.tsx" -o -name "*.ts" -o -name "*.cjs" -o -name "*.js" \) | while read file; do
+find "$SITE_DIR" -type f \( -name "*.astro" -o -name "*.tsx" -o -name "*.ts" -o -name "*.cjs" -o -name "*.js" -o -name "*.json" \) | while read file; do
     # Use different sed syntax for macOS vs Linux
     if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i '' "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" "$file"
