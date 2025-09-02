@@ -1,9 +1,9 @@
 {
-  "hero": {
-    "title": "Welcome to SITE_NAME_PLACEHOLDER",
-    "subtitle": "SITE_DESCRIPTION_PLACEHOLDER",
-    "finalTitle": "Build Amazing Things",
-    "finalSubtitle": "Start your journey today",
-    "image": "/placeholder.jpg"
+  "title": "Welcome to SITE_NAME_PLACEHOLDER",
+  "subtitle": "SITE_DESCRIPTION_PLACEHOLDER",
+  "quote": {
+    "text": "Innovation distinguishes between a leader and a follower.",
+    "authorName": "Steve Jobs",
+    "authorTitle": "Co-founder of Apple"
   }
 }
