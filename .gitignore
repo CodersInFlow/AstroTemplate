@@ -60,7 +60,8 @@ backend/server-*
 *.so
 *.dll
 
-# Media files (optional - uncomment if you want to exclude)
+# Media files (keep in GitLab, exclude from GitHub using push scripts)
+# Note: These are tracked in git but filtered when pushing to GitHub
 # *.mp4
 # *.mov
 # *.avi
