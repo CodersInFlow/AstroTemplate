@@ -3,6 +3,10 @@
 import darkflowsStyles from './styles/main.css?raw';
 // Import DevModeOverlay for development
 import DevModeOverlay from '../../shared/components/Dev/DevModeOverlay.tsx';
+import TopNavBarData from '../../shared/components/Navigation/TopNavBarData.astro';
+
+// Import navbar data
+import navbarData from './data/navbar.json';
 
 export interface Props {
   title?: string;
@@ -31,6 +35,7 @@ const isDevelopment = import.meta.env.DEV;
   </head>
   <body class="bg-background text-text-primary">
     <style set:html={darkflowsStyles}></style>
+    <TopNavBarData data={navbarData} />
     <slot />
     {isDevelopment && <DevModeOverlay client:load />}
   </body>
