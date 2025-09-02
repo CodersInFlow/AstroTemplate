@@ -61,8 +61,20 @@ export function getSitesConfig(): Record<string, SiteConfig> {
   return sitesConfig;
 }
 
-export function getTenantFromHost(hostname: string): SiteConfig {
+export function getTenantFromHost(hostname: string, urlParams?: URLSearchParams): SiteConfig {
   const sites = getSitesConfig();
+  
+  // Check for query parameter override first
+  if (urlParams) {
+    const siteOverride = urlParams.get('site') || urlParams.get('website') || urlParams.get('tenant');
+    if (siteOverride) {
+      // Add .com if not present
+      const siteDomain = siteOverride.includes('.') ? siteOverride : `${siteOverride}.com`;
+      if (sites[siteDomain]) {
+        return sites[siteDomain];
+      }
+    }
+  }
   
   // Remove port and www
   let domain = hostname

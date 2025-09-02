@@ -9,9 +9,9 @@ const layouts = import.meta.glob('../sites/*/layout.astro', { eager: true });
 const configs = import.meta.glob('../sites/*/config.json', { eager: true });
 const pages = import.meta.glob('../sites/*/pages/**/*.astro', { eager: true });
 
-// Get tenant from host header
+// Get tenant from host header (with query param override)
 const hostname = Astro.request.headers.get('host') || '127.0.0.1:4321';
-const tenant = getTenantFromHost(hostname);
+const tenant = getTenantFromHost(hostname, Astro.url.searchParams);
 const tenantDir = tenant.directory || tenant.id;
 
 // Get route
