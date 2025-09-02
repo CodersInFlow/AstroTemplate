@@ -1,7 +1,7 @@
 ---
 import Layout from '../layout.astro';
 import CallToAction from '../../../shared/components/CallToAction/CallToAction.tsx';
-import Tech from '../../../shared/components/Tech/Tech.astro';
+import TechSection from '../../../shared/components/Tech/TechSection.tsx';
 
 const ctaData = {
   title: "Let's Work Together",
@@ -64,7 +64,7 @@ const ctaData = {
     </section>
 
     <!-- Tech Stack -->
-    <Tech />
+    <TechSection client:visible />
 
     <!-- CTA -->
     <CallToAction {...ctaData} client:visible />

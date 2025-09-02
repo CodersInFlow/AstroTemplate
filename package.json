@@ -3,8 +3,9 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "postinstall": "cd astro-multi-tenant && npm install",
+    "postinstall": "node scripts/postinstall.cjs",
     "setup": "./setup.sh",
+    "generate-secrets": "node scripts/generate-secrets.cjs",
     "dev": "./scripts/dev-docker.sh",
     "dev:watch": "./scripts/dev-docker-watch.sh",
     "dev:astro": "astro dev",

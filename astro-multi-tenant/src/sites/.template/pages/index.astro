@@ -5,7 +5,7 @@ import HeroSection from '../../../shared/components/Hero/HeroSection.astro';
 import FeaturesSection from '../../../shared/components/Features/FeaturesSection.tsx';
 import CallToAction from '../../../shared/components/CallToAction/CallToAction.tsx';
 import FAQ from '../../../shared/components/FAQ/FAQ.astro';
-import Tech from '../../../shared/components/Tech/Tech.astro';
+import TechSection from '../../../shared/components/Tech/TechSection.tsx';
 
 // Demo data for the components
 const heroData = {
@@ -91,7 +91,7 @@ const faqItems = [
     <FeaturesSection {...featuresData} client:load />
     
     <!-- Tech Stack (optional - remove if not needed) -->
-    <Tech />
+    <TechSection client:visible />
     
     <!-- FAQ Section -->
     <FAQ items={faqItems} />

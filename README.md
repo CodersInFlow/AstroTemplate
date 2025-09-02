@@ -4,7 +4,10 @@ A single codebase that serves multiple websites with different domains, database
 
 ## 🚀 Quick Start
 
-> **Note:** After cloning, just run `npm install` - it automatically handles all dependencies!
+> **Note:** After cloning, just run `npm install` - it automatically:
+> - Installs all dependencies in both directories
+> - Creates `.env` file with secure JWT/session secrets
+> - Sets up `sites-config.json` if needed
 
 ### Development
 
@@ -12,7 +15,7 @@ A single codebase that serves multiple websites with different domains, database
 ```bash
 git clone git@github.com:CodersInFlow/AstroTemplate.git
 cd AstroTemplate
-npm install  # Automatically installs all dependencies in both directories
+npm install  # Automatic complete setup!
 ```
 
 2. **Start development:**
