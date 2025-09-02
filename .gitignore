@@ -1,40 +1,126 @@
-.playwright-mcp
-out
-dist
-node_modules
-.vscode-test/
-*.vsix
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+
+# Production
+dist/
+build/
+*.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 .DS_Store
+Thumbs.db
+
+# Environment variables
 .env
-Roo-Code/
-
-# Coders in Flow shadow git storage
-.codersinflow/
-
-# Coders in Flow
-.codersinflow
-.vscode
-reference/
-
-# Git submodules (managed by .gitmodules)
-
-# Coders in Flow
-.venv
-.codex
-.claude
-CLAUDE.md
-.git
-*.log
-*.tmp
-__pycache__
-*.pyc
 .env.local
-.next
-.github
-**/*dist/**
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Deployment configuration
-.env.deploy
+# Logs
+logs/
+*.log
 
-# Docker build temporary directory
-.docker-build-temp/
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Astro
+.astro/
+
+# Large files and binaries
+*.tar.gz
+*.zip
+*.rar
+*.7z
+backend/server
+backend/server-*
+*.dylib
+*.so
+*.dll
+
+# Media files (optional - uncomment if you want to exclude)
+# *.mp4
+# *.mov
+# *.avi
+# *.mkv
+# *.webm
+
+# Large image files (optional - uncomment if you want to exclude)
+# *.psd
+# *.ai
+# *.sketch
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Package manager locks (keep one, ignore others based on your preference)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# OS generated files
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+venv/
+env/
+
+# Rust
+target/
+Cargo.lock
+
+# Go
+*.exe
+*.test
+*.out
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Misc
+*.bak
+*.backup
+*.old
+.history/
