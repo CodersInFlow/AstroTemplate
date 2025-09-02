@@ -32,8 +32,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Parse token
+		jwtSecret := os.Getenv("JWT_SECRET")
+		if jwtSecret == "" {
+			jwtSecret = "default-dev-secret-change-in-production"
+		}
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET")), nil
+			return []byte(jwtSecret), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -63,7 +67,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		// Get user from database
 		var user models.User
-		err = database.GetCollection("users").FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&user)
+		err = database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&user)
 		if err != nil {
 			http.Error(w, "User not found", http.StatusUnauthorized)
 			return

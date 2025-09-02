@@ -13,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type LoginRequest struct {
@@ -39,18 +40,51 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Find user by email
+	// Auto-create admin user if it doesn't exist (only for admin@codersinflow.com)
+	if req.Email == "admin@codersinflow.com" && req.Password == "c0dersinflow" {
+		var existingAdmin models.User
+		err := database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"email": "admin@codersinflow.com"}).Decode(&existingAdmin)
+		if err == mongo.ErrNoDocuments {
+			// Admin doesn't exist, create it
+			newAdmin := models.User{
+				ID:        primitive.NewObjectID(),
+				Email:     "admin@codersinflow.com",
+				Name:      "Admin",
+				Password:  "c0dersinflow",
+				Role:      "admin",
+				Approved:  true,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			
+			// Hash the password
+			if err := newAdmin.HashPassword(); err != nil {
+				http.Error(w, "Failed to create admin user", http.StatusInternalServerError)
+				return
+			}
+			
+			// Insert the admin user
+			if _, err := database.GetCollectionFromRequest(r, "users").InsertOne(context.Background(), newAdmin); err != nil {
+				http.Error(w, "Failed to create admin user", http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	// Find user by email (normal login flow)
 	var user models.User
-	err := database.GetCollection("users").FindOne(context.Background(), bson.M{"email": req.Email}).Decode(&user)
+	err := database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"email": req.Email}).Decode(&user)
 	if err != nil {
-		if err.Error() == "mongo: no documents in result" {
+		if err == mongo.ErrNoDocuments {
 			http.Error(w, "User not found", http.StatusNotFound)
+			return
 		} else if err.Error() == "context deadline exceeded" || err.Error() == "server selection timeout" {
 			http.Error(w, "Database connection timeout - please try again", http.StatusServiceUnavailable)
+			return
 		} else {
 			http.Error(w, "Database error: "+err.Error(), http.StatusInternalServerError)
+			return
 		}
-		return
 	}
 
 	// Check password
@@ -83,14 +117,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set cookie
+	// Set cookie with SameSite=Lax (works since frontend and backend are on same domain)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "auth-token",
 		Value:    tokenString,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   os.Getenv("NODE_ENV") == "production",
-		SameSite: http.SameSiteLaxMode,
+		Secure:   os.Getenv("NODE_ENV") == "production", // HTTPS in production
+		SameSite: http.SameSiteLaxMode, // Works for same-site requests
 		MaxAge:   60 * 60 * 24 * 7, // 7 days
 	})
 
@@ -122,7 +156,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user already exists
-	count, err := database.GetCollection("users").CountDocuments(context.Background(), bson.M{"email": req.Email})
+	count, err := database.GetCollectionFromRequest(r, "users").CountDocuments(context.Background(), bson.M{"email": req.Email})
 	if err != nil {
 		if err.Error() == "context deadline exceeded" || err.Error() == "server selection timeout" {
 			http.Error(w, "Database connection timeout - please try again", http.StatusServiceUnavailable)
@@ -155,7 +189,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert user
-	_, err = database.GetCollection("users").InsertOne(context.Background(), user)
+	_, err = database.GetCollectionFromRequest(r, "users").InsertOne(context.Background(), user)
 	if err != nil {
 		http.Error(w, "Failed to create user", http.StatusInternalServerError)
 		return
@@ -221,7 +255,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	// Get full user from DB to check password
 	var fullUser models.User
-	err := database.GetCollection("users").FindOne(context.Background(), bson.M{"_id": user.ID}).Decode(&fullUser)
+	err := database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"_id": user.ID}).Decode(&fullUser)
 	if err != nil {
 		http.Error(w, "User not found", http.StatusUnauthorized)
 		return
@@ -242,7 +276,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	hashedPassword := fullUser.Password
 
 	// Update password in database
-	_, err = database.GetCollection("users").UpdateOne(
+	_, err = database.GetCollectionFromRequest(r, "users").UpdateOne(
 		context.Background(),
 		bson.M{"_id": user.ID},
 		bson.M{"$set": bson.M{
@@ -258,5 +292,94 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Password changed successfully",
+	})
+}
+
+func CheckAdmin(w http.ResponseWriter, r *http.Request) {
+	// Check if admin user exists
+	var user models.User
+	err := database.GetCollectionFromRequest(r, "users").FindOne(
+		context.Background(),
+		bson.M{"email": "admin@codersinflow.com"},
+	).Decode(&user)
+	
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "Admin not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"exists": true,
+		"email": user.Email,
+	})
+}
+
+func CreateAdmin(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Name     string `json:"name"`
+	}
+	
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	
+	// Check if admin already exists
+	var existingUser models.User
+	err := database.GetCollectionFromRequest(r, "users").FindOne(
+		context.Background(),
+		bson.M{"email": req.Email},
+	).Decode(&existingUser)
+	
+	if err == nil {
+		// User already exists
+		http.Error(w, "User already exists", http.StatusConflict)
+		return
+	}
+	
+	if err != mongo.ErrNoDocuments {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	
+	// Create the admin user
+	newAdmin := models.User{
+		ID:        primitive.NewObjectID(),
+		Email:     req.Email,
+		Name:      req.Name,
+		Password:  req.Password,
+		Role:      "admin",
+		Approved:  true,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	
+	// Hash the password
+	if err := newAdmin.HashPassword(); err != nil {
+		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
+		return
+	}
+	
+	// Insert the admin user
+	if _, err := database.GetCollectionFromRequest(r, "users").InsertOne(context.Background(), newAdmin); err != nil {
+		http.Error(w, "Failed to create admin user", http.StatusInternalServerError)
+		return
+	}
+	
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Admin user created successfully",
+		"user": map[string]string{
+			"id":    newAdmin.ID.Hex(),
+			"email": newAdmin.Email,
+			"name":  newAdmin.Name,
+		},
 	})
 }

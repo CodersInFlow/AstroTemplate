@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,13 +13,15 @@ import (
 	"github.com/coders-website/backend/internal/middleware"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 )
 
 func main() {
-	// Load .env file
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
+	// Load .env file from root directory
+	if err := godotenv.Load("../.env"); err != nil {
+		// Fallback to local .env for backward compatibility
+		if err := godotenv.Load(); err != nil {
+			log.Println("No .env file found")
+		}
 	}
 
 	// Connect to MongoDB
@@ -28,30 +32,44 @@ func main() {
 
 	// Initialize router
 	router := mux.NewRouter()
+	
+	// Apply CORS middleware FIRST (before any routes)
+	router.Use(middleware.DynamicCORSMiddleware)
+	
+	// Apply tenant middleware second
+	router.Use(middleware.TenantMiddleware)
 
 	// API routes
 	api := router.PathPrefix("/api").Subrouter()
 
 	// Public routes
-	api.HandleFunc("/version", handlers.GetVersion).Methods("GET")
-	api.HandleFunc("/health", handlers.HealthCheck).Methods("GET")
-	api.HandleFunc("/auth/login", handlers.Login).Methods("POST")
-	api.HandleFunc("/auth/register", handlers.Register).Methods("POST")
-	api.HandleFunc("/posts", handlers.GetPosts).Methods("GET")
-	api.HandleFunc("/posts/{slug}", handlers.GetPostBySlug).Methods("GET")
-	api.HandleFunc("/categories", handlers.GetCategories).Methods("GET")
+	api.HandleFunc("/version", handlers.GetVersion).Methods("GET", "OPTIONS")
+	api.HandleFunc("/health", handlers.HealthCheck).Methods("GET", "OPTIONS")
+	api.HandleFunc("/auth/login", handlers.Login).Methods("POST", "OPTIONS")
+	api.HandleFunc("/auth/register", handlers.Register).Methods("POST", "OPTIONS")
+	api.HandleFunc("/auth/check-admin", handlers.CheckAdmin).Methods("GET", "OPTIONS")
+	api.HandleFunc("/auth/create-admin", handlers.CreateAdmin).Methods("POST", "OPTIONS")
+	api.HandleFunc("/posts", handlers.GetPosts).Methods("GET", "OPTIONS")
+	api.HandleFunc("/posts/{slug}", handlers.GetPostBySlug).Methods("GET", "OPTIONS")
+	api.HandleFunc("/categories", handlers.GetCategories).Methods("GET", "OPTIONS")
+	
+	// Component data routes (consider protecting these in production)
+	api.HandleFunc("/component-data", handlers.GetComponentData).Methods("GET", "OPTIONS")
+	api.HandleFunc("/component-data", handlers.UpdateComponentData).Methods("PUT", "OPTIONS")
+	api.HandleFunc("/components", handlers.ListComponentData).Methods("GET", "OPTIONS")
+	api.HandleFunc("/reorder-components", handlers.ReorderComponents).Methods("POST", "OPTIONS")
 	
 	// Temporarily public for testing
-	api.HandleFunc("/social/test", handlers.TestSocialConnectionSimple).Methods("POST")
+	api.HandleFunc("/social/test", handlers.TestSocialConnectionSimple).Methods("POST", "OPTIONS")
 
 	// Protected routes
 	protected := api.PathPrefix("").Subrouter()
 	protected.Use(middleware.AuthMiddleware)
 
 	// Auth routes
-	protected.HandleFunc("/auth/logout", handlers.Logout).Methods("POST")
-	protected.HandleFunc("/auth/me", handlers.GetMe).Methods("GET")
-	protected.HandleFunc("/auth/change-password", handlers.ChangePassword).Methods("POST")
+	protected.HandleFunc("/auth/logout", handlers.Logout).Methods("POST", "OPTIONS")
+	protected.HandleFunc("/auth/me", handlers.GetMe).Methods("GET", "OPTIONS")
+	protected.HandleFunc("/auth/change-password", handlers.ChangePassword).Methods("POST", "OPTIONS")
 
 	// Admin routes
 	protected.HandleFunc("/posts", handlers.CreatePost).Methods("POST")
@@ -84,31 +102,34 @@ func main() {
 	// Serve uploaded files
 	router.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))))
 
-	// CORS configuration
-	corsOrigin := os.Getenv("CORS_ORIGIN")
-	if corsOrigin == "" {
-		corsOrigin = "http://127.0.0.1:4321"
-	}
-	log.Printf("CORS Origin: %s", corsOrigin)
-	
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{corsOrigin, "http://127.0.0.1:4321", "http://localhost:4321"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Content-Type", "Authorization", "Cookie"},
-		AllowCredentials: true,
-		MaxAge:           300,
-	})
-
-	handler := c.Handler(router)
-
 	// Server configuration
-	port := os.Getenv("PORT")
+	port := os.Getenv("API_PORT")
 	if port == "" {
-		port = "8749"
+		// Fallback to PORT for backward compatibility
+		port = os.Getenv("PORT")
+	}
+	if port == "" {
+		// Try to read from app-config.json
+		if configData, err := os.ReadFile("../app-config.json"); err == nil {
+			var config map[string]interface{}
+			if err := json.Unmarshal(configData, &config); err == nil {
+				if server, ok := config["server"].(map[string]interface{}); ok {
+					if ports, ok := server["ports"].(map[string]interface{}); ok {
+						if backendPort, ok := ports["backend"].(float64); ok {
+							port = fmt.Sprintf("%d", int(backendPort))
+						}
+					}
+				}
+			}
+		}
+		// Final fallback
+		if port == "" {
+			port = "3001"
+		}
 	}
 	
 	srv := &http.Server{
-		Handler:      handler,
+		Handler:      router,
 		Addr:         ":" + port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

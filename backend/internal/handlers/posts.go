@@ -39,12 +39,12 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 		var category models.Category
 		// Try to find category by slug and type first
 		categoryQuery := bson.M{"slug": categorySlug, "type": postType}
-		err := database.GetCollection("categories").FindOne(context.Background(), categoryQuery).Decode(&category)
+		err := database.GetCollectionFromRequest(r, "categories").FindOne(context.Background(), categoryQuery).Decode(&category)
 		
 		// If not found with type, try just slug
 		if err != nil && postType != "" {
 			categoryQuery = bson.M{"slug": categorySlug}
-			err = database.GetCollection("categories").FindOne(context.Background(), categoryQuery).Decode(&category)
+			err = database.GetCollectionFromRequest(r, "categories").FindOne(context.Background(), categoryQuery).Decode(&category)
 		}
 		
 		if err == nil {
@@ -59,7 +59,7 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Find posts
-	cursor, err := database.GetCollection("posts").Find(
+	cursor, err := database.GetCollectionFromRequest(r, "posts").Find(
 		context.Background(),
 		query,
 		options.Find().SetSort(bson.D{{Key: "createdAt", Value: -1}}),
@@ -92,13 +92,13 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 
 		// Get author
 		var author models.User
-		if err := database.GetCollection("users").FindOne(context.Background(), bson.M{"_id": post.Author}).Decode(&author); err == nil {
+		if err := database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"_id": post.Author}).Decode(&author); err == nil {
 			enrichedPost.AuthorData = &author
 		}
 
 		// Get category
 		var category models.Category
-		if err := database.GetCollection("categories").FindOne(context.Background(), bson.M{"_id": post.Category}).Decode(&category); err == nil {
+		if err := database.GetCollectionFromRequest(r, "categories").FindOne(context.Background(), bson.M{"_id": post.Category}).Decode(&category); err == nil {
 			enrichedPost.CategoryData = &category
 		}
 
@@ -119,7 +119,7 @@ func GetPostBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := vars["slug"]
 
 	var post models.Post
-	err := database.GetCollection("posts").FindOne(context.Background(), bson.M{"slug": slug, "published": true}).Decode(&post)
+	err := database.GetCollectionFromRequest(r, "posts").FindOne(context.Background(), bson.M{"slug": slug, "published": true}).Decode(&post)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			http.Error(w, "Post not found", http.StatusNotFound)
@@ -133,12 +133,12 @@ func GetPostBySlug(w http.ResponseWriter, r *http.Request) {
 	enrichedPost := models.PostWithAuthor{Post: post}
 
 	var author models.User
-	if err := database.GetCollection("users").FindOne(context.Background(), bson.M{"_id": post.Author}).Decode(&author); err == nil {
+	if err := database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"_id": post.Author}).Decode(&author); err == nil {
 		enrichedPost.AuthorData = &author
 	}
 
 	var category models.Category
-	if err := database.GetCollection("categories").FindOne(context.Background(), bson.M{"_id": post.Category}).Decode(&category); err == nil {
+	if err := database.GetCollectionFromRequest(r, "categories").FindOne(context.Background(), bson.M{"_id": post.Category}).Decode(&category); err == nil {
 		enrichedPost.CategoryData = &category
 	}
 
@@ -160,7 +160,7 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Successfully converted to ObjectID: %s", id.Hex())
 
 	var post models.Post
-	err = database.GetCollection("posts").FindOne(context.Background(), bson.M{"_id": id}).Decode(&post)
+	err = database.GetCollectionFromRequest(r, "posts").FindOne(context.Background(), bson.M{"_id": id}).Decode(&post)
 	if err != nil {
 		log.Printf("Error finding post with _id %s: %v", id.Hex(), err)
 		if err == mongo.ErrNoDocuments {
@@ -176,12 +176,12 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 	enrichedPost := models.PostWithAuthor{Post: post}
 
 	var author models.User
-	if err := database.GetCollection("users").FindOne(context.Background(), bson.M{"_id": post.Author}).Decode(&author); err == nil {
+	if err := database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"_id": post.Author}).Decode(&author); err == nil {
 		enrichedPost.AuthorData = &author
 	}
 
 	var category models.Category
-	if err := database.GetCollection("categories").FindOne(context.Background(), bson.M{"_id": post.Category}).Decode(&category); err == nil {
+	if err := database.GetCollectionFromRequest(r, "categories").FindOne(context.Background(), bson.M{"_id": post.Category}).Decode(&category); err == nil {
 		enrichedPost.CategoryData = &category
 	}
 
@@ -216,7 +216,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	post.CalculateReadingTime()
 
 	// Insert post
-	_, err := database.GetCollection("posts").InsertOne(context.Background(), post)
+	_, err := database.GetCollectionFromRequest(r, "posts").InsertOne(context.Background(), post)
 	if err != nil {
 		http.Error(w, "Failed to create post", http.StatusInternalServerError)
 		return
@@ -251,7 +251,7 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update post
-	result, err := database.GetCollection("posts").UpdateOne(
+	result, err := database.GetCollectionFromRequest(r, "posts").UpdateOne(
 		context.Background(),
 		bson.M{"_id": id},
 		bson.M{"$set": updateData},
@@ -281,7 +281,7 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := database.GetCollection("posts").DeleteOne(context.Background(), bson.M{"_id": id})
+	result, err := database.GetCollectionFromRequest(r, "posts").DeleteOne(context.Background(), bson.M{"_id": id})
 	if err != nil {
 		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return

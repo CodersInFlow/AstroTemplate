@@ -23,7 +23,7 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 		query["type"] = categoryType
 	}
 
-	cursor, err := database.GetCollection("categories").Find(context.Background(), query)
+	cursor, err := database.GetCollectionFromRequest(r, "categories").Find(context.Background(), query)
 	if err != nil {
 		http.Error(w, "Failed to fetch categories", http.StatusInternalServerError)
 		return
@@ -40,7 +40,7 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 	if len(categories) == 0 && categoryType != "" {
 		// First check if a General category exists for this type
 		var existingGeneral models.Category
-		err := database.GetCollection("categories").FindOne(
+		err := database.GetCollectionFromRequest(r, "categories").FindOne(
 			context.Background(), 
 			bson.M{"slug": "general", "type": categoryType},
 		).Decode(&existingGeneral)
@@ -56,7 +56,7 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 			}
 			
 			// Insert into database
-			_, insertErr := database.GetCollection("categories").InsertOne(context.Background(), generalCategory)
+			_, insertErr := database.GetCollectionFromRequest(r, "categories").InsertOne(context.Background(), generalCategory)
 			if insertErr == nil {
 				categories = append(categories, generalCategory)
 			}
@@ -86,7 +86,7 @@ func CreateCategory(w http.ResponseWriter, r *http.Request) {
 	category.CreatedAt = time.Now()
 	category.GenerateSlug()
 
-	_, err := database.GetCollection("categories").InsertOne(context.Background(), category)
+	_, err := database.GetCollectionFromRequest(r, "categories").InsertOne(context.Background(), category)
 	if err != nil {
 		http.Error(w, "Failed to create category", http.StatusInternalServerError)
 		return
@@ -110,7 +110,7 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := database.GetCollection("categories").UpdateOne(
+	result, err := database.GetCollectionFromRequest(r, "categories").UpdateOne(
 		context.Background(),
 		bson.M{"_id": id},
 		bson.M{"$set": updateData},
@@ -141,7 +141,7 @@ func DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if category is in use
-	count, err := database.GetCollection("posts").CountDocuments(context.Background(), bson.M{"category": id})
+	count, err := database.GetCollectionFromRequest(r, "posts").CountDocuments(context.Background(), bson.M{"category": id})
 	if err != nil {
 		http.Error(w, "Failed to check category usage", http.StatusInternalServerError)
 		return
@@ -151,7 +151,7 @@ func DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := database.GetCollection("categories").DeleteOne(context.Background(), bson.M{"_id": id})
+	result, err := database.GetCollectionFromRequest(r, "categories").DeleteOne(context.Background(), bson.M{"_id": id})
 	if err != nil {
 		http.Error(w, "Failed to delete category", http.StatusInternalServerError)
 		return

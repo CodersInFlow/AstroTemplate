@@ -25,7 +25,7 @@ func getString(m bson.M, key string) string {
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	cursor, err := database.GetCollection("users").Find(context.Background(), bson.M{})
+	cursor, err := database.GetCollectionFromRequest(r, "users").Find(context.Background(), bson.M{})
 	if err != nil {
 		http.Error(w, "Failed to fetch users", http.StatusInternalServerError)
 		return
@@ -52,7 +52,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 	// Decode directly into User struct
 	var user models.User
-	err = database.GetCollection("users").FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
+	err = database.GetCollectionFromRequest(r, "users").FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
 	if err != nil {
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
@@ -168,7 +168,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update user
-	result, err := database.GetCollection("users").UpdateOne(
+	result, err := database.GetCollectionFromRequest(r, "users").UpdateOne(
 		context.Background(),
 		bson.M{"_id": userID},
 		update,
@@ -196,7 +196,7 @@ func ApproveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := database.GetCollection("users").UpdateOne(
+	result, err := database.GetCollectionFromRequest(r, "users").UpdateOne(
 		context.Background(),
 		bson.M{"_id": id},
 		bson.M{"$set": bson.M{"approved": true}},
@@ -234,7 +234,7 @@ func UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := database.GetCollection("users").UpdateOne(
+	result, err := database.GetCollectionFromRequest(r, "users").UpdateOne(
 		context.Background(),
 		bson.M{"_id": id},
 		bson.M{"$set": bson.M{"role": req.Role}},
@@ -271,7 +271,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user already exists
-	count, err := database.GetCollection("users").CountDocuments(context.Background(), bson.M{"email": req.Email})
+	count, err := database.GetCollectionFromRequest(r, "users").CountDocuments(context.Background(), bson.M{"email": req.Email})
 	if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
@@ -302,7 +302,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	user.UpdatedAt = now
 
 	// Insert user
-	result, err := database.GetCollection("users").InsertOne(context.Background(), user)
+	result, err := database.GetCollectionFromRequest(r, "users").InsertOne(context.Background(), user)
 	if err != nil {
 		http.Error(w, "Failed to create user", http.StatusInternalServerError)
 		return
@@ -334,7 +334,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete the user
-	result, err := database.GetCollection("users").DeleteOne(
+	result, err := database.GetCollectionFromRequest(r, "users").DeleteOne(
 		context.Background(),
 		bson.M{"_id": id},
 	)
