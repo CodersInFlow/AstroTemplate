@@ -1,5 +1,4 @@
 ---
-import Layout from '../layout.astro';
 import CallToAction from '../../../shared/components/CallToAction/CallToAction.tsx';
 import TechSection from '../../../shared/components/Tech/TechSection.tsx';
 
@@ -11,10 +10,7 @@ const ctaData = {
 };
 ---
 
-<Layout 
-  title="About - SITE_NAME_PLACEHOLDER"
-  description="Learn more about SITE_NAME_PLACEHOLDER"
->
+
   <main>
     <!-- About Hero -->
     <section class="relative overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10 py-24 px-4">
@@ -69,4 +65,3 @@ const ctaData = {
     <!-- CTA -->
     <CallToAction {...ctaData} client:visible />
   </main>
-</Layout>

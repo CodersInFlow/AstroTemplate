@@ -1,5 +1,4 @@
 ---
-import Layout from '../layout.astro';
 import DevWrapper from '../../../shared/components/Dev/DevWrapper.astro';
 
 const testData = {
@@ -8,7 +7,6 @@ const testData = {
 };
 ---
 
-<Layout title="Dev Mode Test">
   <main style="padding: 2rem;">
     <h1>Dev Mode Test - CodersinFlow</h1>
     <p>Environment: {import.meta.env.DEV ? 'Development' : 'Production'}</p>
@@ -45,4 +43,3 @@ const testData = {
       });
     }, 100);
   </script>
-</Layout>

@@ -1,5 +1,4 @@
 ---
-import Layout from '../layout.astro';
 import DevWrapper from '../../../shared/components/Dev/DevWrapper.astro';
 
 // Import data
@@ -28,11 +27,6 @@ import TestimonialsWrapper from '../../../shared/components/Sections/Testimonial
 import CallToAction from '../../../shared/components/Sections/CallToAction';
 ---
 
-<Layout 
-  title="AI-Powered Pair Programming with Coders In Flow - VSCode Extension for Developers"
-  description="Better than RooCode, Cline & Cursor combined! Coders In Flow delivers next-gen AI pair programming for VSCode developers"
-  keywords="AI coding assistant, code generation, Claude Code, DeepSeek, OpenAI, LM Studio, Ollama, context editing, VS Code extension, GitHub Copilot alternative, automatic memory, smart code completion"
->
   
   <!-- Hero Comparison Card -->
   <DevWrapper componentName="HeroComparison" dataPath="../data/hero-comparison.json" data={heroComparisonData}>
@@ -77,4 +71,3 @@ import CallToAction from '../../../shared/components/Sections/CallToAction';
   
   <!-- Call to Action -->
   <!-- <CallToAction client:visible /> -->
-</Layout>

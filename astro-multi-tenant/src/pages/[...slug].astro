@@ -3,9 +3,9 @@
 import { getTenantFromHost } from '../shared/lib/tenant';
 import BlogList from '../shared/components/BlogList.astro';
 import BlogPost from '../shared/components/BlogPost.astro';
+import SmartLayout from '../layouts/SmartLayout.astro';
 
-// Import all site layouts, configs, and pages using import.meta.glob
-const layouts = import.meta.glob('../sites/*/layout.astro', { eager: true });
+// Import all site configs and pages using import.meta.glob
 const configs = import.meta.glob('../sites/*/config.json', { eager: true });
 const pages = import.meta.glob('../sites/*/pages/**/*.astro', { eager: true });
 
@@ -18,18 +18,9 @@ const tenantDir = tenant.directory || tenant.id;
 const { slug } = Astro.params;
 const route = slug || 'index';
 
-// Load site layout and config from glob imports
-const layoutPath = `../sites/${tenantDir}/layout.astro`;
+// Load site config from glob imports
 const configPath = `../sites/${tenantDir}/config.json`;
-
-const Layout = layouts[layoutPath]?.default;
 const config = configs[configPath]?.default;
-
-// Handle missing layout
-if (!Layout) {
-  console.error(`No layout found for tenant: ${tenantDir}`);
-  return new Response('Site configuration error', { status: 500 });
-}
 
 // Handle blog routes
 let blogSlug = null;
@@ -74,4 +65,6 @@ if (!PageComponent) {
 }
 ---
 
-<PageComponent {...pageProps} />
+<SmartLayout title={config?.name}>
+  <PageComponent {...pageProps} />
+</SmartLayout>

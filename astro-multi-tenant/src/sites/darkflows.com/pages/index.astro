@@ -1,5 +1,4 @@
 ---
-import Layout from '../layout.astro';
 import SwirlingParticles from '../../../shared/components/Effects/SwirlingParticles.astro';
 import FeaturedPost from '../../../shared/components/Features/FeaturedPost.astro';
 import DataConnectSections from '../../../shared/components/Sections/DataConnectSections.astro';
@@ -17,7 +16,6 @@ import faqData from '../data/faq.json';
 import footerData from '../data/footer.json';
 ---
 
-<Layout>
   <main class="min-h-screen bg-background relative">
     <SwirlingParticles />
     <div class="relative z-20">
@@ -29,4 +27,3 @@ import footerData from '../data/footer.json';
       <Footer data={footerData} />
     </div>
   </main>
-</Layout>

@@ -1,5 +1,4 @@
 ---
-import Layout from '../layout.astro';
 import Hero from '../../../shared/components/Hero/Hero.jsx';
 import ProjectsHeader from '../../../shared/components/Sections/ProjectsHeader.jsx';
 import ProjectsItems from '../../../shared/components/Sections/ProjectsItems.jsx';
@@ -22,7 +21,6 @@ import contactHeaderData from '../data/contact-header.json';
 import contactInfoData from '../data/contact-info.json';
 ---
 
-<Layout title="Preston Garrison - Developer">
   <main>
     <Hero client:visible data={heroData} />
     <ProjectsHeader data={projectsHeaderData} />
@@ -40,4 +38,3 @@ import contactInfoData from '../data/contact-info.json';
       <ContactInfo data={contactInfoData} />
     </div>
   </main>
-</Layout>

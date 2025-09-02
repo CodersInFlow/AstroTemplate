@@ -1,5 +1,4 @@
 ---
-import Layout from '../layout.astro';
 import { getSitesConfig } from '../../../shared/lib/tenant';
 
 const sites = getSitesConfig();
@@ -26,7 +25,6 @@ const displaySites = Object.entries(sites)
 // Don't add welcome.localhost as it might not route properly
 ---
 
-<Layout title="Multi-Tenant Dashboard">
   <div id="dashboard-container">
     <div class="dashboard-header">
       <div class="site-selector">
@@ -453,4 +451,3 @@ const displaySites = Object.entries(sites)
       }
     }
   </style>
-</Layout>

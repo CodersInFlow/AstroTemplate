@@ -6,7 +6,8 @@ module.exports = {
     './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
     './src/sites/prestongarrison.com/**/*.{astro,tsx}',
     './src/modules/blog/**/*.{astro,tsx}',
-    './src/shared/components/**/*.{jsx,tsx}'
+    './src/shared/components/**/*.{jsx,tsx}',
+    './src/layouts/**/*.{astro,tsx}'
   ],
   theme: {
     extend: {

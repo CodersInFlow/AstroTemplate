@@ -1,5 +1,4 @@
 ---
-import Layout from '../layout.astro';
 
 // Import data files (required for auto-wrapper to work)
 import heroData from '../data/features-hero.json';
@@ -27,10 +26,7 @@ import TestimonialsWrapper from '../../../shared/components/Sections/Testimonial
 import CallToAction from '../../../shared/components/Sections/CallToAction.tsx';
 ---
 
-<Layout 
-  title="SITE_NAME_PLACEHOLDER - Modern Web Solutions"
-  description="SITE_DESCRIPTION_PLACEHOLDER"
->
+
   
   <!-- Hero Comparison Card -->
   <HeroComparison client:load data={heroComparisonData} />
@@ -62,4 +58,3 @@ import CallToAction from '../../../shared/components/Sections/CallToAction.tsx';
   <!-- Call to Action -->
   <CallToAction client:load />
   
-</Layout>
