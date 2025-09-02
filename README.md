@@ -78,6 +78,20 @@ The deployment script will:
 - Setup SSL certificates via Let's Encrypt
 - Start Docker containers
 
+## 🔄 Git Repository Management
+
+### Pushing to Both Remotes
+
+This project is configured with two git remotes (origin and github). To push changes to both:
+
+```bash
+# Push to both remotes at once
+./scripts/push-both.sh
+
+# Or manually push to each
+git push origin main && git push github main
+```
+
 ## 🎨 Adding a New Site
 
 ### Quick Method (Recommended)
