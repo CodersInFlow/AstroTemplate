@@ -1,4 +1,13 @@
 {
+  "welcome.localhost": {
+    "id": "welcome",
+    "name": "Platform Overview",
+    "description": "Multi-Tenant Component Platform",
+    "directory": "welcome",
+    "database": "welcome_db",
+    "theme": "dark",
+    "features": []
+  },
   "codersinflow.com": {
     "id": "codersinflow",
     "name": "CodersInFlow",

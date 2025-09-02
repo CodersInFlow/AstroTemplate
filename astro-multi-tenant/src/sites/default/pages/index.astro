@@ -2,58 +2,19 @@
 import Layout from '../layout.astro';
 import { getSitesConfig } from '../../../shared/lib/tenant';
 
-interface SiteConfig {
-  id: string;
-  name?: string;
-  description?: string;
-  directory: string;
-  database: string;
-  theme: string;
-  features: string[];
-}
-
-const sites = getSitesConfig() as Record<string, SiteConfig>;
-
-// Check if we're in development mode
+const sites = getSitesConfig();
 const isDevelopment = import.meta.env.DEV;
 const DEV_FRONTEND_PORT = import.meta.env.PUBLIC_DEV_FRONTEND_PORT || '4321';
 
-// Filter out localhost, 127.0.0.1, and default entries
-const displaySites = Object.entries(sites).filter(([domain, config]) => {
-  return !domain.includes('localhost') && 
-         !domain.includes('127.0.0.1') && 
-         domain !== 'default' &&
-         !domain.startsWith('www.');
-});
-
-// Group sites by removing www prefix
-const uniqueSites = displaySites.reduce<Record<string, SiteConfig>>((acc, [domain, config]) => {
-  const cleanDomain = domain.replace('www.', '');
-  if (!acc[cleanDomain]) {
-    acc[cleanDomain] = config;
-  }
-  return acc;
-}, {});
-
-// Generate URL based on environment - fix to handle any TLD
-const getUrl = (domain: string) => {
-  if (isDevelopment) {
-    // Extract the site ID (everything before the first dot)
-    const siteId = domain.split('.')[0];
-    return `http://${siteId}.localhost:${DEV_FRONTEND_PORT}`;
-  } else {
-    // In production, use HTTPS with actual domain
-    return `https://${domain}`;
-  }
-};
-
-// Prepare dropdown sites (including the welcome page)
-const dropdownSites = [
+// Prepare sites for dropdown - welcome first, then others
+const displaySites = [
+  // Add welcome site first
   {
-    domain: 'Welcome Page',
+    domain: 'welcome.localhost',
     name: 'Platform Overview',
-    url: isDevelopment ? `http://localhost:${DEV_FRONTEND_PORT}` : '/'
+    url: `http://welcome.localhost:${DEV_FRONTEND_PORT}`
   },
+  // Then add other sites
   ...Object.entries(sites)
     .filter(([domain]) => 
       !domain.includes('localhost') && 
@@ -65,363 +26,89 @@ const dropdownSites = [
       domain,
       name: config.name || domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1),
       url: isDevelopment 
-        ? `http://${domain.split('.')[0]}.localhost:${DEV_FRONTEND_PORT}`
+        ? `http://${domain.replace('.com', '.localhost')}:${DEV_FRONTEND_PORT}`
         : `https://${domain}`
     }))
 ];
 ---
 
-<Layout title="Multi-Tenant Platform - Component Library">
-  <main class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-    <!-- Hero Section -->
-    <div class="container mx-auto px-4 py-16">
-      <div class="text-center mb-16">
-        <h1 class="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
-          Multi-Tenant Component Platform
-        </h1>
-        <p class="text-2xl text-gray-300 mb-8">
-          Build faster by reusing components from any of our sites
-        </p>
-      </div>
-
-      <!-- Dashboard Section -->
-      <div class="max-w-7xl mx-auto mb-16">
-        <div class="bg-black/40 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden">
-          <div class="dashboard-header p-4 bg-black/60 border-b border-white/20">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-              <div class="site-selector flex items-center gap-3">
-                <label for="site-select" class="text-white font-medium">Select Site:</label>
-                <select id="site-select" class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white backdrop-blur-sm focus:outline-none focus:border-blue-400 transition-colors">
-                  {dropdownSites.map((site, index) => (
-                    <option value={site.url} selected={index === 0} class="bg-gray-900">
-                      {site.name} {site.domain !== 'Welcome Page' && `(${site.domain})`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div class="selection-info flex items-center gap-3">
-                <span class="selected-count text-gray-300">Selected: <span id="count" class="font-bold text-white">0</span> components</span>
-                <button id="send-to-vscode" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium">Send to VSCode</button>
-                <button id="clear-selection" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors font-medium">Clear Selection</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="selected-components p-4 bg-black/30 border-b border-white/20 hidden" id="selected-section">
-            <h3 class="text-lg font-semibold text-white mb-2">Selected Components:</h3>
-            <ul id="component-list" class="space-y-1 text-gray-300"></ul>
-          </div>
-          
-          <div class="iframe-container" style="height: 600px;">
-            <iframe id="site-frame" src={`${dropdownSites[0]?.url || 'http://localhost:4321'}`} class="w-full h-full"></iframe>
-          </div>
-        </div>
-      </div>
-
-      <!-- Instructions Card -->
-      <div class="max-w-4xl mx-auto mb-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8">
-        <h2 class="text-3xl font-bold text-white mb-6">🚀 How to Use This Platform</h2>
-        
-        <div class="space-y-6 text-gray-200">
-          <div class="flex gap-4">
-            <span class="text-2xl">1️⃣</span>
-            <div>
-              <h3 class="text-xl font-semibold mb-2">Visit Any Site</h3>
-              <p>Click on any site below or navigate directly to <code class="px-2 py-1 bg-black/30 rounded">http://[sitename].localhost:4321</code></p>
-            </div>
-          </div>
-
-          <div class="flex gap-4">
-            <span class="text-2xl">2️⃣</span>
-            <div>
-              <h3 class="text-xl font-semibold mb-2">Component Selection Mode</h3>
-              <p>Visit the <a href="/dashboard" class="text-blue-400 hover:text-blue-300 underline">Dashboard</a> to enter component selection mode. You can select components from any site and send them to VSCode.</p>
-            </div>
-          </div>
-
-          <div class="flex gap-4">
-            <span class="text-2xl">3️⃣</span>
-            <div>
-              <h3 class="text-xl font-semibold mb-2">Edit Components</h3>
-              <p>When viewing a site with <code class="px-2 py-1 bg-black/30 rounded">?dashboardMode=true</code>, you can:</p>
-              <ul class="list-disc list-inside mt-2 ml-4">
-                <li>✅ Select components to reuse</li>
-                <li>📝 Edit component JSON data</li>
-                <li>↕️ Reorder components with arrow buttons</li>
-                <li>🎨 See live changes instantly</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="flex gap-4">
-            <span class="text-2xl">4️⃣</span>
-            <div>
-              <h3 class="text-xl font-semibold mb-2">Create Your Own Site</h3>
-              <p>Run <code class="px-2 py-1 bg-black/30 rounded">./scripts/add-site.sh yoursite.com</code> to create a new site from our template with all shared components available.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-8 p-4 bg-blue-500/20 border border-blue-400/30 rounded-lg">
-          <p class="text-blue-300">
-            <strong>💡 Pro Tip:</strong> The dashboard at <a href="/dashboard" class="underline">/dashboard</a> lets you browse all sites in an iframe and select multiple components at once!
-          </p>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="max-w-4xl mx-auto mb-16 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <a href="/dashboard" class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-400/30 p-6 transition-all duration-300 hover:scale-105 hover:border-blue-400/60">
-          <div class="relative z-10">
-            <div class="text-4xl mb-3">🎯</div>
-            <h3 class="text-xl font-bold text-white mb-2">Component Dashboard</h3>
-            <p class="text-gray-300 text-sm">Select and reuse components from any site</p>
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        </a>
-
-        <a href="/blog/editor" class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-400/30 p-6 transition-all duration-300 hover:scale-105 hover:border-green-400/60">
-          <div class="relative z-10">
-            <div class="text-4xl mb-3">✍️</div>
-            <h3 class="text-xl font-bold text-white mb-2">Blog Editor</h3>
-            <p class="text-gray-300 text-sm">Create and manage blog posts</p>
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-green-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        </a>
-
-        <a href="https://github.com/CodersInFlow/AstroTemplate" target="_blank" class="group relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-400/30 p-6 transition-all duration-300 hover:scale-105 hover:border-purple-400/60">
-          <div class="relative z-10">
-            <div class="text-4xl mb-3">📚</div>
-            <h3 class="text-xl font-bold text-white mb-2">Documentation</h3>
-            <p class="text-gray-300 text-sm">Learn more on GitHub</p>
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        </a>
-      </div>
-
-      <!-- Sites Grid -->
-      <div class="max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold text-white mb-8 text-center">Available Sites</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(uniqueSites).map(([domain, config]) => (
-            <div class="group relative overflow-hidden rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 p-8 transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:shadow-2xl">
-              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              <div class="relative z-10">
-                <div class="flex items-center justify-between mb-4">
-                  <h2 class="text-2xl font-bold">
-                    {config.name || domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1)}
-                  </h2>
-                  <svg class="w-6 h-6 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                  </svg>
-                </div>
-                
-                <p class="text-sm opacity-75 mb-4">
-                  {config.description || `Welcome to ${config.name || domain}`}
-                </p>
-                
-                <div class="flex items-center gap-2 text-xs mb-4">
-                  <span class="px-2 py-1 rounded-full bg-white/20 backdrop-blur-sm">
-                    {domain}
-                  </span>
-                  {config.features && config.features.includes('blog') && (
-                    <span class="px-2 py-1 rounded-full bg-green-500/20 text-green-200 backdrop-blur-sm">
-                      Blog
-                    </span>
-                  )}
-                  {config.features && config.features.includes('docs') && (
-                    <span class="px-2 py-1 rounded-full bg-blue-500/20 text-blue-200 backdrop-blur-sm">
-                      Docs
-                    </span>
-                  )}
-                </div>
-
-                <div class="flex gap-2">
-                  <a 
-                    href={getUrl(domain)}
-                    class="flex-1 px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 rounded-lg text-center text-sm transition-all"
-                  >
-                    Visit Site
-                  </a>
-                  <a 
-                    href={`${getUrl(domain)}?dashboardMode=true`}
-                    class="flex-1 px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/30 rounded-lg text-center text-sm transition-all"
-                  >
-                    Edit Mode
-                  </a>
-                </div>
-              </div>
-              
-              <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
-            </div>
+<Layout title="Multi-Tenant Platform">
+  <div id="dashboard-container">
+    <div class="dashboard-header">
+      <div class="site-selector">
+        <label for="site-select">Select Site:</label>
+        <select id="site-select">
+          {displaySites.map((site, index) => (
+            <option value={site.url} selected={index === 0}>
+              {site.name} ({site.domain})
+            </option>
           ))}
-        </div>
-      </div>
-      
-      <div class="mt-16 text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-          <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-          </svg>
-          <span class="text-sm">
-            {isDevelopment ? 'All sites are available locally' : 'All sites are live and secured with HTTPS'}
-          </span>
-        </div>
-      </div>
-      
-      <div class="mt-8 text-center opacity-75">
-        <p class="text-sm">
-          Visit sites directly at their domain: 
-          <code class="px-2 py-1 mx-1 rounded bg-white/10 backdrop-blur-sm">
-            {isDevelopment ? `http://[sitename].localhost:${DEV_FRONTEND_PORT}` : 'https://[domain]'}
-          </code>
-        </p>
+        </select>
       </div>
     </div>
-  </main>
+    
+    <iframe id="site-frame" src={`${displaySites[0]?.url || 'http://welcome.localhost:4321'}`}></iframe>
+  </div>
+
+  <style>
+    #dashboard-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .dashboard-header {
+      padding: 1rem;
+      background: #2a2a2a;
+      border-bottom: 1px solid #444;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .site-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .site-selector label {
+      font-weight: 500;
+    }
+
+    #site-select {
+      padding: 0.5rem;
+      background: #1a1a1a;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #site-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #1a1a1a;
+    }
+  </style>
+
+  <script>
+    // Handle site selection
+    const siteSelect = document.getElementById('site-select');
+    const siteFrame = document.getElementById('site-frame');
+    
+    siteSelect?.addEventListener('change', (e) => {
+      const url = e.target.value;
+      if (siteFrame) {
+        // Don't add dashboardMode for welcome site
+        const addDashboard = !url.includes('welcome.localhost');
+        siteFrame.src = addDashboard ? `${url}?dashboardMode=true` : url;
+      }
+    });
+  </script>
 </Layout>
-
-<style>
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  .container {
-    animation: float 6s ease-in-out infinite;
-    animation-delay: 0.2s;
-  }
-  
-  #selected-section:not(.hidden) {
-    display: block;
-  }
-</style>
-
-<script>
-  // Initialize WebSocket for VSCode communication
-  const ws = new WebSocket('ws://localhost:7651');
-  
-  ws.onopen = () => {
-    console.log('Connected to VSCode WebSocket');
-    ws.send(JSON.stringify({ type: 'connected', message: 'Dashboard connected to VSCode extension WebSocket server' }));
-  };
-  
-  ws.onmessage = (event) => {
-    console.log('Received from VSCode:', event.data);
-  };
-  
-  ws.onerror = (error) => {
-    console.error('WebSocket error:', error);
-  };
-  
-  ws.onclose = () => {
-    console.log('WebSocket closed');
-  };
-
-  // Component tracking
-  let selectedComponents = [];
-  
-  // Handle site selection
-  const siteSelect = document.getElementById('site-select');
-  const siteFrame = document.getElementById('site-frame');
-  const componentList = document.getElementById('component-list');
-  const countSpan = document.getElementById('count');
-  const selectedSection = document.getElementById('selected-section');
-  
-  siteSelect?.addEventListener('change', (e) => {
-    const url = e.target.value;
-    if (siteFrame) {
-      // Don't add dashboardMode to the welcome page
-      const isDashboardUrl = !url.includes('localhost:4321') || url.includes('.localhost');
-      siteFrame.src = isDashboardUrl ? `${url}?dashboardMode=true` : url;
-    }
-  });
-  
-  // Listen for messages from iframe
-  window.addEventListener('message', (event) => {
-    if (event.data.type === 'component-selected') {
-      const { component, isSelected } = event.data;
-      
-      if (isSelected) {
-        selectedComponents.push(component);
-      } else {
-        selectedComponents = selectedComponents.filter(c => 
-          !(c.name === component.name && c.site === component.site)
-        );
-      }
-      
-      updateSelectedList();
-    }
-  });
-  
-  function updateSelectedList() {
-    if (componentList) {
-      componentList.innerHTML = selectedComponents.map(comp => 
-        `<li class="flex items-center justify-between p-2 bg-white/5 rounded">
-          <span>${comp.name} (${comp.site})</span>
-          <button onclick="removeComponent('${comp.name}', '${comp.site}')" class="text-red-400 hover:text-red-300">×</button>
-        </li>`
-      ).join('');
-    }
-    
-    if (countSpan) {
-      countSpan.textContent = selectedComponents.length;
-    }
-    
-    if (selectedSection) {
-      if (selectedComponents.length > 0) {
-        selectedSection.classList.remove('hidden');
-      } else {
-        selectedSection.classList.add('hidden');
-      }
-    }
-  }
-  
-  window.removeComponent = function(name, site) {
-    selectedComponents = selectedComponents.filter(c => 
-      !(c.name === name && c.site === site)
-    );
-    updateSelectedList();
-    
-    // Notify iframe to deselect
-    if (siteFrame) {
-      siteFrame.contentWindow?.postMessage({
-        type: 'deselect-component',
-        component: { name, site }
-      }, '*');
-    }
-  };
-  
-  // Send to VSCode button
-  document.getElementById('send-to-vscode')?.addEventListener('click', () => {
-    if (selectedComponents.length === 0) {
-      alert('No components selected');
-      return;
-    }
-    
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({
-        type: 'components-selected',
-        components: selectedComponents
-      }));
-      alert(`Sent ${selectedComponents.length} component(s) to VSCode`);
-    } else {
-      alert('Not connected to VSCode. Make sure the extension is running.');
-    }
-  });
-  
-  // Clear selection button
-  document.getElementById('clear-selection')?.addEventListener('click', () => {
-    selectedComponents = [];
-    updateSelectedList();
-    
-    // Notify iframe to clear all selections
-    if (siteFrame) {
-      siteFrame.contentWindow?.postMessage({
-        type: 'clear-selections'
-      }, '*');
-    }
-  });
-</script>
