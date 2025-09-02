@@ -89,8 +89,17 @@ push_to_github() {
     echo -e "${GREEN}✅ GitHub push complete (without large files)${NC}"
     
     # Clean up: return to original branch and delete temp branch
-    git checkout $CURRENT_BRANCH
+    # Force checkout to avoid issues with untracked files
+    git checkout -f $CURRENT_BRANCH || {
+        echo -e "${RED}❌ Failed to return to $CURRENT_BRANCH${NC}"
+        echo -e "${YELLOW}You are still on $TEMP_BRANCH${NC}"
+        echo -e "${YELLOW}To manually fix: git checkout -f $CURRENT_BRANCH${NC}"
+        exit 1
+    }
     git branch -D $TEMP_BRANCH
+    
+    # Restore any large files that were removed
+    git checkout HEAD -- . 2>/dev/null || true
 }
 
 # Function to check if remote exists
