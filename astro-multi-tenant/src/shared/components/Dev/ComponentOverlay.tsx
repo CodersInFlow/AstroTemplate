@@ -170,8 +170,61 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
             marginLeft: '2px'
           }}
         >
-          {/* Reorder buttons - hide in dashboard mode */}
-          {component.order !== undefined && !isDashboardMode && (
+          {/* Select checkbox first */}
+          <label 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={isDashboardMode ? component.isSelected : component.isReusable}
+              onChange={onToggleReusable}
+              style={{
+                cursor: 'pointer',
+                width: '14px',
+                height: '14px',
+                accentColor: isDashboardMode && component.isSelected ? '#22c55e' : undefined
+              }}
+            />
+            <span style={{ fontSize: '11px' }}>
+              {isDashboardMode ? 'Select' : 'Reuse'}
+            </span>
+          </label>
+          
+          {/* Edit JSON button second */}
+          {component.dataPath && (
+            <button
+              onClick={onEditJson}
+              style={{
+                background: 'rgba(59, 130, 246, 0.2)',
+                border: '1px solid rgba(59, 130, 246, 0.5)',
+                color: '#93c5fd',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.3)';
+                e.currentTarget.style.color = '#dbeafe';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+                e.currentTarget.style.color = '#93c5fd';
+              }}
+            >
+              Edit JSON
+            </button>
+          )}
+
+          {/* Arrow buttons last */}
+          {component.order !== undefined && (
             <div style={{ display: 'flex', gap: '2px' }}>
               <button
                 onClick={onMoveUp}
@@ -232,56 +285,6 @@ const ComponentOverlay: React.FC<ComponentOverlayProps> = ({
                 ↓
               </button>
             </div>
-          )}
-          <label 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-              userSelect: 'none'
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={isDashboardMode ? component.isSelected : component.isReusable}
-              onChange={onToggleReusable}
-              style={{
-                cursor: 'pointer',
-                width: '14px',
-                height: '14px',
-                accentColor: isDashboardMode && component.isSelected ? '#22c55e' : undefined
-              }}
-            />
-            <span style={{ fontSize: '11px' }}>
-              {isDashboardMode ? 'Select' : 'Reuse'}
-            </span>
-          </label>
-          
-          {component.dataPath && !isDashboardMode && (
-            <button
-              onClick={onEditJson}
-              style={{
-                background: 'rgba(59, 130, 246, 0.2)',
-                border: '1px solid rgba(59, 130, 246, 0.5)',
-                color: '#93c5fd',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontSize: '11px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.3)';
-                e.currentTarget.style.color = '#dbeafe';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
-                e.currentTarget.style.color = '#93c5fd';
-              }}
-            >
-              Edit JSON
-            </button>
           )}
         </div>
       </div>

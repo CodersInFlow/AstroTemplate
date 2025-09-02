@@ -382,6 +382,11 @@ const DevModeOverlay: React.FC = () => {
     }
   };
 
+  // Only show overlay when in dashboard mode
+  if (!isDashboardMode) {
+    return null;
+  }
+
   return (
     <>
       {/* Debug indicator */}
