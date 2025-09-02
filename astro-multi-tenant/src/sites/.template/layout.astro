@@ -1,5 +1,6 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
+import siteStyles from './styles/main.css?raw';
 
 export interface Props {
   title?: string;
@@ -53,7 +54,7 @@ const canonicalURL = Astro.site
     <ViewTransitions />
     
     <!-- Site CSS -->
-    <link rel="stylesheet" href="/styles/main.css" />
+    <style set:html={siteStyles}></style>
   </head>
   
   <body class="min-h-screen bg-background text-text-primary">
