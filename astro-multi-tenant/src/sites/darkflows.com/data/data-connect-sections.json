@@ -17,7 +17,7 @@
         "subtitle": "Easily spot and solve problems on your network"
       }
     ],
-    "image": "/male_firefighter2.png"
+    "image": "/male_firefighter2.jpg"
   },
   {
     "id": "data-section-1",
@@ -37,7 +37,7 @@
         "subtitle": "See at all time what is happening on your network"
       }
     ],
-    "image": "/custom.png"
+    "image": "/custom.jpg"
   },
   {
     "id": "data-section-2",
@@ -85,7 +85,7 @@
         "subtitle": "Optimized for high speed NAS storage"
       }
     ],
-    "image": "/female_firefighter1.png"
+    "image": "/female_firefighter1.jpg"
   },
   {
     "id": "data-section-3",
@@ -101,7 +101,7 @@
         "subtitle": "Using DNS and DHCP data we can name and trace clients on your network"
       }
     ],
-    "image": "/pihole.png"
+    "image": "/pihole.jpg"
   },
   {
     "id": "data-section-4",
@@ -117,6 +117,6 @@
         "subtitle": "Easily add shares, users, and groups to your Samba server"
       }
     ],
-    "image": "/samba_image.png"
+    "image": "/samba_image.jpg"
   }
 ]
