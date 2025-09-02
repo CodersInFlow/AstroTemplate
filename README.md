@@ -10,13 +10,7 @@ A single codebase that serves multiple websites with different domains, database
 ```bash
 git clone git@github.com:CodersInFlow/AstroTemplate.git
 cd AstroTemplate
-
-# Run the automated setup (installs all dependencies, creates .env)
-./setup.sh
-
-# OR manually:
-npm install  # Automatically installs both root and astro-multi-tenant dependencies
-cp .env.example .env  # Then edit .env with your settings
+npm install  # Automatically installs all dependencies in both directories
 ```
 
 2. **Start development:**
