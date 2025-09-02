@@ -316,8 +316,15 @@ const DevModeOverlay: React.FC = () => {
       });
 
       if (response.ok) {
-        // Reload page to see changes
-        window.location.reload();
+        // In dashboard mode, just show success message instead of reloading
+        if (isDashboardMode) {
+          console.log('Components reordered successfully. Refresh to see changes.');
+          // Could update local state to reflect new order without reload
+          // For now, just log success
+        } else {
+          // Reload page to see changes (only when not in dashboard)
+          window.location.reload();
+        }
       } else {
         console.error('Failed to reorder components');
         alert('Failed to reorder components. This feature requires backend implementation.');

@@ -1,7 +1,7 @@
 export const project_items = [
   {
     id: '0',
-    image_name: '/images/configurator.png',
+    image_name: '/images/configurator.jpg',
     image_desc: 'Revolt Flight Controller',
     title: 'flight controller configurator',
     desc: 'Written using React and Electron this full blown configurator was the first of its kind to offer full wizards to make it easy for anyone to set up the drone in less then 30 seconds.',
@@ -89,7 +89,7 @@ export const project_items = [
 
   {
     id: '11',
-    image_name: '/images/stats.png',
+    image_name: '/images/stats.jpg',
     image_desc: 'web statistics',
     title: 'web statistics service',
     desc: 'We created the first web site analytics system before Google Analytics even existed. Tracking users every step of the way, and handling over 10 million unique users per pentium 3 1ghz server.',

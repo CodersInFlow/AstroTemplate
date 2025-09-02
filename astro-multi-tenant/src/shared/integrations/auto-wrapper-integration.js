@@ -24,11 +24,7 @@ export function autoWrapperIntegration() {
                 const fileName = id.split('/').pop();
                 console.log('Auto-wrapper checking:', fileName);
                 
-                // For Preston Garrison's index.astro specifically
-                if (fileName === 'index.astro' && id.includes('prestongarrison')) {
-                  console.log('  -> Preston index.astro detected');
-                  console.log('  -> First 500 chars:', code.substring(0, 500));
-                }
+
                 
                 // Check if this is an Astro file with component imports and data props
                 const hasComponentImports = /import\s+\w+\s+from\s+['"].*\/components\//.test(code);

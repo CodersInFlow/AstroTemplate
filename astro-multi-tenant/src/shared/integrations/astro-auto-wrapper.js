@@ -18,6 +18,41 @@ export function astroAutoWrapper() {
                 enforce: 'pre',
                 
                 async load(id) {
+                  // Helper function to inject DevModeOverlay into layout files
+                  const injectDevModeOverlay = (content) => {
+                    // Find the frontmatter section
+                    const frontmatterEnd = content.indexOf('---', 3);
+                    if (frontmatterEnd === -1) {
+                      return null;
+                    }
+                    
+                    let frontmatter = content.substring(0, frontmatterEnd + 3);
+                    let template = content.substring(frontmatterEnd + 3);
+                    
+                    // Add DevModeOverlay import after first ---
+                    frontmatter = frontmatter.replace(
+                      /^---\n/,
+                      `---\nimport DevModeOverlay from '../../shared/components/Dev/DevModeOverlay.tsx';\n`
+                    );
+                    
+                    // Add isDevelopment check before closing ---
+                    if (!content.includes('isDevelopment')) {
+                      frontmatter = frontmatter.replace(
+                        /\n---$/,
+                        `\n\n// Check if we're in development mode\nconst isDevelopment = import.meta.env.DEV;\n---`
+                      );
+                    }
+                    
+                    // Add DevModeOverlay before closing </body>
+                    template = template.replace(
+                      /<\/body>/,
+                      `    {isDevelopment && <DevModeOverlay client:load />}\n  </body>`
+                    );
+                    
+                    console.log('  -> Injected DevModeOverlay into layout');
+                    return frontmatter + template;
+                  };
+
                   // Only process .astro files in sites directories (pages and layout)
                   if (!id.endsWith('.astro') || !id.includes('/sites/')) {
                     return null;
@@ -30,10 +65,21 @@ export function astroAutoWrapper() {
                     return null;
                   }
                   
+                  // Read the file content
+                  let content = await fs.readFile(id, 'utf-8');
+                  let wasModified = false;
+                  
+                  // For layout files, inject DevModeOverlay if not present
+                  if (isLayoutFile && !content.includes('DevModeOverlay')) {
+                    content = injectDevModeOverlay(content);
+                    wasModified = true;
+                    // Continue processing to wrap components
+                  }
+                  
                   // Skip files that already have DevWrapper
-                  const content = await fs.readFile(id, 'utf-8');
                   if (content.includes('DevWrapper')) {
-                    return null;
+                    // If we already injected DevModeOverlay, return the modified content
+                    return wasModified ? content : null;
                   }
                   
                   const fileName = path.basename(id);
@@ -44,17 +90,30 @@ export function astroAutoWrapper() {
                   const hasDataImports = /import\s+\w+\s+from\s+['"].*\.json['"]/.test(content);
                   
                   if (!hasComponentImports || !hasDataImports) {
-                    return null;
+                    // If we modified the content earlier (e.g., added DevModeOverlay), return it
+                    return wasModified ? content : null;
                   }
                   
-                  // Find the frontmatter section
+                  // Find the frontmatter section (re-parse after potential DevModeOverlay injection)
                   const frontmatterEnd = content.indexOf('---', 3);
                   if (frontmatterEnd === -1) {
-                    return null;
+                    return wasModified ? content : null;
                   }
                   
                   const frontmatter = content.substring(0, frontmatterEnd + 3);
                   const template = content.substring(frontmatterEnd + 3);
+                  
+                  // Parse imports to build a map of variable names to file paths
+                  const importMap = {};
+                  const importPattern = /import\s+(\w+)\s+from\s+['"]([^'"]+\.json)['"]/g;
+                  let importMatch;
+                  while ((importMatch = importPattern.exec(content)) !== null) {
+                    const varName = importMatch[1];
+                    const filePath = importMatch[2];
+                    // Extract just the filename from the path
+                    const fileName = filePath.split('/').pop();
+                    importMap[varName] = fileName;
+                  }
                   
                   // Pattern to match components with any prop that receives imported data
                   // Only match components starting with uppercase (React/Astro components, not HTML elements)
@@ -85,8 +144,15 @@ export function astroAutoWrapper() {
                       if (propName === 'class' || propName === 'className' || propName === 'id' || propName === 'client') continue;
                       
                       // Check if the prop value looks like imported JSON data
-                      // Look for variables that end with Data or contain the word data
                       const trimmedValue = propValue.trim();
+                      
+                      // First check if we have this variable in our import map
+                      if (importMap[trimmedValue]) {
+                        dataFile = importMap[trimmedValue];
+                        break;
+                      }
+                      
+                      // Fallback: guess based on variable name pattern
                       if (trimmedValue.match(/Data$|data/i) && !trimmedValue.startsWith('"') && !trimmedValue.startsWith("'")) {
                         // Convert variable name to likely filename
                         const fileName = trimmedValue
@@ -135,7 +201,7 @@ export function astroAutoWrapper() {
                       ? '../../shared/components/Dev/DevWrapper.astro'
                       : '../../../shared/components/Dev/DevWrapper.astro';
                     
-                    // Add DevWrapper import at the top of the frontmatter (after the opening ---)
+                    // Add DevWrapper import at the top of the frontmatter
                     const importStatement = `import DevWrapper from '${importPath}';`;
                     const modifiedFrontmatter = frontmatter.replace(
                       /^---\n/,
@@ -146,7 +212,8 @@ export function astroAutoWrapper() {
                     return modifiedFrontmatter + modifiedTemplate;
                   }
                   
-                  return null;
+                  // If we modified the content earlier (e.g., added DevModeOverlay), return it
+                  return wasModified ? content : null;
                 }
               }]
             }
