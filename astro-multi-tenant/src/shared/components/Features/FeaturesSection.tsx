@@ -71,7 +71,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
             featureCardsVisible[0] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
           }`}
           style={{
-            ...cardPositions[2000] && {
+            ...cardPositions?.[2000] && {
               transform: `translate(${cardPositions[2000].x}px, ${cardPositions[2000].y}px)`,
               position: 'relative',
               zIndex: dragState.cardId === 2000 ? 999 : 1,
@@ -117,7 +117,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
           }`}
           style={{
             transitionDelay: '0.2s',
-            ...cardPositions[2001] && {
+            ...cardPositions?.[2001] && {
               transform: `translate(${cardPositions[2001].x}px, ${cardPositions[2001].y}px)`,
               position: 'relative',
               zIndex: dragState.cardId === 2001 ? 999 : 1,
@@ -163,7 +163,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({
           }`}
           style={{
             transitionDelay: '0.4s',
-            ...cardPositions[2002] && {
+            ...cardPositions?.[2002] && {
               transform: `translate(${cardPositions[2002].x}px, ${cardPositions[2002].y}px)`,
               position: 'relative',
               zIndex: dragState.cardId === 2002 ? 999 : 1,
