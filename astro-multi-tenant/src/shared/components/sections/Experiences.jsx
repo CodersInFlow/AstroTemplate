@@ -1,5 +1,4 @@
 import TitleHeader from '../Headers/TitleHeader.jsx'
-import DevComponentWrapper from '../Dev/DevComponentWrapper.jsx'
 
 const Experiences = ({ header = {}, experienceItems = [] }) => {
   // Extract header data with defaults
@@ -12,14 +11,12 @@ const Experiences = ({ header = {}, experienceItems = [] }) => {
 
   return (
     <>
-      <DevComponentWrapper componentName="TitleHeader" dataPath="experiences.json" componentId="experiences-header">
-        <TitleHeader
-          title={title}
-          description={description}
-          image={image}
-          imageDesc={imageDesc}
-        />
-      </DevComponentWrapper>
+      <TitleHeader
+        title={title}
+        description={description}
+        image={image}
+        imageDesc={imageDesc}
+      />
 
       <div className="flex items-center justify-center w-full p-8">
         <iframe

@@ -119,8 +119,8 @@ const imageURL = new URL(image, url);
   </head>
   <body class="bg-background text-text-primary">
     <style set:html={prestonStyles}></style>
-    <Menu client:load data={{}} />
-    {showHeader && <MainTitleHeader data={{ title: "Preston Garrison" }} client:load />}
+    <Menu data={{}} />
+    {showHeader && <MainTitleHeader data={{ title: "Preston Garrison" }} />}
     <slot />
     {isDevelopment && <DevModeOverlay client:load />}
   </body>

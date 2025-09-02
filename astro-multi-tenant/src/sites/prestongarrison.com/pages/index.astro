@@ -1,33 +1,43 @@
 ---
 import Layout from '../layout.astro';
 import Hero from '../../../shared/components/Hero/Hero.jsx';
-import Projects from '../../../shared/components/Sections/Projects.jsx';
-import Experiences from '../../../shared/components/Sections/Experiences.jsx';
-import Qualifications from '../../../shared/components/Sections/Qualifications.jsx';
-import Contact from '../../../shared/components/Contact/Contact.jsx';
+import ProjectsHeader from '../../../shared/components/Sections/ProjectsHeader.jsx';
+import ProjectsItems from '../../../shared/components/Sections/ProjectsItems.jsx';
+import ExperiencesHeader from '../../../shared/components/Sections/ExperiencesHeader.jsx';
+import ExperiencesVideos from '../../../shared/components/Sections/ExperiencesVideos.jsx';
+import QualificationsHeader from '../../../shared/components/Sections/QualificationsHeader.jsx';
+import QualificationsSkills from '../../../shared/components/Sections/QualificationsSkills.jsx';
+import ContactHeader from '../../../shared/components/Contact/ContactHeader.jsx';
+import ContactInfo from '../../../shared/components/Contact/ContactInfo.jsx';
 
 // Import data
 import heroData from '../data/hero.json';
 import projectsHeaderData from '../data/projects-header.json';
 import projectsItemsData from '../data/projects-items.json';
 import experiencesData from '../data/experiences.json';
+import videosData from '../data/videos.json';
 import qualificationsHeaderData from '../data/qualifications-header.json';
 import skillsData from '../data/skills.json';
-import contactData from '../data/contact.json';
+import contactHeaderData from '../data/contact-header.json';
+import contactInfoData from '../data/contact-info.json';
 ---
 
 <Layout title="Preston Garrison - Developer">
   <main>
-    <Hero client:load data={heroData} />
-    <Projects client:load projectItems={projectsItemsData} header={projectsHeaderData} />
+    <Hero client:visible data={heroData} />
+    <ProjectsHeader data={projectsHeaderData} />
+    <ProjectsItems client:visible data={projectsItemsData} />
     <div id="qualifications">
-      <Qualifications client:load headerData={qualificationsHeaderData} skillsData={skillsData} />
+      <QualificationsHeader data={qualificationsHeaderData} />
+      <QualificationsSkills client:visible data={skillsData} />
     </div>
     <div id="experiences">
-      <Experiences client:load experienceItems={experiencesData.items} header={experiencesData.header} />
+      <ExperiencesHeader data={experiencesData.header} />
+      <ExperiencesVideos client:visible data={videosData} />
     </div>
     <div id="contact">
-      <Contact client:load contactData={contactData} />
+      <ContactHeader data={contactHeaderData} />
+      <ContactInfo data={contactInfoData} />
     </div>
   </main>
 </Layout>

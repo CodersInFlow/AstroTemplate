@@ -1,39 +1,15 @@
-// Removed Next.js Image import
-
-import TitleHeader from '../Headers/TitleHeader.jsx'
-
-const Contact = ({ contactData = {} }) => {
-  // Extract data with defaults
-  const {
-    header = {},
-    info = {},
-    social = []
-  } = contactData;
-
-  const {
-    title = "Contact Me",
-    description = 'I look forward to any and all future projects. Let me help take your companies ideas to the next level.',
-    image = "/images/envelope.png",
-    imageDesc = "Envelope"
-  } = header;
-
+const ContactInfo = ({ data = {} }) => {
   const {
     name = "Preston Garrison",
     email = "resume@prestongarrison.com",
     phone = "+1 (480) 388-7766",
     followTitle = "Follow Me",
-    followDescription = "Connect with me on social media"
-  } = info;
+    followDescription = "Connect with me on social media",
+    social = []
+  } = data;
 
   return (
     <>
-      <TitleHeader
-        title={title}
-        description={description}
-        image={image}
-        imageDesc={imageDesc}
-      />
-
       <div className="h-5"></div>
 
       <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-lg text-center">
@@ -81,4 +57,4 @@ const Contact = ({ contactData = {} }) => {
   )
 }
 
-export default Contact
+export default ContactInfo

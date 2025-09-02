@@ -140,6 +140,16 @@ const DevModeOverlay: React.FC = () => {
           site = 'prestongarrison.com'; // Default for direct localhost access
         }
         
+        // Check if dataPath includes array index notation
+        const arrayMatch = component.dataPath.match(/^(.+\.json)\[(\d+)\]$/);
+        let pathToLoad = component.dataPath;
+        let arrayIndex = -1;
+        
+        if (arrayMatch) {
+          pathToLoad = arrayMatch[1]; // e.g., "projects-items.json"
+          arrayIndex = parseInt(arrayMatch[2]); // e.g., 0
+        }
+        
         // Use the Go API server to fetch the JSON data
         // API URL from environment or fallback to configured values
         const apiBase = import.meta.env.PUBLIC_API_URL || 
@@ -147,10 +157,15 @@ const DevModeOverlay: React.FC = () => {
                          ? `http://localhost:${import.meta.env.PUBLIC_DEV_API_PORT || '3001'}` 
                          : '');
         
-        const response = await fetch(`${apiBase}/api/component-data?path=${component.dataPath}&site=${site}`);
+        const response = await fetch(`${apiBase}/api/component-data?path=${pathToLoad}&site=${site}`);
         if (response.ok) {
           const data = await response.json();
-          component.props = data;
+          // If it's an array access, get the specific item
+          if (arrayIndex >= 0 && Array.isArray(data)) {
+            component.props = data[arrayIndex] || {};
+          } else {
+            component.props = data;
+          }
         } else {
           console.error('Failed to load JSON data');
           component.props = {};

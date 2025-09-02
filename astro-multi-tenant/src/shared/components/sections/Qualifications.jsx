@@ -1,6 +1,5 @@
 import Skills from './Skills.jsx'
 import TitleHeader from '../Headers/TitleHeader.jsx'
-import DevComponentWrapper from '../Dev/DevComponentWrapper.jsx'
 
 const Qualifications = ({ headerData = {}, skillsData = {} }) => {
   // Extract header data with defaults
@@ -16,30 +15,22 @@ const Qualifications = ({ headerData = {}, skillsData = {} }) => {
 
   return (
     <>
-      <DevComponentWrapper componentName="TitleHeader" dataPath="qualifications-header.json" componentId="qualifications-header">
-        <TitleHeader
-          title={title}
-          description={description}
-          image={image}
-          imageDesc={imageDesc}
-        />
-      </DevComponentWrapper>
+      <TitleHeader
+        title={title}
+        description={description}
+        image={image}
+        imageDesc={imageDesc}
+      />
       
       {/* Loop through all skill categories */}
       {skills.map((skillCategory, index) => (
-        <DevComponentWrapper 
+        <Skills
           key={index}
-          componentName="Skills" 
-          dataPath="skills.json" 
-          componentId={`skills-${skillCategory.name.toLowerCase().replace(/\s+/g, '-')}`}
-        >
-          <Skills
-            color={skillCategory.color}
-            items={skillCategory.items || []}
-            title={skillCategory.name}
-            description={skillCategory.description}
-          />
-        </DevComponentWrapper>
+          color={skillCategory.color}
+          items={skillCategory.items || []}
+          title={skillCategory.name}
+          description={skillCategory.description}
+        />
       ))}
     </>
   )
