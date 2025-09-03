@@ -44,19 +44,24 @@ RUN mkdir -p /var/log/supervisor /data/db /var/log/mongodb
 
 WORKDIR /app
 
-# Copy built Astro app
+# Copy built Astro app (both internal and for external mount)
+COPY --from=frontend-builder /build/dist /app/dist-internal
 COPY --from=frontend-builder /build/dist /app/dist
 COPY --from=frontend-builder /build/package.json /app/
 COPY --from=frontend-builder /build/node_modules /app/node_modules
+COPY --from=frontend-builder /build/node_modules /app/node_modules-internal
 
-# Copy source sites
-COPY --from=frontend-builder /build/src/sites /app/src/sites
+# Copy source sites (both internal and for external mount)
+COPY --from=frontend-builder /build/src/sites /app/src/sites-internal
+RUN mkdir -p /app/src/sites
 
-# Copy backend
+# Copy backend (both internal and for external mount)
+COPY --from=backend-builder /build/server /app/server-internal
 COPY --from=backend-builder /build/server /app/server
-RUN chmod +x /app/server
+RUN chmod +x /app/server /app/server-internal
 
 # Copy configuration files
+COPY sites-config.json /app/sites-config-internal.json
 COPY sites-config.json /app/sites-config.json
 COPY scripts/supervisor.conf /etc/supervisor/supervisord.conf
 

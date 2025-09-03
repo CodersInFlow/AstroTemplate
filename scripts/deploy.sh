@@ -214,7 +214,7 @@ ssh -p $SSH_PORT $USER@$SERVER << EOF
   docker stop $CONTAINER_NAME 2>/dev/null || true
   docker rm $CONTAINER_NAME 2>/dev/null || true
   
-  # Start new container with docker run (only mount data directories, keep code internal)
+  # Start new container with docker run (only mount data directories)
   docker run -d \
     --name $CONTAINER_NAME \
     -p 4321:4321 \
