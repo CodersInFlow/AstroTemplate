@@ -110,28 +110,40 @@ else
     REMOTE_IMAGE="$IMAGE_NAME:$TAG"
 fi
 
-# Generate nginx configs (respecting blacklist)
-echo "🔧 Generating nginx configurations..."
-./scripts/generate-nginx-configs.sh
+# Deploy nginx configurations
+echo "🔧 Deploying nginx configurations..."
+echo "  🧹 Cleaning up old nginx configs on server..."
 
-# Upload nginx configs (only non-blacklisted)
-echo "📤 Uploading nginx configurations..."
-ssh -p $SSH_PORT $USER@$SERVER "mkdir -p $NGINX_CONFIG_DIR/sites-enabled $NGINX_CONFIG_DIR/includes"
+# Remove old site-specific configs (we're using catch-all now)
+ssh -p $SSH_PORT $USER@$SERVER << 'ENDSSH'
+# Backup old configs
+mkdir -p /etc/nginx/backup-configs
+mv /etc/nginx/sites-enabled/*.conf /etc/nginx/backup-configs/ 2>/dev/null || true
 
-for conf in nginx/sites-enabled/*.conf; do
-    if [ -f "$conf" ]; then
-        domain=$(basename "$conf" .conf)
-        site_id="${domain%.com}"
-        
-        # Skip if blacklisted
-        if [ -f "blacklist.txt" ] && grep -q "^$site_id$" blacklist.txt; then
-            echo "  ⏭️  Skipping $domain (blacklisted)"
-        else
-            echo "  📤 Uploading $domain"
-            scp -P $SSH_PORT "$conf" $USER@$SERVER:$NGINX_CONFIG_DIR/sites-enabled/
-        fi
-    fi
-done
+# Create necessary directories
+mkdir -p /etc/nginx/sites-enabled
+mkdir -p /etc/nginx/includes
+mkdir -p /etc/nginx/includes/api-overrides
+mkdir -p /etc/nginx/includes/upload-overrides
+mkdir -p /etc/nginx/includes/static-overrides
+mkdir -p /etc/nginx/includes/route-overrides
+mkdir -p /etc/nginx/includes/custom-locations
+mkdir -p /etc/nginx/includes/public-overrides
+ENDSSH
+
+echo "  📤 Uploading new catch-all nginx configuration..."
+
+# Upload the catch-all config
+if [ -f "nginx/sites-enabled/00-default-catch-all.conf" ]; then
+    echo "    📤 Uploading catch-all config"
+    scp -P $SSH_PORT nginx/sites-enabled/00-default-catch-all.conf $USER@$SERVER:$NGINX_CONFIG_DIR/sites-enabled/
+fi
+
+# Upload common includes
+if [ -f "nginx/includes/common-locations.conf" ]; then
+    echo "    📤 Uploading common-locations.conf"
+    scp -P $SSH_PORT nginx/includes/common-locations.conf $USER@$SERVER:$NGINX_CONFIG_DIR/includes/
+fi
 
 # Upload include files if they exist (only for non-blacklisted sites)
 if [ -d "nginx/includes" ]; then
@@ -217,12 +229,33 @@ ssh -p $SSH_PORT $USER@$SERVER << EOF
     -e PUBLIC_DEV_API_PORT="${PUBLIC_DEV_API_PORT}" \
     -e CORS_ORIGIN="${CORS_ORIGIN}" \
     -v $REMOTE_BASE_DIR/uploads:/app/uploads \
+    -v $REMOTE_BASE_DIR/public:/app/public \
     -v $REMOTE_BASE_DIR/mongodb-data:/data/db \
     -v $REMOTE_BASE_DIR/sites-config.json:/app/sites-config.json:ro \
     --restart unless-stopped \
     $REMOTE_IMAGE
   
-  # Reload nginx
+  # Setup directory structure
+  echo "📁 Setting up directory structure..."
+  mkdir -p /var/www/docker/public
+  mkdir -p /var/www/docker/uploads
+  mkdir -p /var/www/docker/logs
+  
+  # Create site-specific directories based on sites-config.json
+  if [ -f /var/www/docker/sites-config.json ]; then
+    for site_id in $(cat /var/www/docker/sites-config.json | jq -r '.[] | .id' | sort -u); do
+      mkdir -p /var/www/docker/public/$site_id
+      mkdir -p /var/www/docker/uploads/blog/$site_id
+      chown -R www-data:www-data /var/www/docker/uploads/blog/$site_id 2>/dev/null || true
+    done
+  fi
+  
+  # Set permissions
+  chown -R www-data:www-data /var/www/docker/uploads 2>/dev/null || true
+  chmod -R 755 /var/www/docker
+  
+  # Test and reload nginx
+  echo "🔄 Testing and reloading nginx..."
   nginx -t && nginx -s reload
   
   # Show status

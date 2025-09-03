@@ -35,6 +35,7 @@ services:
     volumes:
       - /var/www/docker/sites-config.json:/app/sites-config.json:ro
       - /var/www/docker/uploads:/app/uploads
+      - /var/www/docker/public:/app/public
       - /var/www/docker/logs:/app/logs
     ports:
       - "80:4321"    # Frontend SSR
