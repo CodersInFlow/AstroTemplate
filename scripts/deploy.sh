@@ -214,27 +214,21 @@ ssh -p $SSH_PORT $USER@$SERVER << EOF
   docker stop $CONTAINER_NAME 2>/dev/null || true
   docker rm $CONTAINER_NAME 2>/dev/null || true
   
-  # Start new container with docker run (no docker-compose needed)
+  # Start new container with docker run (only mount data directories, keep code internal)
   docker run -d \
     --name $CONTAINER_NAME \
     -p 4321:4321 \
     -p 3001:3001 \
     -e NODE_ENV=production \
-    -e PORT="${PORT}" \
-    -e API_PORT="3001" \
-    -e MONGODB_URI="${MONGODB_URI}" \
-    -e JWT_SECRET="${JWT_SECRET}" \
-    -e PUBLIC_API_URL="${PUBLIC_API_URL}" \
-    -e PUBLIC_DEV_FRONTEND_PORT="${PUBLIC_DEV_FRONTEND_PORT}" \
-    -e PUBLIC_DEV_API_PORT="${PUBLIC_DEV_API_PORT}" \
-    -e CORS_ORIGIN="${CORS_ORIGIN}" \
+    -e PORT="${PORT:-4321}" \
+    -e API_PORT="${API_PORT:-3001}" \
+    -e MONGODB_URI="${MONGODB_URI:-mongodb://localhost:27017/magicvideo}" \
+    -e JWT_SECRET="${JWT_SECRET:-super-secret-jwt-key}" \
+    -e PUBLIC_API_URL="${PUBLIC_API_URL:-https://magicvideodownloader.com}" \
+    -e CORS_ORIGIN="${CORS_ORIGIN:-*}" \
     -v $REMOTE_BASE_DIR/uploads:/app/uploads \
     -v $REMOTE_BASE_DIR/public:/app/public \
     -v $REMOTE_BASE_DIR/mongodb-data:/data/db \
-    -v $REMOTE_BASE_DIR/sites-config.json:/app/sites-config.json:ro \
-    -v $REMOTE_BASE_DIR/dist:/app/dist \
-    -v $REMOTE_BASE_DIR/sites:/app/src/sites \
-    -v $REMOTE_BASE_DIR/server:/app/server \
     --restart unless-stopped \
     $REMOTE_IMAGE
   

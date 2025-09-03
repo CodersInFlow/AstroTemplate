@@ -49,15 +49,23 @@ COPY --from=frontend-builder /build/dist /app/dist
 COPY --from=frontend-builder /build/package.json /app/
 COPY --from=frontend-builder /build/node_modules /app/node_modules
 
+# Copy source sites
+COPY --from=frontend-builder /build/src/sites /app/src/sites
+
 # Copy backend
-COPY --from=backend-builder /build/server /app/
+COPY --from=backend-builder /build/server /app/server
+RUN chmod +x /app/server
 
 # Copy configuration files
 COPY sites-config.json /app/sites-config.json
 COPY scripts/supervisor.conf /etc/supervisor/supervisord.conf
 
+# Copy and setup entrypoint script
+COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 # Expose ports (these will be overridden by runtime env vars)
 EXPOSE 4321 3001
 
-# Start services
-CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+# Use entrypoint to handle mount syncing on startup
+ENTRYPOINT ["/docker-entrypoint.sh"]

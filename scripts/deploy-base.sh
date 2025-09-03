@@ -101,7 +101,9 @@ EOF
 # Initial sync of sites/dist/server
 echo ""
 echo "📤 Performing initial sync of sites and dist..."
-./scripts/sync-sites.sh
+if ! ./scripts/sync-sites.sh; then
+    echo "⚠️  Warning: Initial sync had some issues, but continuing..."
+fi
 
 # Deploy nginx configurations
 echo "🔧 Deploying nginx configurations..."

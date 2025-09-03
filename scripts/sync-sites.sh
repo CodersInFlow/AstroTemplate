@@ -63,7 +63,7 @@ fi
 echo ""
 echo "📤 Syncing dist folder..."
 rsync -avz --delete \
-    -e "ssh -p $SSH_PORT" \
+    -e "ssh -p $SSH_PORT -o ConnectTimeout=30 -o ServerAliveInterval=15 -o ServerAliveCountMax=3" \
     $EXCLUDE_ARGS \
     astro-multi-tenant/dist/ \
     $USER@$SERVER:$REMOTE_BASE_DIR/dist/
@@ -72,7 +72,7 @@ rsync -avz --delete \
 echo ""
 echo "📤 Syncing sites folder..."
 rsync -avz --delete \
-    -e "ssh -p $SSH_PORT" \
+    -e "ssh -p $SSH_PORT -o ConnectTimeout=30 -o ServerAliveInterval=15 -o ServerAliveCountMax=3" \
     $EXCLUDE_ARGS \
     astro-multi-tenant/src/sites/ \
     $USER@$SERVER:$REMOTE_BASE_DIR/sites/
@@ -80,7 +80,10 @@ rsync -avz --delete \
 # Sync Go server binary
 echo ""
 echo "📤 Syncing Go server..."
-scp -P $SSH_PORT backend/server $USER@$SERVER:$REMOTE_BASE_DIR/
+rsync -avz \
+    -e "ssh -p $SSH_PORT -o ConnectTimeout=30 -o ServerAliveInterval=15 -o ServerAliveCountMax=3" \
+    backend/server \
+    $USER@$SERVER:$REMOTE_BASE_DIR/
 
 # Upload filtered sites-config.json
 if [ -f "blacklist.txt" ]; then
