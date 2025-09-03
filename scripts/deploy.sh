@@ -232,6 +232,9 @@ ssh -p $SSH_PORT $USER@$SERVER << EOF
     -v $REMOTE_BASE_DIR/public:/app/public \
     -v $REMOTE_BASE_DIR/mongodb-data:/data/db \
     -v $REMOTE_BASE_DIR/sites-config.json:/app/sites-config.json:ro \
+    -v $REMOTE_BASE_DIR/dist:/app/dist \
+    -v $REMOTE_BASE_DIR/sites:/app/src/sites \
+    -v $REMOTE_BASE_DIR/server:/app/server \
     --restart unless-stopped \
     $REMOTE_IMAGE
   

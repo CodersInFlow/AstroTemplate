@@ -37,6 +37,9 @@ services:
       - /var/www/docker/uploads:/app/uploads
       - /var/www/docker/public:/app/public
       - /var/www/docker/logs:/app/logs
+      - /var/www/docker/dist:/app/dist
+      - /var/www/docker/sites:/app/src/sites
+      - /var/www/docker/server:/app/server
     ports:
       - "80:4321"    # Frontend SSR
       - "3001:3001"  # Backend API
