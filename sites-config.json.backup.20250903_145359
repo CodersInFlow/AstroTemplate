@@ -196,37 +196,37 @@
     "theme": "light",
     "features": []
   },
-  "alexgarrison.org": {
-    "id": "alexgarrison",
-    "name": "Alex Garrison",
-    "description": "Personal website of Alex",
-    "directory": "alexgarrison.org",
-    "database": "alexgarrison_db",
-    "theme": "dark-red",
+  "testsite.com": {
+    "id": "testsite",
+    "name": "Test Site",
+    "description": "Testing the add script",
+    "directory": "testsite.com",
+    "database": "testsite_db",
+    "theme": "dark",
     "features": [
       "blog",
       "docs"
     ]
   },
-  "www.alexgarrison.org": {
-    "id": "alexgarrison",
-    "name": "Alex Garrison",
-    "description": "Personal website of Alex",
-    "directory": "alexgarrison.org",
-    "database": "alexgarrison_db",
-    "theme": "dark-red",
+  "www.testsite.com": {
+    "id": "testsite",
+    "name": "Test Site",
+    "description": "Testing the add script",
+    "directory": "testsite.com",
+    "database": "testsite_db",
+    "theme": "dark",
     "features": [
       "blog",
       "docs"
     ]
   },
-  "alexgarrison.localhost": {
-    "id": "alexgarrison",
-    "name": "Alex Garrison",
-    "description": "Personal website of Alex",
-    "directory": "alexgarrison.org",
-    "database": "alexgarrison_db",
-    "theme": "dark-red",
+  "testsite.localhost": {
+    "id": "testsite",
+    "name": "Test Site",
+    "description": "Testing the add script",
+    "directory": "testsite.com",
+    "database": "testsite_db",
+    "theme": "dark",
     "features": [
       "blog",
       "docs"

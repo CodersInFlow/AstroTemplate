@@ -75,26 +75,74 @@ SITES_CONFIG="sites-config.json"
 if [ -f "$SITES_CONFIG" ]; then
     echo -e "${RED}📝 Removing from configuration...${NC}"
     
-    # Backup existing config
-    cp "$SITES_CONFIG" "${SITES_CONFIG}.backup"
+    # Create timestamped backup
+    BACKUP_FILE="${SITES_CONFIG}.backup.$(date +%Y%m%d_%H%M%S)"
+    cp "$SITES_CONFIG" "$BACKUP_FILE"
+    echo -e "${BLUE}📋 Created backup: $BACKUP_FILE${NC}"
     
-    # Use Node.js to remove entries
+    # Count entries before removal for validation
+    BEFORE_COUNT=$(node -e "const c = require('./$SITES_CONFIG'); console.log(Object.keys(c).length)")
+    
+    # Use Node.js to remove entries with error handling
     node -e "
         const fs = require('fs');
-        const config = JSON.parse(fs.readFileSync('$SITES_CONFIG', 'utf8'));
-        
-        // Extract site ID from domain (remove .com, .org, etc.)
-        const siteId = '$DOMAIN'.split('.')[0];
-        
-        // Remove all variants: domain, www.domain, and localhost
-        delete config['$DOMAIN'];
-        delete config['www.$DOMAIN'];
-        delete config[siteId + '.localhost'];
-        
-        fs.writeFileSync('$SITES_CONFIG', JSON.stringify(config, null, 2));
-        
-        console.log('✅ Configuration updated');
-    "
+        try {
+            const config = JSON.parse(fs.readFileSync('$SITES_CONFIG', 'utf8'));
+            
+            // Save original count
+            const originalCount = Object.keys(config).length;
+            
+            // Extract site ID from domain (remove .com, .org, etc.)
+            const siteId = '$DOMAIN'.split('.')[0];
+            
+            // Check if site exists
+            if (!config['$DOMAIN'] && !config['www.$DOMAIN'] && !config[siteId + '.localhost']) {
+                console.log('⚠️  Site $DOMAIN not found in configuration');
+                process.exit(0);
+            }
+            
+            // Remove all variants: domain, www.domain, and localhost
+            let removedCount = 0;
+            if (config['$DOMAIN']) { delete config['$DOMAIN']; removedCount++; }
+            if (config['www.$DOMAIN']) { delete config['www.$DOMAIN']; removedCount++; }
+            if (config[siteId + '.localhost']) { delete config[siteId + '.localhost']; removedCount++; }
+            
+            // Validate we're only removing what we expect (max 3 entries per site)
+            if (removedCount > 3) {
+                console.error('❌ Error: Attempting to remove too many entries (' + removedCount + ')');
+                process.exit(1);
+            }
+            
+            // Validate final count
+            const finalCount = Object.keys(config).length;
+            if (finalCount < originalCount - 3 || finalCount < 1) {
+                console.error('❌ Error: Removal would result in unexpected data loss');
+                console.error('   Original: ' + originalCount + ', Expected: ' + (originalCount - removedCount) + ', Got: ' + finalCount);
+                process.exit(1);
+            }
+            
+            fs.writeFileSync('$SITES_CONFIG', JSON.stringify(config, null, 2));
+            console.log('✅ Successfully removed ' + removedCount + ' entries for $DOMAIN');
+        } catch (e) {
+            console.error('❌ Error updating configuration:', e.message);
+            // Restore backup on error
+            fs.copyFileSync('$BACKUP_FILE', '$SITES_CONFIG');
+            console.log('🔄 Restored from backup due to error');
+            process.exit(1);
+        }
+    " || {
+        echo -e "${RED}❌ Failed to update configuration${NC}"
+        echo -e "${YELLOW}Restoring from backup...${NC}"
+        cp "$BACKUP_FILE" "$SITES_CONFIG"
+        exit 1
+    }
+    
+    # Verify the file is valid JSON after modification
+    node -e "JSON.parse(require('fs').readFileSync('$SITES_CONFIG', 'utf8'))" || {
+        echo -e "${RED}❌ Configuration file corrupted, restoring backup${NC}"
+        cp "$BACKUP_FILE" "$SITES_CONFIG"
+        exit 1
+    }
 else
     echo -e "${YELLOW}⚠️  Configuration file not found${NC}"
 fi

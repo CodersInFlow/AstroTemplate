@@ -141,3 +141,5 @@ __pycache__
 .next
 .github
 .docker-build-output/
+.docker*
+

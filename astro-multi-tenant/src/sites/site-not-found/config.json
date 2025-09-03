@@ -1,0 +1,29 @@
+{
+  "name": "Site Not Found",
+  "description": "Error page for unconfigured domains",
+  "theme": "dark",
+  "colors": {
+    "primary": "#ef4444",
+    "secondary": "#64748b",
+    "accent": "#f59e0b",
+    "background": "#111827",
+    "surface": "#1f2937",
+    "surfaceHover": "#374151",
+    "textPrimary": "#f3f4f6",
+    "textSecondary": "#9ca3af",
+    "textInverse": "#111827",
+    "border": "#374151",
+    "error": "#ef4444",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "info": "#3b82f6",
+    "link": "#60a5fa",
+    "linkHover": "#93c5fd",
+    "codeBg": "#1f2937",
+    "codeText": "#e5e7eb"
+  },
+  "fonts": {
+    "google": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+  },
+  "features": []
+}

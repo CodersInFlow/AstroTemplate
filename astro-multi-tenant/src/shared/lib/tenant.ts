@@ -105,15 +105,21 @@ export function getTenantFromHost(hostname: string, urlParams?: URLSearchParams)
     .replace(/:\d+$/, '')
     .replace(/^www\./, '');
   
-  // Smart localhost handling - convert .localhost to .com for matching
-  if (domain.endsWith('.localhost')) {
-    // codersinflow.localhost -> codersinflow.com
-    domain = domain.replace('.localhost', '.com');
-  }
-  
-  // Check for exact match
+  // Check for exact match first (including .localhost domains)
   if (sites[domain]) {
     return sites[domain];
+  }
+  
+  // If .localhost domain not found, try to find matching production domain
+  // This is a fallback for backwards compatibility
+  if (domain.endsWith('.localhost')) {
+    const siteId = domain.replace('.localhost', '');
+    // Look for any domain that starts with this site ID
+    for (const [key, config] of Object.entries(sites)) {
+      if (config.id === siteId) {
+        return config;
+      }
+    }
   }
   
   // Check for localhost/127.0.0.1 - return first site or default

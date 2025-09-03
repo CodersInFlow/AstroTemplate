@@ -237,7 +237,8 @@ echo -e "${GREEN}📝 Updating sites configuration...${NC}"
 
 # Escape for JSON
 escape_for_json() {
-    echo "$1" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed "s/'/\\'/g" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/\t/\\t/g' | sed 's/\r/\\r/g'
+    # Use printf to handle escaping more reliably
+    printf '%s' "$1" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | tr '\n' ' ' | sed 's/\t/\\t/g' | sed 's/\r/\\r/g'
 }
 
 # Prepare JSON-escaped values
@@ -292,17 +293,45 @@ EOF
 
 # Update or create sites-config.json
 if [ -f "$SITES_CONFIG" ]; then
-    # Backup existing config
-    cp "$SITES_CONFIG" "${SITES_CONFIG}.backup"
+    # Create timestamped backup
+    BACKUP_FILE="${SITES_CONFIG}.backup.$(date +%Y%m%d_%H%M%S)"
+    cp "$SITES_CONFIG" "$BACKUP_FILE"
+    echo -e "${BLUE}📋 Created backup: $BACKUP_FILE${NC}"
     
-    # Use Node.js to merge JSON properly
+    # Use Node.js to merge JSON properly with error handling
     node -e "
         const fs = require('fs');
-        const existing = JSON.parse(fs.readFileSync('$SITES_CONFIG', 'utf8'));
-        const newSite = $SITE_CONFIG;
-        const merged = { ...existing, ...newSite };
-        fs.writeFileSync('$SITES_CONFIG', JSON.stringify(merged, null, 2));
-    "
+        try {
+            const existing = JSON.parse(fs.readFileSync('$SITES_CONFIG', 'utf8'));
+            const newSite = $SITE_CONFIG;
+            
+            // Check if site already exists
+            if (existing['$DOMAIN']) {
+                console.error('❌ Error: Site $DOMAIN already exists in configuration');
+                process.exit(1);
+            }
+            
+            const merged = { ...existing, ...newSite };
+            
+            // Validate before writing
+            if (Object.keys(merged).length < Object.keys(existing).length) {
+                console.error('❌ Error: Merge would result in data loss');
+                process.exit(1);
+            }
+            
+            fs.writeFileSync('$SITES_CONFIG', JSON.stringify(merged, null, 2));
+            console.log('✅ Successfully added $DOMAIN to configuration');
+        } catch (e) {
+            console.error('❌ Error updating configuration:', e.message);
+            // Restore backup on error
+            fs.copyFileSync('$BACKUP_FILE', '$SITES_CONFIG');
+            console.log('🔄 Restored from backup due to error');
+            process.exit(1);
+        }
+    " || {
+        echo -e "${RED}❌ Failed to update configuration${NC}"
+        exit 1
+    }
     
     echo -e "${GREEN}✅ Updated sites-config.json${NC}"
 else

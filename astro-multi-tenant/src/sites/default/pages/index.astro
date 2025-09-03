@@ -17,7 +17,7 @@ const displaySites = Object.entries(sites)
     domain,
     name: config.name || domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1),
     url: isDevelopment 
-      ? `http://${domain.replace('.com', '.localhost')}:${DEV_FRONTEND_PORT}`
+      ? `http://${config.id}.localhost:${DEV_FRONTEND_PORT}`
       : `https://${domain}`
   }));
 
