@@ -303,6 +303,18 @@ docker exec magic-video-container ps aux | grep mongo
 2. Verify extraction: `ls -la .docker-build-output/`
 3. Test SSH: `ssh user@server "ls /var/www/docker"`
 
+### Cloudflare "Too Many Redirects" Error
+This happens when Cloudflare SSL mode is set incorrectly:
+1. Go to Cloudflare dashboard → SSL/TLS → Overview
+2. Set encryption mode to **Full (strict)** (NOT Flexible)
+3. Go to SSL/TLS → Edge Certificates
+4. Enable **Always Use HTTPS**
+
+**Important**: Using "Flexible" SSL mode causes redirect loops because:
+- Cloudflare connects to origin via HTTP
+- Nginx redirects HTTP to HTTPS
+- Creates infinite redirect loop
+
 ## 🎨 Theming System
 
 ### Semantic Color Classes

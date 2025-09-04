@@ -27,12 +27,13 @@ RUN go mod download && \
 # Runtime stage  
 FROM node:20-slim
 
-# Install supervisor, MongoDB, Go, and required tools
+# Install supervisor, MongoDB, Go, inotify-tools and required tools
 RUN apt-get update && apt-get install -y \
     supervisor \
     wget \
     gnupg \
     curl \
+    inotify-tools \
     && wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | apt-key add - \
     && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list \
     && apt-get update \

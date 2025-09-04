@@ -57,6 +57,16 @@ fi
 echo ""
 echo "🚀 Starting services..."
 
+# Start the file watcher for auto-rebuild if we have the full project
+if [ -f "/app/scripts/watch-and-rebuild.sh" ] && [ -d "/app/astro-multi-tenant" ]; then
+    echo "👁️  Starting auto-rebuild watcher..."
+    chmod +x /app/scripts/watch-and-rebuild.sh
+    /app/scripts/watch-and-rebuild.sh &
+    echo "✅ File watcher started (PID: $!)"
+else
+    echo "ℹ️  Auto-rebuild not available (no watch script or full project)"
+fi
+
 # Use synced supervisor config if available
 if [ -f "/app/scripts/supervisor.conf" ]; then
     echo "Using synced supervisor config..."
