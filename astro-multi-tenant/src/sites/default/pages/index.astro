@@ -193,11 +193,11 @@ const displaySites = Object.entries(sites)
     class DashboardController {
       constructor() {
         this.selectedComponents = new Map();
-        this.currentSite = document.getElementById('site-select')?.value || 'http://localhost:4321';
         this.ws = null;
         this.wsConnected = false;
         
         this.initElements();
+        this.restoreSavedSite();
         this.setupEventListeners();
       }
 
@@ -211,10 +211,33 @@ const displaySites = Object.entries(sites)
         this.selectedSection = document.getElementById('selected-section');
       }
 
+      restoreSavedSite() {
+        // Try to restore the last selected site from localStorage
+        const savedSite = localStorage.getItem('devSelectedSite');
+        if (savedSite && this.siteSelect) {
+          // Check if the saved site exists in the options
+          const options = Array.from(this.siteSelect.options);
+          const matchingOption = options.find(opt => opt.value === savedSite);
+          
+          if (matchingOption) {
+            this.siteSelect.value = savedSite;
+            this.currentSite = savedSite;
+            const addDashboard = !savedSite.includes('welcome.localhost');
+            this.iframe.src = addDashboard ? `${savedSite}?dashboardMode=true` : savedSite;
+          } else {
+            this.currentSite = this.siteSelect.value || 'http://localhost:4321';
+          }
+        } else {
+          this.currentSite = this.siteSelect?.value || 'http://localhost:4321';
+        }
+      }
+
       setupEventListeners() {
         // Site selector change
         this.siteSelect?.addEventListener('change', (e) => {
           this.currentSite = e.target.value;
+          // Save the selected site to localStorage
+          localStorage.setItem('devSelectedSite', this.currentSite);
           const addDashboard = !this.currentSite.includes('welcome.localhost');
           this.iframe.src = addDashboard ? `${this.currentSite}?dashboardMode=true` : this.currentSite;
         });
