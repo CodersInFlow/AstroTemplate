@@ -336,12 +336,37 @@ ssh user@server "docker exec magic-video-container pm2 status"
 - **Resilience**: Auto-restart on crash with 1GB memory limit per worker
 - **Load Balancing**: Automatic distribution across workers
 
+### Implementation Notes
+- PM2 runs in cluster mode with `instances: 'max'` (uses all available CPU cores)
+- Each worker process handles ~70MB RAM vs single process
+- Blog module works seamlessly - uses JWT (stateless) and MongoDB (shared)
+- File uploads go to shared filesystem mount accessible by all workers
+- Supervisor manages PM2 which manages the Node.js workers
+
 ## 🔧 Troubleshooting
 
 ### Container not starting
 ```bash
 docker logs magic-video-container
 ```
+
+### PM2 not starting
+```bash
+# Check if ecosystem.config.cjs exists in container
+ssh user@server "docker exec magic-video-container ls -la /app/ecosystem.config.cjs"
+
+# Start PM2 manually if needed
+ssh user@server "docker exec magic-video-container pm2 start /app/ecosystem.config.cjs"
+
+# Check PM2 logs for errors
+ssh user@server "docker exec magic-video-container pm2 logs --err"
+```
+
+### ESM/CommonJS Issues
+If you see "module is not defined" errors:
+- Ensure ecosystem config uses `.cjs` extension (not `.js`)
+- Update all references in Dockerfile and supervisor.conf
+- The file must use `module.exports` syntax (CommonJS)
 
 ### SSL certificate issues
 ```bash
