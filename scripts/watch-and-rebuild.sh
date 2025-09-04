@@ -117,24 +117,33 @@ while true; do
                 ln -sf /app/astro-multi-tenant/dist /app/dist
             fi
             
-            # Restart frontend process by killing node and letting supervisor restart it
+            # Restart frontend process - kill ALL node processes to ensure clean restart
             echo "$LOG_PREFIX 🔄 Restarting frontend service..."
-            # Kill the node process - supervisor will auto-restart it
-            if pkill -f "node dist/server/entry.mjs" 2>/dev/null || killall node 2>/dev/null; then
-                echo "$LOG_PREFIX ✅ Killed frontend process, supervisor will restart"
-                sleep 2
-                # Verify it restarted
-                if pgrep -f "node dist/server/entry.mjs" > /dev/null; then
-                    echo "$LOG_PREFIX ✅ Frontend service restarted successfully"
-                else
-                    echo "$LOG_PREFIX ⚠️  Starting frontend manually..."
-                    cd /app/astro-multi-tenant && nohup node dist/server/entry.mjs > /tmp/frontend.log 2>&1 &
-                    echo "$LOG_PREFIX ✅ Frontend service started"
-                fi
+            
+            # Kill all node processes (multiple attempts to ensure it's dead)
+            echo "$LOG_PREFIX 🛑 Killing all node processes..."
+            killall -9 node 2>/dev/null || true
+            sleep 1
+            killall -9 node 2>/dev/null || true
+            
+            # Double check port is free
+            if lsof -i:4321 > /dev/null 2>&1; then
+                echo "$LOG_PREFIX ⚠️  Port 4321 still in use, force killing..."
+                lsof -ti:4321 | xargs kill -9 2>/dev/null || true
+                sleep 1
+            fi
+            
+            # Start fresh
+            echo "$LOG_PREFIX 🚀 Starting fresh frontend process..."
+            cd /app/astro-multi-tenant && nohup node dist/server/entry.mjs > /tmp/frontend.log 2>&1 &
+            NEW_PID=$!
+            sleep 3
+            
+            # Verify it started
+            if kill -0 $NEW_PID 2>/dev/null; then
+                echo "$LOG_PREFIX ✅ Frontend service restarted successfully (PID: $NEW_PID)"
             else
-                echo "$LOG_PREFIX ⚠️  No frontend process found, starting it..."
-                cd /app/astro-multi-tenant && nohup node dist/server/entry.mjs > /tmp/frontend.log 2>&1 &
-                echo "$LOG_PREFIX ✅ Frontend service started"
+                echo "$LOG_PREFIX ❌ Failed to start frontend service"
             fi
         else
             echo "$LOG_PREFIX ❌ Frontend build failed!"
