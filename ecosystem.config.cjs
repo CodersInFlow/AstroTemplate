@@ -1,8 +1,8 @@
 module.exports = {
   apps: [{
     name: 'astro-multi-tenant',
-    script: './dist/server/entry.mjs',
-    cwd: '/app/astro-multi-tenant',
+    script: '/app/dist/server/entry.mjs',
+    cwd: '/app',
     instances: 'max', // Use all CPU cores
     exec_mode: 'cluster',
     watch: false, // Watcher script handles this
