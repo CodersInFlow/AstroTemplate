@@ -43,7 +43,7 @@ const HeaderData = ({ data = {} }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-border">
+    <header className="sticky top-0 z-50 bg-surface border-b border-border">
       <div className="px-4 h-14 flex items-center justify-between">
         {/* Logo */}
         <a href={logo.href} className="flex items-center space-x-2 hover:opacity-80 transition-opacity">

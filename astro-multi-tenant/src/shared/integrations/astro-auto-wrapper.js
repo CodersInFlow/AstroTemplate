@@ -54,6 +54,7 @@ export function astroAutoWrapper() {
                   };
 
                   // Only process .astro files in sites directories (pages and layout)
+                  // Only process .astro files in sites directories (pages and layout)
                   if (!id.endsWith('.astro') || !id.includes('/sites/')) {
                     return null;
                   }

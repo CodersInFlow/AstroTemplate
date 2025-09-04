@@ -2,6 +2,7 @@
 // ONE layout to rule them all!
 import { getTenantFromHost } from '../shared/lib/tenant';
 import DevModeOverlay from '../shared/components/Dev/DevModeOverlay.tsx';
+import DevWrapper from '../shared/components/Dev/DevWrapper.astro';
 
 // Import all configs and styles using import.meta.glob
 const configs = import.meta.glob('../sites/*/config.json', { eager: true });
@@ -84,13 +85,29 @@ const googleFonts = config.fonts?.google || 'https://fonts.googleapis.com/css2?f
   
   <body class={`tenant-${tenantDir.replace('.', '-')} bg-background text-text-primary`}>
     <!-- Header (if site has one) -->
-    {showNav && Header ? <Header /> : null}
+    {showNav && Header ? (
+      isDevelopment ? (
+        <DevWrapper componentName="Header" dataPath={`../data/header.json`}>
+          <Header />
+        </DevWrapper>
+      ) : (
+        <Header />
+      )
+    ) : null}
     
     <!-- Page content -->
     <slot />
     
     <!-- Footer (if site has one) -->
-    {showFooter && Footer ? <Footer /> : null}
+    {showFooter && Footer ? (
+      isDevelopment ? (
+        <DevWrapper componentName="Footer" dataPath={`../data/footer.json`}>
+          <Footer />
+        </DevWrapper>
+      ) : (
+        <Footer />
+      )
+    ) : null}
     
     <!-- Dev overlay in development -->
     {isDevelopment && <DevModeOverlay client:load />}

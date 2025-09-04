@@ -1,4 +1,5 @@
 ---
+import MainTitleHeader from '../../../shared/components/Headers/MainTitleHeader.jsx';
 import Hero from '../../../shared/components/Hero/Hero.jsx';
 import ProjectsHeader from '../../../shared/components/sections/ProjectsHeader.jsx';
 import ProjectsItems from '../../../shared/components/sections/ProjectsItems.jsx';
@@ -10,6 +11,7 @@ import ContactHeader from '../../../shared/components/Contact/ContactHeader.jsx'
 import ContactInfo from '../../../shared/components/Contact/ContactInfo.jsx';
 
 // Import data
+import mainTitleData from '../data/main-title.json';
 import heroData from '../data/hero.json';
 import projectsHeaderData from '../data/projects-header.json';
 import projectsItemsData from '../data/projects-items.json';
@@ -22,6 +24,7 @@ import contactInfoData from '../data/contact-info.json';
 ---
 
   <main>
+    <MainTitleHeader data={mainTitleData} />
     <Hero client:visible data={heroData} />
     <ProjectsHeader data={projectsHeaderData} />
     <ProjectsItems client:visible data={projectsItemsData} />
