@@ -36,7 +36,7 @@ const PhoneMockupHero: React.FC<PhoneMockupHeroProps> = ({ data }) => {
   }, []);
 
   return (
-    <section className="pt-16 pb-10 text-white relative overflow-hidden bg-gradient-to-br from-background via-surface to-background min-h-screen flex items-center">
+    <section className="py-16 text-white relative overflow-hidden bg-gradient-to-br from-background via-surface to-background min-h-screen flex items-center">
       {/* Animated background elements */}
       <div className="absolute inset-0">
         {/* Floating orbs */}
@@ -108,8 +108,8 @@ const PhoneMockupHero: React.FC<PhoneMockupHeroProps> = ({ data }) => {
             </div>
           </div>
 
-          {/* Phone Mockup with Advanced Animation */}
-          <div className="flex justify-center relative">
+          {/* Phone Mockup with Feature Badges */}
+          <div className="flex justify-center items-center gap-8 relative">
             {/* Glow effect behind phone */}
             <div className={`absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl ${mounted ? 'animate-pulse-slow' : 'opacity-0'}`} />
             
@@ -153,16 +153,18 @@ const PhoneMockupHero: React.FC<PhoneMockupHeroProps> = ({ data }) => {
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Floating UI Elements */}
-              <div className={`absolute -top-4 -right-4 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2 text-green-400 text-sm font-semibold ${mounted ? 'animate-bounce-in animation-delay-1200' : 'opacity-0'}`}>
-                Connected
+            {/* Feature badges stacked as separate div */}
+            <div className="flex flex-col gap-3">
+              <div className={`bg-green-500/10 border border-green-500/30 rounded-full px-4 py-2 text-green-400 text-sm font-semibold whitespace-nowrap ${mounted ? 'animate-slide-in-right animation-delay-1200' : 'opacity-0'}`}>
+                ✓ Connected
               </div>
-              <div className={`absolute top-20 -left-8 bg-blue-500/10 border border-blue-500/30 rounded-full px-4 py-2 text-blue-400 text-sm font-semibold ${mounted ? 'animate-bounce-in animation-delay-1400' : 'opacity-0'}`}>
-                WiFi Ready
+              <div className={`bg-blue-500/10 border border-blue-500/30 rounded-full px-4 py-2 text-blue-400 text-sm font-semibold whitespace-nowrap ${mounted ? 'animate-slide-in-right animation-delay-1400' : 'opacity-0'}`}>
+                📶 WiFi Ready
               </div>
-              <div className={`absolute bottom-20 -right-8 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-2 text-purple-400 text-sm font-semibold ${mounted ? 'animate-bounce-in animation-delay-1600' : 'opacity-0'}`}>
-                Secure
+              <div className={`bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-2 text-purple-400 text-sm font-semibold whitespace-nowrap ${mounted ? 'animate-slide-in-right animation-delay-1600' : 'opacity-0'}`}>
+                🔒 Secure
               </div>
             </div>
           </div>

@@ -11,18 +11,16 @@ import testimonialsData from '../data/testimonials.json';
 import ctaData from '../data/cta.json';
 import footerData from '../data/footer.json';
 
-// Import custom DockHub components
-import PhoneMockupHero from '../components/PhoneMockupHero.tsx';
-import ProblemsCards from '../components/ProblemsCards.tsx';
-import StepByStepProcess from '../components/StepByStepProcess.tsx';
-import CompatibilityBrands from '../components/CompatibilityBrands.tsx';
-import InstallerBenefits from '../components/InstallerBenefits.tsx';
-import DockHubFeatures from '../components/DockHubFeatures.tsx';
-import DockHubTestimonials from '../components/DockHubTestimonials.tsx';
-import DockHubCTA from '../components/DockHubCTA.tsx';
-import DockHubFooter from '../components/DockHubFooter.tsx';
-
 // Import shared components
+import PhoneMockupHero from '../../../shared/components/Hero/PhoneMockupHero.tsx';
+import ProblemsCards from '../../../shared/components/sections/ProblemsCards.tsx';
+import StepByStepProcess from '../../../shared/components/sections/StepByStepProcess.tsx';
+import CompatibilityBrands from '../../../shared/components/sections/CompatibilityBrands.tsx';
+import InstallerBenefits from '../../../shared/components/sections/InstallerBenefits.tsx';
+import SimpleFeatures from '../../../shared/components/sections/SimpleFeatures.tsx';
+import TestimonialsGrid from '../../../shared/components/sections/TestimonialsGrid.tsx';
+import SimpleCTA from '../../../shared/components/sections/SimpleCTA.tsx';
+import SimpleFooter from '../../../shared/components/sections/SimpleFooter.tsx';
 import ComparisonTable from '../../../shared/components/Comparison/ComparisonTable.tsx';
 ---
 
@@ -40,7 +38,7 @@ import ComparisonTable from '../../../shared/components/Comparison/ComparisonTab
   
   <!-- Features Grid -->
   <section id="features">
-    <DockHubFeatures client:visible data={featuresData} />
+    <SimpleFeatures client:visible data={featuresData} />
   </section>
   
   <!-- How It Works -->
@@ -58,14 +56,14 @@ import ComparisonTable from '../../../shared/components/Comparison/ComparisonTab
   
   <!-- Testimonials -->
   <section class="py-16 bg-white">
-    <DockHubTestimonials client:visible data={testimonialsData} />
+    <TestimonialsGrid client:visible data={testimonialsData} />
   </section>
   
   <!-- CTA Section -->
-  <DockHubCTA client:visible data={ctaData} />
+  <SimpleCTA client:visible data={ctaData} />
   
   <!-- Footer -->
-  <DockHubFooter data={footerData} />
+  <SimpleFooter data={footerData} />
 </main>
 
 <style>
