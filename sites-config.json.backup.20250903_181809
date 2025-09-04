@@ -195,5 +195,41 @@
     "database": "welcome_db",
     "theme": "light",
     "features": []
+  },
+  "alexgarrison.org": {
+    "id": "alexgarrison",
+    "name": "alexgarrison",
+    "description": "Welcome to alexgarrison",
+    "directory": "alexgarrison.org",
+    "database": "alexgarrison_db",
+    "theme": "light",
+    "features": [
+      "blog",
+      "docs"
+    ]
+  },
+  "www.alexgarrison.org": {
+    "id": "alexgarrison",
+    "name": "alexgarrison",
+    "description": "Welcome to alexgarrison",
+    "directory": "alexgarrison.org",
+    "database": "alexgarrison_db",
+    "theme": "light",
+    "features": [
+      "blog",
+      "docs"
+    ]
+  },
+  "alexgarrison.localhost": {
+    "id": "alexgarrison",
+    "name": "alexgarrison",
+    "description": "Welcome to alexgarrison",
+    "directory": "alexgarrison.org",
+    "database": "alexgarrison_db",
+    "theme": "light",
+    "features": [
+      "blog",
+      "docs"
+    ]
   }
 }

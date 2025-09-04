@@ -163,6 +163,21 @@ if [ -d "nginx/includes" ]; then
     done
 fi
 
+# Sync entire project to /var/www/astro for rebuild capability
+echo "📤 Syncing project to /var/www/astro..."
+rsync -avz --delete \
+    -e "ssh -p $SSH_PORT" \
+    --exclude 'node_modules' \
+    --exclude '.git' \
+    --exclude '.docker-build-output' \
+    --exclude '.docker-build-temp' \
+    --exclude 'dist' \
+    --exclude '.env' \
+    --exclude 'mongodb-data' \
+    --exclude 'uploads' \
+    ./ \
+    $USER@$SERVER:/var/www/astro/
+
 # Upload filtered sites-config.json
 if [ -f "blacklist.txt" ]; then
     echo "📝 Creating filtered sites-config.json..."
@@ -214,7 +229,7 @@ ssh -p $SSH_PORT $USER@$SERVER << EOF
   docker stop $CONTAINER_NAME 2>/dev/null || true
   docker rm $CONTAINER_NAME 2>/dev/null || true
   
-  # Start new container with docker run (only mount data directories)
+  # Start new container with full project mount for auto-rebuild
   docker run -d \
     --name $CONTAINER_NAME \
     -p 4321:4321 \
@@ -226,8 +241,8 @@ ssh -p $SSH_PORT $USER@$SERVER << EOF
     -e JWT_SECRET="${JWT_SECRET:-super-secret-jwt-key}" \
     -e PUBLIC_API_URL="${PUBLIC_API_URL:-https://magicvideodownloader.com}" \
     -e CORS_ORIGIN="${CORS_ORIGIN:-*}" \
+    -v /var/www/astro:/app \
     -v $REMOTE_BASE_DIR/uploads:/app/uploads \
-    -v $REMOTE_BASE_DIR/public:/app/public \
     -v $REMOTE_BASE_DIR/mongodb-data:/data/db \
     --restart unless-stopped \
     $REMOTE_IMAGE
@@ -250,6 +265,15 @@ ssh -p $SSH_PORT $USER@$SERVER << EOF
   # Set permissions
   chown -R www-data:www-data /var/www/docker/uploads 2>/dev/null || true
   chmod -R 755 /var/www/docker
+  
+  # Fix SSL certificate permissions for dynamic loading
+  echo "🔐 Fixing SSL certificate permissions..."
+  for cert_dir in /etc/letsencrypt/archive/*; do
+    if [ -d "\$cert_dir" ]; then
+      chmod 644 \$cert_dir/*.pem 2>/dev/null || true
+      echo "  ✓ Fixed permissions for \$(basename \$cert_dir)"
+    fi
+  done
   
   # Test and reload nginx
   echo "🔄 Testing and reloading nginx..."

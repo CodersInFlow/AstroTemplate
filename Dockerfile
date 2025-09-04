@@ -55,6 +55,11 @@ COPY --from=frontend-builder /build/node_modules /app/node_modules-internal
 COPY --from=frontend-builder /build/src/sites /app/src/sites-internal
 RUN mkdir -p /app/src/sites
 
+# Copy ALL source files for rebuild capability
+COPY --from=frontend-builder /build/src /app/src-internal
+COPY --from=frontend-builder /build/astro.config.mjs /app/
+COPY --from=frontend-builder /build/tsconfig.json /app/
+
 # Copy backend (both internal and for external mount)
 COPY --from=backend-builder /build/server /app/server-internal
 COPY --from=backend-builder /build/server /app/server
@@ -66,7 +71,7 @@ COPY sites-config.json /app/sites-config.json
 COPY scripts/supervisor.conf /etc/supervisor/supervisord.conf
 
 # Copy and setup entrypoint script
-COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
+COPY scripts/docker-entrypoint-rebuild.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Expose ports (these will be overridden by runtime env vars)

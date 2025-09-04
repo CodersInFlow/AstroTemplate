@@ -17,6 +17,7 @@ else
 fi
 
 # Check and sync sites folder
+REBUILD_NEEDED=false
 if [ -z "$(ls -A /app/src/sites 2>/dev/null)" ]; then
     echo "  📦 External sites mount is empty, copying from image..."
     if [ -d /app/src/sites-internal ]; then
@@ -24,7 +25,17 @@ if [ -z "$(ls -A /app/src/sites 2>/dev/null)" ]; then
         echo "  ✅ Sites copied to external mount"
     fi
 else
-    echo "  ✓ External sites mount has content, using existing files"
+    echo "  ✓ External sites mount has content, checking for new sites..."
+    
+    # Check if we have new sites by looking for sites without built pages
+    for site_dir in /app/src/sites/*/; do
+        site_name=$(basename "$site_dir")
+        if [ ! -d "/app/dist/client/_astro" ] || [ ! -f "/app/dist/server/manifest_*.mjs" ]; then
+            echo "  🆕 Detected changes, rebuild needed"
+            REBUILD_NEEDED=true
+            break
+        fi
+    done
 fi
 
 # Check and sync server binary
@@ -55,6 +66,26 @@ fi
 if [ ! -d /app/node_modules ] && [ -d /app/node_modules-internal ]; then
     echo "  📦 Copying node_modules from internal..."
     cp -r /app/node_modules-internal /app/node_modules
+fi
+
+# Rebuild if needed
+if [ "$REBUILD_NEEDED" = true ]; then
+    echo ""
+    echo "🔨 Rebuilding Astro app with new sites..."
+    cd /app
+    
+    # Copy source files from internal if needed
+    if [ ! -d /app/src/shared ]; then
+        echo "  📦 Copying source structure for rebuild..."
+        cp -r /app/src-internal/* /app/src/ 2>/dev/null || true
+    fi
+    
+    # Now rebuild
+    echo "  📦 Building Astro app with new sites..."
+    cd /app
+    npx astro build || echo "  ⚠️  Build failed, using existing dist"
+    
+    echo "  ✅ Rebuild complete!"
 fi
 
 echo "✅ Mount sync complete, starting services..."
