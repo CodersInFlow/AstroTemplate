@@ -84,13 +84,13 @@ const googleFonts = config.fonts?.google || 'https://fonts.googleapis.com/css2?f
   
   <body class={`tenant-${tenantDir.replace('.', '-')} bg-background text-text-primary`}>
     <!-- Header (if site has one) -->
-    {showNav && Header && <Header />}
+    {showNav && Header ? <Header /> : null}
     
     <!-- Page content -->
     <slot />
     
     <!-- Footer (if site has one) -->
-    {showFooter && Footer && <Footer />}
+    {showFooter && Footer ? <Footer /> : null}
     
     <!-- Dev overlay in development -->
     {isDevelopment && <DevModeOverlay client:load />}
