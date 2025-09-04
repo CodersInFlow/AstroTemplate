@@ -60,7 +60,8 @@ push_filtered() {
     fi
     
     # Add GitHub remote
-    git remote add github $(cd - && git remote get-url github 2>/dev/null || git remote get-url origin)
+    GITHUB_URL=$(cd - > /dev/null 2>&1 && git remote get-url github 2>/dev/null || git remote get-url origin 2>/dev/null | grep github || echo "git@github.com:CodersInFlow/AstroTemplate.git")
+    git remote add github "$GITHUB_URL"
     
     # Push to GitHub
     if [[ "$FORCE" == "--force" ]]; then
