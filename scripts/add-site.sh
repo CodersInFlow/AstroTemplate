@@ -118,7 +118,13 @@ SITE_ID="${DOMAIN%%.*}"
 # Generate display name if not provided
 if [ -z "$NAME" ]; then
     # Convert domain to title case (example-site -> Example Site)
-    NAME=$(echo "$SITE_ID" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
+    # Use awk for better portability across systems
+    NAME=$(echo "$SITE_ID" | awk '{gsub(/-/," "); for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))} 1')
+    
+    # If awk conversion failed, fallback to simple replacement
+    if [ -z "$NAME" ] || [ "$NAME" = "$SITE_ID" ]; then
+        NAME=$(echo "$SITE_ID" | sed 's/-/ /g')
+    fi
 fi
 
 # Generate description if not provided
