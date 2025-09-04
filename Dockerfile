@@ -27,7 +27,7 @@ RUN go mod download && \
 # Runtime stage  
 FROM node:20-slim
 
-# Install supervisor, MongoDB, Go, inotify-tools, PM2 and required tools
+# Install supervisor, MongoDB, Go, inotify-tools and required tools
 RUN apt-get update && apt-get install -y \
     supervisor \
     wget \
@@ -39,9 +39,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get update \
     && apt-get install -y mongodb-org \
     && curl -L https://go.dev/dl/go1.21.5.linux-amd64.tar.gz | tar -C /usr/local -xz \
-    && npm install -g pm2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Install PM2 globally
+RUN npm install -g pm2
 
 # Add Go to PATH
 ENV PATH="/usr/local/go/bin:${PATH}"
@@ -76,7 +78,7 @@ RUN chmod +x /app/server /app/server-internal
 COPY sites-config.json /app/sites-config-internal.json
 COPY sites-config.json /app/sites-config.json
 COPY scripts/supervisor.conf /etc/supervisor/supervisord.conf
-COPY ecosystem.config.js /app/ecosystem.config.js
+COPY ecosystem.config.cjs /app/ecosystem.config.cjs
 
 # Copy and setup entrypoint script
 COPY scripts/docker-entrypoint-rebuild.sh /docker-entrypoint.sh

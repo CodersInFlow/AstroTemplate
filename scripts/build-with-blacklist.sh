@@ -54,6 +54,7 @@ rsync -a --no-links backend/ $BUILD_DIR/backend/
 echo "  Copying configuration files..."
 cp sites-config.json $BUILD_DIR/
 cp Dockerfile $BUILD_DIR/
+cp ecosystem.config.cjs $BUILD_DIR/ 2>/dev/null || true
 cp -r scripts $BUILD_DIR/
 
 # Filter sites-config.json to exclude blacklisted sites
