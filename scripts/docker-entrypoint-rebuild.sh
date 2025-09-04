@@ -57,5 +57,11 @@ fi
 echo ""
 echo "🚀 Starting services..."
 
-# Start supervisor
-exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+# Use synced supervisor config if available
+if [ -f "/app/scripts/supervisor.conf" ]; then
+    echo "Using synced supervisor config..."
+    exec /usr/bin/supervisord -n -c /app/scripts/supervisor.conf
+else
+    echo "Using default supervisor config..."
+    exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+fi

@@ -27,17 +27,22 @@ RUN go mod download && \
 # Runtime stage  
 FROM node:20-slim
 
-# Install supervisor, MongoDB and required tools
+# Install supervisor, MongoDB, Go, and required tools
 RUN apt-get update && apt-get install -y \
     supervisor \
     wget \
     gnupg \
+    curl \
     && wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | apt-key add - \
     && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list \
     && apt-get update \
     && apt-get install -y mongodb-org \
+    && curl -L https://go.dev/dl/go1.21.5.linux-amd64.tar.gz | tar -C /usr/local -xz \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Add Go to PATH
+ENV PATH="/usr/local/go/bin:${PATH}"
 
 # Create necessary directories
 RUN mkdir -p /var/log/supervisor /data/db /var/log/mongodb

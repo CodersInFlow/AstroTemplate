@@ -50,11 +50,13 @@ rsync -avz --delete \
 echo ""
 echo "🐳 Restarting Docker container to rebuild..."
 ssh -p $SSH_PORT $USER@$SERVER << 'EOF'
+    # Make entrypoint executable
+    chmod +x /var/www/astro/scripts/docker-entrypoint-rebuild.sh
     # Stop and remove old container
     docker stop magic-video-container 2>/dev/null || true
     docker rm magic-video-container 2>/dev/null || true
     
-    # Start new container with full project mount
+    # Start new container with full project mount and custom entrypoint
     docker run -d \
         --name magic-video-container \
         -p 4321:4321 \
@@ -68,6 +70,7 @@ ssh -p $SSH_PORT $USER@$SERVER << 'EOF'
         -v /var/www/astro:/app \
         -v /var/www/docker/uploads:/app/uploads \
         -v /var/www/docker/mongodb-data:/data/db \
+        --entrypoint /app/scripts/docker-entrypoint-rebuild.sh \
         --restart unless-stopped \
         proggod/magic-video-app:latest
     
