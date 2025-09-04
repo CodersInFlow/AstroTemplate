@@ -267,41 +267,5 @@
       "blog",
       "docs"
     ]
-  },
-  "andreaimagines.com": {
-    "id": "andreaimagines",
-    "name": "andreaimagines",
-    "description": "Welcome to andreaimagines",
-    "directory": "andreaimagines.com",
-    "database": "andreaimagines_db",
-    "theme": "light",
-    "features": [
-      "blog",
-      "docs"
-    ]
-  },
-  "www.andreaimagines.com": {
-    "id": "andreaimagines",
-    "name": "andreaimagines",
-    "description": "Welcome to andreaimagines",
-    "directory": "andreaimagines.com",
-    "database": "andreaimagines_db",
-    "theme": "light",
-    "features": [
-      "blog",
-      "docs"
-    ]
-  },
-  "andreaimagines.localhost": {
-    "id": "andreaimagines",
-    "name": "andreaimagines",
-    "description": "Welcome to andreaimagines",
-    "directory": "andreaimagines.com",
-    "database": "andreaimagines_db",
-    "theme": "light",
-    "features": [
-      "blog",
-      "docs"
-    ]
   }
 }

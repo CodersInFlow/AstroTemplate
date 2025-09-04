@@ -117,16 +117,24 @@ while true; do
                 ln -sf /app/astro-multi-tenant/dist /app/dist
             fi
             
-            # Restart frontend process
+            # Restart frontend process by killing node and letting supervisor restart it
             echo "$LOG_PREFIX 🔄 Restarting frontend service..."
-            if supervisorctl restart frontend 2>&1 | grep -E "started|ERROR"; then
-                echo "$LOG_PREFIX ✅ Frontend service restarted"
+            # Kill the node process - supervisor will auto-restart it
+            if pkill -f "node dist/server/entry.mjs" 2>/dev/null || killall node 2>/dev/null; then
+                echo "$LOG_PREFIX ✅ Killed frontend process, supervisor will restart"
+                sleep 2
+                # Verify it restarted
+                if pgrep -f "node dist/server/entry.mjs" > /dev/null; then
+                    echo "$LOG_PREFIX ✅ Frontend service restarted successfully"
+                else
+                    echo "$LOG_PREFIX ⚠️  Starting frontend manually..."
+                    cd /app/astro-multi-tenant && nohup node dist/server/entry.mjs > /tmp/frontend.log 2>&1 &
+                    echo "$LOG_PREFIX ✅ Frontend service started"
+                fi
             else
-                echo "$LOG_PREFIX ❌ Failed to restart frontend service"
-                # Try alternative restart method
-                supervisorctl stop frontend
-                sleep 1
-                supervisorctl start frontend
+                echo "$LOG_PREFIX ⚠️  No frontend process found, starting it..."
+                cd /app/astro-multi-tenant && nohup node dist/server/entry.mjs > /tmp/frontend.log 2>&1 &
+                echo "$LOG_PREFIX ✅ Frontend service started"
             fi
         else
             echo "$LOG_PREFIX ❌ Frontend build failed!"
