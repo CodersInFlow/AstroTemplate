@@ -231,41 +231,5 @@
       "blog",
       "docs"
     ]
-  },
-  "adcontrol.com": {
-    "id": "adcontrol",
-    "name": "adcontrol",
-    "description": "Welcome to adcontrol",
-    "directory": "adcontrol.com",
-    "database": "adcontrol_db",
-    "theme": "light",
-    "features": [
-      "blog",
-      "docs"
-    ]
-  },
-  "www.adcontrol.com": {
-    "id": "adcontrol",
-    "name": "adcontrol",
-    "description": "Welcome to adcontrol",
-    "directory": "adcontrol.com",
-    "database": "adcontrol_db",
-    "theme": "light",
-    "features": [
-      "blog",
-      "docs"
-    ]
-  },
-  "adcontrol.localhost": {
-    "id": "adcontrol",
-    "name": "adcontrol",
-    "description": "Welcome to adcontrol",
-    "directory": "adcontrol.com",
-    "database": "adcontrol_db",
-    "theme": "light",
-    "features": [
-      "blog",
-      "docs"
-    ]
   }
 }

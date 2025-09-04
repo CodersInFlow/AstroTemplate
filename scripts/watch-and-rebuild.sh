@@ -8,6 +8,9 @@ LAST_BUILD_TIME=0
 DEBOUNCE_SECONDS=3
 LOG_PREFIX="[WATCHER]"
 
+# Clean up lock file on exit
+trap "rm -f $LOCK_FILE $LOCK_FILE.queued; echo '$LOG_PREFIX 🛑 Watcher stopped, cleaned up lock files'" EXIT INT TERM
+
 echo "$LOG_PREFIX 👁️  Starting file watcher for auto-rebuild..."
 echo "$LOG_PREFIX    Watching: /app/astro-multi-tenant/src/sites/"
 echo "$LOG_PREFIX    Watching: /app/sites-config.json"
@@ -39,9 +42,15 @@ while true; do
     
     # Check lock to prevent concurrent builds
     if [ -f "$LOCK_FILE" ]; then
-        echo "$LOG_PREFIX ⏭️  Build already in progress, queuing rebuild..."
-        touch "$LOCK_FILE.queued"
-        continue
+        # Check if lock is stale (older than 5 minutes)
+        if [ $(find "$LOCK_FILE" -mmin +5 2>/dev/null | wc -l) -gt 0 ]; then
+            echo "$LOG_PREFIX 🔓 Removing stale lock file (older than 5 minutes)"
+            rm -f "$LOCK_FILE"
+        else
+            echo "$LOG_PREFIX ⏭️  Build already in progress, queuing rebuild..."
+            touch "$LOCK_FILE.queued"
+            continue
+        fi
     fi
     
     # Lock to prevent concurrent builds

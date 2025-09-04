@@ -50,6 +50,16 @@ rsync -avz --delete \
     ./ \
     $USER@$SERVER:$REMOTE_DIR/
 
+# Fix SSL certificate permissions for new domains
+echo "🔐 Fixing SSL certificate permissions..."
+ssh -p $SSH_PORT $USER@$SERVER << 'ENDSSH'
+  for cert_dir in /etc/letsencrypt/archive/*; do
+    if [ -d "$cert_dir" ]; then
+      chmod 644 "$cert_dir"/*.pem 2>/dev/null || true
+    fi
+  done
+ENDSSH
+
 echo ""
 echo "✅ Hot sync complete!"
 echo "====================="
