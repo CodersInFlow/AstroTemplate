@@ -133,9 +133,13 @@ while true; do
                 sleep 1
             fi
             
-            # Start fresh
+            # Clear Node module cache to ensure fresh routes
+            echo "$LOG_PREFIX 🧹 Clearing Node module cache..."
+            rm -rf /tmp/v8-compile-cache* 2>/dev/null || true
+            
+            # Start fresh with NODE_ENV to ensure no caching
             echo "$LOG_PREFIX 🚀 Starting fresh frontend process..."
-            cd /app/astro-multi-tenant && nohup node dist/server/entry.mjs > /tmp/frontend.log 2>&1 &
+            cd /app/astro-multi-tenant && NODE_ENV=production nohup node --no-warnings dist/server/entry.mjs > /tmp/frontend.log 2>&1 &
             NEW_PID=$!
             sleep 3
             

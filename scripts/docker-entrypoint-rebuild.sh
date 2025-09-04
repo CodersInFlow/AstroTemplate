@@ -61,7 +61,8 @@ echo "🚀 Starting services..."
 if [ -f "/app/scripts/watch-and-rebuild.sh" ] && [ -d "/app/astro-multi-tenant" ]; then
     echo "👁️  Starting auto-rebuild watcher..."
     chmod +x /app/scripts/watch-and-rebuild.sh
-    /app/scripts/watch-and-rebuild.sh &
+    # Run watcher with proper environment to ensure Docker paths are used
+    cd /app && /app/scripts/watch-and-rebuild.sh &
     echo "✅ File watcher started (PID: $!)"
 else
     echo "ℹ️  Auto-rebuild not available (no watch script or full project)"
