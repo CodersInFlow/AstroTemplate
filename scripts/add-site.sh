@@ -67,7 +67,8 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             if [ -z "$DOMAIN" ]; then
-                DOMAIN="$1"
+                # Force domain to lowercase for consistency
+                DOMAIN=$(echo "$1" | tr '[:upper:]' '[:lower:]')
             fi
             shift
             ;;
@@ -112,19 +113,13 @@ if [[ "$DOMAIN" == www.* ]]; then
     exit 1
 fi
 
-# Extract site ID from domain (remove .com, .org, etc.)
-SITE_ID="${DOMAIN%%.*}"
+# Extract site ID from domain (remove .com, .org, etc.) and force lowercase
+SITE_ID=$(echo "${DOMAIN%%.*}" | tr '[:upper:]' '[:lower:]')
 
 # Generate display name if not provided
 if [ -z "$NAME" ]; then
-    # Convert domain to title case (example-site -> Example Site)
-    # Use awk for better portability across systems
-    NAME=$(echo "$SITE_ID" | awk '{gsub(/-/," "); for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))} 1')
-    
-    # If awk conversion failed, fallback to simple replacement
-    if [ -z "$NAME" ] || [ "$NAME" = "$SITE_ID" ]; then
-        NAME=$(echo "$SITE_ID" | sed 's/-/ /g')
-    fi
+    # Keep everything lowercase for consistency
+    NAME="$SITE_ID"
 fi
 
 # Generate description if not provided
