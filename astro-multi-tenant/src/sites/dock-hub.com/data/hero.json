@@ -1,0 +1,25 @@
+{
+  "title": "Control Your Boat Lift",
+  "titleHighlight": "From Anywhere",
+  "subtitle": "The smart alternative to lost remotes. Start your lift before you arrive. Install in minutes, not hours.",
+  "primaryButton": {
+    "text": "See How It Works",
+    "link": "#how-it-works"
+  },
+  "secondaryButton": {
+    "text": "Check Compatibility",
+    "link": "#compatibility"
+  },
+  "phoneMockup": {
+    "appName": "DockHub Control",
+    "status": "Lift Status: Ready",
+    "upButton": {
+      "label": "↑",
+      "color": "#00ff88"
+    },
+    "downButton": {
+      "label": "↓",
+      "color": "#00a8e8"
+    }
+  }
+}

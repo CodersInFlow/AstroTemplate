@@ -1,0 +1,76 @@
+---
+// Import JSON data files
+import heroData from '../data/hero.json';
+import problemsData from '../data/problems.json';
+import comparisonData from '../data/comparison-table.json';
+import featuresData from '../data/features-dock.json';
+import howItWorksData from '../data/how-it-works.json';
+import compatibilityData from '../data/compatibility.json';
+import installerData from '../data/installer-benefits.json';
+import testimonialsData from '../data/testimonials.json';
+import ctaData from '../data/cta.json';
+import footerData from '../data/footer.json';
+
+// Import custom DockHub components
+import PhoneMockupHero from '../components/PhoneMockupHero.tsx';
+import ProblemsCards from '../components/ProblemsCards.tsx';
+import StepByStepProcess from '../components/StepByStepProcess.tsx';
+import CompatibilityBrands from '../components/CompatibilityBrands.tsx';
+import InstallerBenefits from '../components/InstallerBenefits.tsx';
+import DockHubFeatures from '../components/DockHubFeatures.tsx';
+import DockHubTestimonials from '../components/DockHubTestimonials.tsx';
+import DockHubCTA from '../components/DockHubCTA.tsx';
+import DockHubFooter from '../components/DockHubFooter.tsx';
+
+// Import shared components
+import ComparisonTable from '../../../shared/components/Comparison/ComparisonTable.tsx';
+---
+
+<main class="bg-background">
+  <!-- Hero Section with Phone Mockup -->
+  <PhoneMockupHero client:load data={heroData} />
+  
+  <!-- Problems Section -->
+  <ProblemsCards client:visible data={problemsData} />
+  
+  <!-- Comparison Table -->
+  <section id="comparison" class="py-16 bg-surface">
+    <ComparisonTable client:visible data={comparisonData} />
+  </section>
+  
+  <!-- Features Grid -->
+  <section id="features">
+    <DockHubFeatures client:visible data={featuresData} />
+  </section>
+  
+  <!-- How It Works -->
+  <section id="how-it-works">
+    <StepByStepProcess client:visible data={howItWorksData} />
+  </section>
+  
+  <!-- Installer Benefits -->
+  <InstallerBenefits client:visible data={installerData} />
+  
+  <!-- Compatibility Section -->
+  <section id="compatibility">
+    <CompatibilityBrands client:visible data={compatibilityData} />
+  </section>
+  
+  <!-- Testimonials -->
+  <section class="py-16 bg-white">
+    <DockHubTestimonials client:visible data={testimonialsData} />
+  </section>
+  
+  <!-- CTA Section -->
+  <DockHubCTA client:visible data={ctaData} />
+  
+  <!-- Footer -->
+  <DockHubFooter data={footerData} />
+</main>
+
+<style>
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+</style>

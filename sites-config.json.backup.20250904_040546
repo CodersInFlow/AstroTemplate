@@ -303,41 +303,5 @@
       "blog",
       "docs"
     ]
-  },
-  "dock-hub.com": {
-    "id": "dock-hub",
-    "name": "DockHub",
-    "description": "Smart Boat Lift Controller - Control From Your Phone",
-    "directory": "dock-hub.com",
-    "database": "dock-hub_db",
-    "theme": "dark",
-    "features": [
-      "blog",
-      "docs"
-    ]
-  },
-  "www.dock-hub.com": {
-    "id": "dock-hub",
-    "name": "DockHub",
-    "description": "Smart Boat Lift Controller - Control From Your Phone",
-    "directory": "dock-hub.com",
-    "database": "dock-hub_db",
-    "theme": "dark",
-    "features": [
-      "blog",
-      "docs"
-    ]
-  },
-  "dock-hub.localhost": {
-    "id": "dock-hub",
-    "name": "DockHub",
-    "description": "Smart Boat Lift Controller - Control From Your Phone",
-    "directory": "dock-hub.com",
-    "database": "dock-hub_db",
-    "theme": "dark",
-    "features": [
-      "blog",
-      "docs"
-    ]
   }
 }
