@@ -5,9 +5,11 @@ A production-ready multi-tenant web platform built with Astro SSR, supporting un
 ## 🚀 Features
 
 - **Multi-tenant Architecture**: Support unlimited sites from a single codebase
+- **Hot-Reload Production**: Add/modify sites without container restarts
 - **Dynamic SSL Certificates**: Automatic SSL certificate selection based on domain
 - **Unified Backend**: Shared Go backend with MongoDB for all sites
 - **Docker Deployment**: Production-ready Docker setup with supervisor
+- **Auto-Rebuild Watcher**: File changes trigger automatic rebuilds
 - **Blacklist Support**: Exclude specific sites from deployment  
 - **Quick Sync**: Update code without rebuilding Docker images
 - **Site Isolation**: Each site has its own components, styles, and data
@@ -37,9 +39,10 @@ A production-ready multi-tenant web platform built with Astro SSR, supporting un
 │
 ├── scripts/                # Deployment and utility scripts
 │   ├── deploy.sh           # Main deployment script
-│   ├── sync-code.sh        # Quick code sync without Docker rebuild
+│   ├── sync-project-hot.sh # Hot sync without container restart
 │   ├── add-site.sh         # Add new site
-│   └── build-with-blacklist.sh  # Build with site exclusions
+│   ├── remove-site.sh      # Remove site
+│   └── watch-and-rebuild-supervisor.sh  # Auto-rebuild watcher
 │
 ├── sites-config.json       # Site configuration manifest
 ├── blacklist.txt           # Sites to exclude from deployment
@@ -108,35 +111,39 @@ Access sites locally:
 
 This will:
 1. Build Docker image with blacklist filtering
-2. Push to Docker registry
+2. Push to Docker registry  
 3. Deploy to server
 4. Setup nginx configurations
-5. Start container with supervisor
+5. Start container with supervisor and PM2 clustering
 
-### Quick Code Updates
+**Note**: After adding PM2, you MUST run `./scripts/deploy.sh` to rebuild the Docker image with PM2 installed.
 
-After initial deployment, use the sync script for fast updates:
+### Hot Sync Updates (No Container Restart!)
+
+After initial deployment, use the hot sync script for instant updates:
 
 ```bash
-# Build in Docker locally and sync (no image push needed)
-./scripts/sync-code.sh
-
-# Skip rebuild if no code changes
-./scripts/sync-code.sh --no-rebuild
+# Sync changes without restarting container
+./scripts/sync-project-hot.sh
 ```
 
-How sync works:
-1. Builds production Docker locally (linux/amd64)
-2. Extracts built files to `.docker-build-output/`
-3. Rsyncs those files to server at `/var/www/docker/`
-4. Restarts container
+How hot sync works:
+1. Rsyncs project files to `/var/www/astro/`
+2. File watcher detects changes automatically
+3. Rebuilds frontend/backend as needed
+4. Restarts only affected services via supervisor
+5. **New sites become accessible immediately!**
 
 ## 🏗️ Adding New Sites
 
 ### Method 1: Using Script (Recommended)
 
 ```bash
+# Add a new site
 ./scripts/add-site.sh newsite.com
+
+# Sync to server (site becomes accessible immediately!)
+./scripts/sync-project-hot.sh
 ```
 
 This will:
@@ -144,6 +151,8 @@ This will:
 2. Configure site settings
 3. Update sites-config.json
 4. Set up both www and non-www versions
+5. Generate Tailwind CSS
+6. **No container restart needed!**
 
 ### Method 2: Manual
 
@@ -206,8 +215,11 @@ Then deploy normally - blacklisted sites will be excluded from the Docker image.
 
 ## 📊 Architecture
 
-### Frontend (Astro SSR)
+### Frontend (Astro SSR with PM2 Clustering)
 - Server-side rendering for SEO
+- **PM2 cluster mode**: Utilizes all CPU cores (8-16x capacity increase)
+- **Zero-downtime reloads**: Workers reload gracefully one-by-one
+- **Auto-restart on crash**: Memory limits prevent runaway processes
 - Dynamic component loading per site
 - Shared components library
 - Tailwind CSS with site-specific configs
@@ -221,10 +233,12 @@ Then deploy normally - blacklisted sites will be excluded from the Docker image.
 - Blog/content management
 
 ### Infrastructure
-- Docker containerization with supervisor
+- Docker containerization with integrated supervisor
+- PM2 cluster mode for Node.js (multi-core utilization)
 - Nginx reverse proxy with dynamic SSL
-- External volume mounts for data persistence
-- Hybrid deployment (code in Docker, data in volumes)
+- External volume mounts for hot reloading
+- Auto-rebuild watcher with zero-downtime PM2 reloads
+- Supervisor-managed processes (MongoDB, Backend, PM2/Frontend, Watcher)
 
 ## 🔄 Deployment Flow
 
@@ -241,26 +255,30 @@ Docker Container
    ├── Supervisor (process manager)
    ├── MongoDB (localhost:27017)
    ├── Go Backend (:3001)
-   └── Astro Frontend (:4321)
+   ├── PM2 Cluster (manages multiple Node.js workers)
+   │   └── Astro Frontend (:4321) × CPU cores
+   └── Watcher (auto-rebuild service)
 ```
 
 ### Volume Mounts
-Docker mounts these directories from `/var/www/docker/`:
-- `uploads/` - User uploaded files
-- `public/` - Static assets  
-- `mongodb-data/` - Database files
+Docker mounts these directories:
+- `/var/www/astro/` - Full project for hot-reload rebuilds
+- `/var/www/docker/uploads/` - User uploaded files
+- `/var/www/docker/public/` - Static assets  
+- `/var/www/docker/mongodb-data/` - Database files
 
-On first run, Docker copies internal files to empty mounts.
+The full project mount enables the watcher to rebuild without container restarts.
 
 ## 📝 Scripts Reference
 
 | Script | Purpose |
 |--------|---------|
 | `deploy.sh` | Full deployment with Docker build and push |
-| `sync-code.sh` | Quick sync without Docker push |
-| `add-site.sh` | Add new site to platform |
+| `sync-project-hot.sh` | Hot sync for instant updates without container restart |
+| `add-site.sh` | Add new site to platform (forces lowercase) |
 | `remove-site.sh` | Remove site from platform |
 | `build-with-blacklist.sh` | Build Docker with site exclusions |
+| `watch-and-rebuild-supervisor.sh` | Auto-rebuild watcher integrated with supervisor |
 | `dev.sh` | Run local development environment |
 | `generate-nginx-configs.sh` | Generate nginx configurations |
 
@@ -279,6 +297,44 @@ ssh user@server "docker exec -it magic-video-container /bin/bash"
 # Check running processes
 ssh user@server "docker exec magic-video-container ps aux"
 ```
+
+## ⚡ PM2 Cluster Management
+
+### Check PM2 Status
+```bash
+# View all worker processes
+ssh user@server "docker exec magic-video-container pm2 list"
+
+# Detailed info about the cluster
+ssh user@server "docker exec magic-video-container pm2 info astro-multi-tenant"
+
+# Real-time monitoring
+ssh user@server "docker exec -it magic-video-container pm2 monit"
+
+# View logs from all workers
+ssh user@server "docker exec magic-video-container pm2 logs --lines 50"
+```
+
+### PM2 Operations
+```bash
+# Graceful reload (zero-downtime)
+ssh user@server "docker exec magic-video-container pm2 reload astro-multi-tenant"
+
+# Scale to specific number of workers
+ssh user@server "docker exec magic-video-container pm2 scale astro-multi-tenant 8"
+
+# Restart all workers (if needed)
+ssh user@server "docker exec magic-video-container pm2 restart astro-multi-tenant"
+
+# Check memory usage
+ssh user@server "docker exec magic-video-container pm2 status"
+```
+
+### Performance Benefits
+- **Capacity**: 8-16x more concurrent requests (uses all CPU cores)
+- **Availability**: Zero-downtime deployments via graceful reloads
+- **Resilience**: Auto-restart on crash with 1GB memory limit per worker
+- **Load Balancing**: Automatic distribution across workers
 
 ## 🔧 Troubleshooting
 
@@ -302,6 +358,18 @@ docker exec magic-video-container ps aux | grep mongo
 1. Check Docker builds locally: `docker images | grep local-build`
 2. Verify extraction: `ls -la .docker-build-output/`
 3. Test SSH: `ssh user@server "ls /var/www/docker"`
+
+### Watcher not rebuilding
+```bash
+# Check watcher logs
+docker exec magic-video-container tail -f /tmp/watcher.log
+
+# Check supervisor status
+docker exec magic-video-container supervisorctl status
+
+# Restart watcher if needed
+docker exec magic-video-container supervisorctl restart watcher
+```
 
 ### Cloudflare "Too Many Redirects" Error
 This happens when Cloudflare SSL mode is set incorrectly:

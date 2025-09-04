@@ -86,10 +86,10 @@ while true; do
             # Remove marker
             rm -f $REBUILD_MARKER
             
-            # Use supervisor to restart frontend
-            echo "$LOG_PREFIX 🔄 Restarting frontend via supervisor..."
-            supervisorctl restart frontend
-            echo "$LOG_PREFIX ✅ Frontend restarted successfully"
+            # Use PM2 to gracefully reload frontend (zero-downtime)
+            echo "$LOG_PREFIX 🔄 Gracefully reloading frontend via PM2..."
+            pm2 reload astro-multi-tenant
+            echo "$LOG_PREFIX ✅ Frontend reloaded successfully (zero-downtime)"
         else
             echo "$LOG_PREFIX ❌ Frontend build failed!"
             rm -f $REBUILD_MARKER
