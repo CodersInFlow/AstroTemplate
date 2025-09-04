@@ -1,17 +1,33 @@
 {
+  "cta": {
+    "href": "/order",
+    "text": "Buy Now"
+  },
   "logo": {
-    "text": "DockHub",
-    "href": "/"
+    "href": "/",
+    "text": "DockHub"
   },
   "navigation": [
-    { "href": "/", "text": "Home" },
-    { "href": "/about", "text": "About" },
-    { "href": "/services", "text": "Services" },
-    { "href": "/contact", "text": "Contact" }
+    {
+      "href": "/",
+      "text": "Home"
+    },
+    {
+      "href": "#features",
+      "text": "Features"
+    },
+    {
+      "href": "#how-it-works",
+      "text": "How It Works"
+    },
+    {
+      "href": "#compatibility",
+      "text": "Compatibility"
+    },
+    {
+      "href": "#testimonials",
+      "text": "Reviews"
+    }
   ],
-  "social": [],
-  "cta": {
-    "text": "Get Started",
-    "href": "/contact"
-  }
+  "social": []
 }
