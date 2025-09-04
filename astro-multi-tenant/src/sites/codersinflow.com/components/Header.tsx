@@ -1,39 +1,13 @@
 import React, { useEffect } from 'react';
+import headerData from '../data/header.json';
 
 const Header: React.FC = () => {
-  const data = {
-    logo: { text: "CodersInFlow", href: "/" },
-    navigation: [
-      { href: "/", text: "Home" },
-      { href: "/features", text: "Features" },
-      { href: "/enterprise", text: "Enterprise" },
-      { href: "/blog", text: "Blog" },
-      { href: "/blog/docs", text: "Docs" }
-    ],
-    social: [
-      {
-        name: "Discord",
-        href: "https://discord.com/invite/3QmjpqX2Y5",
-        icon: "discord"
-      },
-      {
-        name: "Reddit", 
-        href: "https://www.reddit.com/r/codersinflow/",
-        icon: "reddit"
-      }
-    ],
-    cta: {
-      text: "Install",
-      href: "/download"
-    }
-  };
-
   const {
     logo = { text: "CodersInFlow", href: "/" },
     navigation = [],
     social = [],
     cta = { text: "Install", href: "/download" }
-  } = data;
+  } = headerData;
 
   useEffect(() => {
     // Add mobile menu toggle functionality
@@ -70,7 +44,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-border">
+    <header className="sticky top-0 z-50 bg-surface border-b border-border">
       <div className="px-4 h-14 flex items-center justify-between">
         {/* Logo */}
         <a href={logo.href} className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
