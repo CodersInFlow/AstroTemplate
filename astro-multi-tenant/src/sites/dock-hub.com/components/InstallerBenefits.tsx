@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ScrollAnimation, useScrollAnimation } from '../../../shared/components/utils/ScrollAnimation';
 
 interface Benefit {
@@ -24,6 +24,14 @@ interface InstallerBenefitsProps {
 
 const InstallerBenefits: React.FC<InstallerBenefitsProps> = ({ data }) => {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [hoveredBar, setHoveredBar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isVisible && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [isVisible, hasAnimated]);
 
   return (
     <section className="py-16 bg-gradient-to-r from-background to-surface text-white">
@@ -107,7 +115,10 @@ const InstallerBenefits: React.FC<InstallerBenefitsProps> = ({ data }) => {
               <div className="bg-background rounded-2xl p-8">
                 {/* Installation time comparison */}
                 <div className="space-y-6">
-                  <div>
+                  <div
+                    onMouseEnter={() => setHoveredBar('traditional')}
+                    onMouseLeave={() => setHoveredBar(null)}
+                  >
                     <p className="text-text-muted text-sm mb-2">Traditional Systems</p>
                     <div className="bg-surface rounded-lg p-4">
                       <div className="flex justify-between items-center mb-2">
@@ -115,12 +126,21 @@ const InstallerBenefits: React.FC<InstallerBenefitsProps> = ({ data }) => {
                         <span className="text-error text-sm">❌ Complex</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div className="bg-error h-2 rounded-full" style={{ width: '90%' }}></div>
+                        <div 
+                          className="bg-error h-2 rounded-full transition-all duration-500 ease-out" 
+                          style={{ 
+                            width: hoveredBar === 'traditional' ? '0%' : (hasAnimated ? '90%' : '0%'),
+                            transitionDelay: hasAnimated && hoveredBar !== 'traditional' ? '300ms' : '0ms'
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
 
-                  <div>
+                  <div
+                    onMouseEnter={() => setHoveredBar('dockhub')}
+                    onMouseLeave={() => setHoveredBar(null)}
+                  >
                     <p className="text-text-muted text-sm mb-2">DockHub Uno</p>
                     <div className="bg-surface rounded-lg p-4">
                       <div className="flex justify-between items-center mb-2">
@@ -128,7 +148,13 @@ const InstallerBenefits: React.FC<InstallerBenefitsProps> = ({ data }) => {
                         <span className="text-success text-sm">✓ Simple</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div className="bg-success h-2 rounded-full animate-pulse" style={{ width: '20%' }}></div>
+                        <div 
+                          className="bg-success h-2 rounded-full transition-all duration-500 ease-out" 
+                          style={{ 
+                            width: hoveredBar === 'dockhub' ? '0%' : (hasAnimated ? '20%' : '0%'),
+                            transitionDelay: hasAnimated && hoveredBar !== 'dockhub' ? '500ms' : '0ms'
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
